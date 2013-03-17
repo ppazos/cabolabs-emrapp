@@ -1,0 +1,46 @@
+/* =============================>>>>>> Estilo para _patientData.gsp */
+#datosPaciente {
+  padding: 10px;
+  margin: 10px auto;
+  background-color: #aaddff;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+}
+#datosPaciente.sex_M {
+  background-color: #aaddff;
+}
+#datosPaciente.sex_F {
+  background-color: #ffbbbb;
+}
+#datosPaciente.sex_ {
+  background-color: #ffffbb;
+}
+.hidden_uid span.uid {
+  float: right;
+  color: #666;
+  display: none;
+}
+.hidden_uid:hover span.uid {
+  display: inline;
+}
+/* =============================>>>>>> /Estilo para _patientData.gsp */
+
+/* ===================>>>> Correccion a main.css para mostrar usuario logueado */
+.nav {
+  overflow: hidden;
+}
+.nav ul {
+  margin: 0;
+  display: inline;
+}
+.nav ul li {
+  display: list-item;
+}
+#loggedUser {
+  float: right;
+}
+#loggedUser a {
+  display: inline-block;
+}
+/* ===================>>>> Correccion a main.css para mostrar usuario logueado */
