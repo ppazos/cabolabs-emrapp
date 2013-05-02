@@ -38,6 +38,11 @@ class RegistrosController {
    static def manager = ArchetypeManager.getInstance()
    def config = ApplicationHolder.application.config.app
    
+   /*
+    * FIXME: la aplicación debería incluir un creador de vistas y bindings en
+    *        función de arquetipos de COMPOSITION existentes localmente o en
+    *        un repositorio remoto que se tenga conectado.
+    */
    static def views = [
       "openEHR-EHR-COMPOSITION.orden_de_estudio_de_laboratorio.v1":
        [ create: "create_orden_de_estudio_de_laboratorio",
@@ -595,6 +600,9 @@ class RegistrosController {
       def res
       def ehrId
       
+      /*
+       * FIXME: que IP y puerto sean configurables.
+       */
       // Pide datos al EHR Server
       //def ehr = new RESTClient('http://192.168.1.101:8090/ehr/')
       def ehr = new RESTClient('http://'+ config.ehr_ip +':8090/ehr/')
@@ -604,16 +612,38 @@ class RegistrosController {
       // FIXME: esto se puede evitar si viene el dato con el paciente
       try
       {
+         // Si ocurre un error (status >399), tira una exception porque el defaultFailureHandler asi lo hace.
+         // Para obtener la respuesta del XML que devuelve el servidor, se accede al campo "response" en la exception.
          res = ehr.get( path:'rest/ehrForSubject', query:[subjectUid:cses.patientUid, format:'json'] )
          
          // FIXME: el paciente puede existir y no tener EHR, verificar si devuelve el EHR u otro error, ej. paciente no existe...
+         // WONTFIX: siempre tira una excepcion en cada caso de error porque el servidor tira error 500 not found en esos casos.
          ehrId = res.data.ehrId
       }
       catch (Exception e)
       {
+         // puedo acceder al response usando la excepción!
+         // 500 class groovyx.net.http.HttpResponseDecorator
+         println e.response.status.toString() +" "+ e.response.class.toString()
+         
+         // errorEHR no encontrado para el paciente $subjectId, se debe crear un EHR para el paciente
+         println e.response.data
+         
+         // WARNING: es el XML parseado, no el texto en bruto!
+         // class groovy.util.slurpersupport.NodeChild
+         println e.response.data.getClass()
+         
+         // Procesando el XML
+         println e.response.data.code.text() // error
+         println e.response.data.message.text() // el texto
+         
+         // text/xml
+         println e.response.contentType
+         
          // TODO: log a disco
          // no debe serguir si falla el lookup
-         render "Ocurrio un error al obtener el ehr del paciente "+ e.message
+         //render "Ocurrio un error al obtener el ehr del paciente "+ e.message
+         render e.response.data.message.text()
          return
       }
       
