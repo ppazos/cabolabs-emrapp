@@ -46,7 +46,7 @@
     
     <g:render template="patientData" model="${session.clinicalSession.datosPaciente}" />
     
-    <h1>Creación de registros clinicos</h1>
+    <h1>Creaci&oacute;n de registros clinicos</h1>
     <div class="content">
     
       <%-- evita error de lazy load si se accede a session.clinicalSession.documents --%>
@@ -88,9 +88,9 @@
       
       
       <div class="help">
-        Esta aplicación es para crear y enviar registros a un servidor remoto de registros clínicos.<br/>
-        Los identificadores únicos de cada registro (registros clínicos, órdenes de estudios, etc.) son asignados por el servidor al recibir cada registro.<br/>
-        La lectura de registros se realiza solicitando los mismos al servidor, según algún criterio de búsqueda.<br/>
+        Esta aplicaci&oacute;n es para crear y enviar registros a un servidor remoto de registros cl&iacute;nicos.<br/>
+        Los identificadores &uacute;nicos de cada registro (registros cl&iacute;nicos, &oacute;rdenes de estudios, etc.) son asignados por el servidor al recibir cada registro.<br/>
+        La lectura de registros se realiza solicitando los mismos al servidor, seg&uacute;n alg&uacute;n criterio de b&uacute;squeda.<br/>
       </div>
     </div>
   </body>
