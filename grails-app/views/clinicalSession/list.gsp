@@ -22,6 +22,7 @@
       <table>
         <thead>
           <tr>
+		    <th>id</th>
             <th>patient</th>
             <th>date</th>
             <th>open</th>
@@ -32,6 +33,7 @@
         <tbody>
         <g:each in="${list}" status="i" var="cses">
           <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
+		    <td>${cses.id}</td>
             <td>${cses.patientUid}</td>
             <td>${cses.dateCreated}</td>
             <td>${cses.open}</td>

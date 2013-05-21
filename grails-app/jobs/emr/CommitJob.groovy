@@ -28,7 +28,7 @@ class CommitJob {
       
       def serializer
       def serializedDocs // List<String>
-      def params = [ versions:[] ]
+      def params
       
       // http://groovy.codehaus.org/modules/http-builder/doc/rest.html
       //def http = new HTTPBuilder('http://192.168.1.104:8080/ehr/')
@@ -47,6 +47,8 @@ class CommitJob {
       csess.each { cses ->
          
          println "Commit de sesion: "+ cses.id + " para patUid: "+ cses.patientUid
+		 
+		 params = [ versions:[] ]
          
          // Serializa a XML los documentos que estan en la sesion clinica
          serializer = new XmlSerializer(cses)
