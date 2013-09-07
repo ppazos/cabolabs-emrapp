@@ -1,0 +1,251 @@
+<version xmlns='http://schemas.openehr.org/v1' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>
+  <commit_audit>
+    <change_type>
+      <value>creation</value>
+      <defining_code>
+        <terminology_id>
+          <value>openehr</value>
+        </terminology_id>
+        <code_string>249</code_string>
+      </defining_code>
+    </change_type>
+    <committer>
+      <name>Dr. Pablo Pazos</name>
+    </committer>
+  </commit_audit>
+  <data xsi:type='COMPOSITION' archetype_node_id='openEHR-EHR-COMPOSITION.signos.v1'>
+    <name>
+      <value>Signos</value>
+    </name>
+    <language>
+      <terminology_id>
+        <value>ISO_639-1</value>
+      </terminology_id>
+      <code_string>es</code_string>
+    </language>
+    <territory>
+      <terminology_id>
+        <value>ISO_3166-1</value>
+      </terminology_id>
+      <code_string>UY</code_string>
+    </territory>
+    <category>
+      <value>event</value>
+      <defining_code>
+        <terminology_id>
+          <value>openehr</value>
+        </terminology_id>
+        <code_string>443</code_string>
+      </defining_code>
+    </category>
+    <composer xsi:type='PARTY_IDENTIFIED'>
+      <name>Dr. Pablo Pazos</name>
+    </composer>
+    <context>
+      <start_time>
+        <value>20130907T171609,0843-0300</value>
+      </start_time>
+      <setting>
+        <value>Hospital Montevideo</value>
+        <defining_code>
+          <terminology_id>
+            <value>openehr</value>
+          </terminology_id>
+          <code_string>229</code_string>
+        </defining_code>
+      </setting>
+    </context>
+    <content xsi:type='OBSERVATION' archetype_node_id='at0006'>
+      <name>
+        <value>Presión Arterial</value>
+      </name>
+      <data xsi:type='HISTORY' archetype_node_id='at0007'>
+        <name>
+          <value>Event Series</value>
+        </name>
+        <events xsi:type='EVENT' archetype_node_id='at0002'>
+          <name>
+            <value>Cualquier evento</value>
+          </name>
+          <data xsi:type='ITEM_TREE' archetype_node_id='at0003'>
+            <name>
+              <value>Arbol</value>
+            </name>
+            <items xsi:type='ELEMENT' archetype_node_id='at0005'>
+              <name>
+                <value>Diastólica</value>
+              </name>
+              <value xsi:type='DV_QUANTITY'>
+                <magnitude>90.0</magnitude>
+                <units>mm[Hg]</units>
+              </value>
+            </items>
+            <items xsi:type='ELEMENT' archetype_node_id='at0004'>
+              <name>
+                <value>Sistólica</value>
+              </name>
+              <value xsi:type='DV_QUANTITY'>
+                <magnitude>120.0</magnitude>
+                <units>mm[Hg]</units>
+              </value>
+            </items>
+          </data>
+        </events>
+      </data>
+    </content>
+    <content xsi:type='OBSERVATION' archetype_node_id='at0008'>
+      <name>
+        <value>Temperatura corporal</value>
+      </name>
+      <data xsi:type='HISTORY' archetype_node_id='at0009'>
+        <name>
+          <value>Event Series</value>
+        </name>
+        <events xsi:type='EVENT' archetype_node_id='at0010'>
+          <name>
+            <value>Cualquier evento</value>
+          </name>
+          <data xsi:type='ITEM_TREE' archetype_node_id='at0011'>
+            <name>
+              <value>Arbol</value>
+            </name>
+            <items xsi:type='ELEMENT' archetype_node_id='at0012'>
+              <name>
+                <value>Temperatura</value>
+              </name>
+              <value xsi:type='DV_QUANTITY'>
+                <magnitude>37.0</magnitude>
+                <units>ºC</units>
+              </value>
+            </items>
+          </data>
+        </events>
+      </data>
+    </content>
+    <content xsi:type='OBSERVATION' archetype_node_id='at0013'>
+      <name>
+        <value>Frecuencia cardiaca</value>
+      </name>
+      <data xsi:type='HISTORY' archetype_node_id='at0014'>
+        <name>
+          <value>Event Series</value>
+        </name>
+        <events xsi:type='EVENT' archetype_node_id='at0015'>
+          <name>
+            <value>Cualquier evento</value>
+          </name>
+          <data xsi:type='ITEM_TREE' archetype_node_id='at0016'>
+            <name>
+              <value>Arbol</value>
+            </name>
+            <items xsi:type='ELEMENT' archetype_node_id='at0017'>
+              <name>
+                <value>Frecuencia Cardiaca</value>
+              </name>
+              <value xsi:type='DV_QUANTITY'>
+                <magnitude>88.0</magnitude>
+                <units>/min</units>
+              </value>
+            </items>
+          </data>
+        </events>
+      </data>
+    </content>
+    <content xsi:type='OBSERVATION' archetype_node_id='at0018'>
+      <name>
+        <value>Frecuencia respiratoria</value>
+      </name>
+      <data xsi:type='HISTORY' archetype_node_id='at0019'>
+        <name>
+          <value>Event Series</value>
+        </name>
+        <events xsi:type='EVENT' archetype_node_id='at0020'>
+          <name>
+            <value>Cualquier evento</value>
+          </name>
+          <data xsi:type='ITEM_TREE' archetype_node_id='at0021'>
+            <name>
+              <value>Arbol</value>
+            </name>
+            <items xsi:type='ELEMENT' archetype_node_id='at0022'>
+              <name>
+                <value>Frecuencia Respiratoria</value>
+              </name>
+              <value xsi:type='DV_QUANTITY'>
+                <magnitude>77.0</magnitude>
+                <units>/min</units>
+              </value>
+            </items>
+          </data>
+        </events>
+      </data>
+    </content>
+    <content xsi:type='OBSERVATION' archetype_node_id='at0023'>
+      <name>
+        <value>Peso corporal</value>
+      </name>
+      <data xsi:type='HISTORY' archetype_node_id='at0024'>
+        <name>
+          <value>Event Series</value>
+        </name>
+        <events xsi:type='EVENT' archetype_node_id='at0025'>
+          <name>
+            <value>Cualquier evento</value>
+          </name>
+          <data xsi:type='ITEM_TREE' archetype_node_id='at0026'>
+            <name>
+              <value>Arbol</value>
+            </name>
+            <items xsi:type='ELEMENT' archetype_node_id='at0027'>
+              <name>
+                <value>Peso</value>
+              </name>
+              <value xsi:type='DV_QUANTITY'>
+                <magnitude>78.0</magnitude>
+                <units>kg</units>
+              </value>
+            </items>
+          </data>
+        </events>
+      </data>
+    </content>
+    <content xsi:type='OBSERVATION' archetype_node_id='at0028'>
+      <name>
+        <value>Estatura</value>
+      </name>
+      <data xsi:type='HISTORY' archetype_node_id='at0029'>
+        <name>
+          <value>Event Series</value>
+        </name>
+        <events xsi:type='EVENT' archetype_node_id='at0030'>
+          <name>
+            <value>Cualquier evento</value>
+          </name>
+          <data xsi:type='ITEM_TREE' archetype_node_id='at0031'>
+            <name>
+              <value>Arbol</value>
+            </name>
+            <items xsi:type='ELEMENT' archetype_node_id='at0032'>
+              <name>
+                <value>Estatura</value>
+              </name>
+              <value xsi:type='DV_QUANTITY'>
+                <magnitude>180.0</magnitude>
+                <units>cm</units>
+              </value>
+            </items>
+          </data>
+        </events>
+      </data>
+    </content>
+  </data>
+  <lifecycle_state>
+    <value>completed</value>
+    <defining_code>
+      <terminology_id>
+        <value>openehr</value>
+      </terminology_id>
+      <code_string>532</code_string>
+    </defining_code>
+  </lifecycle_state>
+</version>
