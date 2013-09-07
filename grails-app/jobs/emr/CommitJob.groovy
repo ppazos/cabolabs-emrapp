@@ -22,7 +22,7 @@ class CommitJob {
    def execute() {
       
       // execute job
-      println "JOB!"
+      //println "JOB!"
     
       def csess = ClinicalSession.findAllByOpenAndCommitted(false, false)
       
@@ -47,15 +47,21 @@ class CommitJob {
       csess.each { cses ->
          
          println "Commit de sesion: "+ cses.id + " para patUid: "+ cses.patientUid
-		 
-		 params = [ versions:[] ]
+       
+         params = [ versions:[] ]
          
          // Serializa a XML los documentos que estan en la sesion clinica
          serializer = new XmlSerializer(cses)
          serializedDocs = serializer.serializeSessionDocs()
          
          // Arma parametros para el request HTTP
-         serializedDocs.each { serDoc ->
+         serializedDocs.eachWithIndex { serDoc, i ->
+         
+            // logging
+            def compoFile = new File('committed' + File.separator +'composition_'+ cses.id +'_'+ i +'.xml')
+            compoFile << serDoc
+            // /logging
+         
             params['versions'] << serDoc
          }
          
@@ -98,7 +104,7 @@ class CommitJob {
             params['ehrId'] = ehrId
             
             // Sin URLENC da error null pointer exception sin mas datos... no se porque es. PREGUNTAR!
-            res = ehr.post( path:'ehr/commit', body:params, requestContentType: URLENC ) // query:[ehrId:ehrId] si es post creo que no acepta query
+            res = ehr.post( path:'rest/commit', body:params, requestContentType: URLENC ) // query:[ehrId:ehrId] si es post creo que no acepta query
                
             /*
              * result {
