@@ -631,7 +631,7 @@ bind_CComplexObject_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activit
          //   println "       tipo del valor de ELEMENT: " + element.value.class + " " + element.value.value.class
          //else
          if (element.value)
-            println "       tipo del valor de ELEMENT: " + element.value.class + " pero no tiene .value!!!!"
+            println "       tipo del valor de ELEMENT: " + element.value.class + " valor="+ element.value
          else
             println "       dice que ELEMENT.value es null para "+ cobject.path()
             
