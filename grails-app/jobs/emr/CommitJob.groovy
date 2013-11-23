@@ -16,7 +16,7 @@ class CommitJob {
    def config = ApplicationHolder.application.config.app
    
    static triggers = {
-      simple repeatInterval: 100000l // execute job once in 100 seconds
+      simple repeatInterval: 10000l // execute job once in 100 seconds
    }
 
    def execute() {
