@@ -33,7 +33,7 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
 
 class RegistrosController {
 
-   static defaultAction = "list"
+   static defaultAction = "currentSession"
    
    static def manager = ArchetypeManager.getInstance()
    def config = ApplicationHolder.application.config.app
@@ -111,16 +111,84 @@ class RegistrosController {
    ]
    
    
-   def list()
+   /**
+    * Listado de registros historicos para un paciente.
+    */
+   def list(String patientUid)
    {
-      // FIXME: verificar que hay una sesion clinica en session.clinicalSession
-      // que es para la que voy a crear los registros que estoy listando.
+      println "list: "+ params
       
-      def archetypes = manager.getArchetypes("composition", ".*")
+      // Sino tengo ya los datos del paciente,
+      // se los pido al servidor.
+      if (!params.datosPaciente)
+      {
+         def http = new HTTPBuilder('http://'+ config.ehr_ip +':8090/ehr/rest/getPatient')
+         
+         // Si no hay conexion con el servidor tira excepcion
+         try
+         {
+            // perform a GET request, expecting TEXT response data
+            http.request( Method.GET, ContentType.JSON ) { req ->
+              
+              //uri.path = '/ajax/services/search/web'
+              //uri.query = [ v:'1.0', q: 'Calvin and Hobbes' ]
+              uri.query = [ format: 'json', uid: patientUid ]
+            
+              headers.'User-Agent' = 'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4'
+              
+              // Begin: java code to set HTTP Parameters/Properties
+              // Groovy HTTPBuilder doesn't provide convenience methods
+              // for many of these yet.
+              req.getParams().setParameter("http.connection.timeout", new Integer(10000));
+              req.getParams().setParameter("http.socket.timeout", new Integer(10000));
+              // End java code to set HTTP Parameters/Properties
+            
+              // response handler for a success response code:
+              response.success = { resp, json ->
+              
+                 //println json
+                 /* es un map...
+                 [uid:3fe33dee-0a9a-43cd-a2b7-ce88b25734ba, 
+                 firstName:Pablo, 
+                 lastName:Pazos, 
+                 dob:19811024, 
+                 sex:M, 
+                 idCode:4116238-0, 
+                 idType:CI]
+                 */
+                 
+                 params.datosPaciente = json
+              }
+            
+              // handler for any failure status code:
+              response.failure = { resp ->
+                 
+                 println "response: " + resp.getAllHeaders() + " curr thrd id: " + Thread.currentThread().getId()
+                 
+                 //println "Unexpected error: ${resp.statusLine.statusCode} : ${resp.statusLine.reasonPhrase}"
+                 throw new Exception("Unexpected error: ${resp.statusLine.statusCode} : ${resp.statusLine.reasonPhrase}")
+              }
+            }
+         
+         }
+         catch (org.apache.http.conn.HttpHostConnectException e) // no hay conectividad
+         {
+            println e.message
+            flash.message = 'En este momento no hay conexion con el servidor demografico, vuelva a intentarlo mas tarde'
+         }
+         catch (groovyx.net.http.HttpResponseException e) // hay conectividad pero da un error del lado del servidor
+         {
+            // TODO: log a disco
+            println e.message
+            flash.message = 'Ocurrio un error al realizar la consulta de pacientes al servidor'
+         }
+      }
       
-      //render archetypes[0].archetypeId.value
+      // Solo renderea la vista
+      // El param lo usa la vista para pedir al servidor
+      // los registros desde la accion compositionList
       
-      return [archetypes: archetypes]
+      println params
    }
    
    
@@ -525,7 +593,23 @@ class RegistrosController {
       session.clinicalSession = cses
       
       // Lista documentos que pueden ser creados
-      redirect(controller:'registros', action:'list')
+      redirect(controller:'registros', action:'currentSession')
+   }
+   
+   /**
+    * Lista de definiciones de registros que se pueden
+    * crear y completar desde la sesion clinica actual.
+    */
+   def currentSession()
+   {
+      if (!session.clinicalSession)
+      {
+         redirect(controller:'person', action:'list')
+         return
+      }
+      
+      def archetypes = manager.getArchetypes("composition", ".*")
+      return [archetypes: archetypes]
    }
    
    
@@ -544,7 +628,7 @@ class RegistrosController {
       
       
       // Lista documentos que pueden ser creados
-      redirect(controller:'registros', action:'list')
+      redirect(controller:'registros', action:'currentSession')
    }
    
 
@@ -594,9 +678,8 @@ class RegistrosController {
     *
     * @return
     */
-   def compositionList()
+   def compositionList(String patientUid)
    {
-      def cses = session.clinicalSession
       def res
       def ehrId
       
@@ -614,13 +697,18 @@ class RegistrosController {
       {
          // Si ocurre un error (status >399), tira una exception porque el defaultFailureHandler asi lo hace.
          // Para obtener la respuesta del XML que devuelve el servidor, se accede al campo "response" en la exception.
-         res = ehr.get( path:'rest/ehrForSubject', query:[subjectUid:cses.patientUid, format:'json'] )
+         res = ehr.get( path:'rest/ehrForSubject', query:[subjectUid:patientUid, format:'json'] )
          
          // FIXME: el paciente puede existir y no tener EHR, verificar si devuelve el EHR u otro error, ej. paciente no existe...
          // WONTFIX: siempre tira una excepcion en cada caso de error porque el servidor tira error 500 not found en esos casos.
          ehrId = res.data.ehrId
       }
-      catch (Exception e)
+      catch (org.apache.http.conn.HttpHostConnectException e) // no hay conectividad
+      {
+         render e.message
+         return
+      }
+      catch (groovyx.net.http.HttpResponseException e)
       {
          // puedo acceder al response usando la excepción!
          // 500 class groovyx.net.http.HttpResponseDecorator

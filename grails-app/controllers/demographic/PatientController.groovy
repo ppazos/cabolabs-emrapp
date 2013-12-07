@@ -60,7 +60,6 @@ class PatientController {
       // TIMER
       def start = System.currentTimeMillis()
       
-      
       def patientList = []
       
       println "Consulta al EHR: "+ config.ehr_ip + ':8090'
@@ -120,17 +119,25 @@ class PatientController {
          }
       
       }
-      catch (Exception e)
+      catch (org.apache.http.conn.HttpHostConnectException e) // no hay conectividad
       {
          println e.message
          flash.message = 'En este momento no hay conexion con el servidor demografico, vuelva a intentarlo mas tarde'
+      }
+      catch (groovyx.net.http.HttpResponseException e) // hay conectividad pero da un error del lado del servidor
+      {
+         // TODO: log a disco
+         println e.message
+         flash.message = 'Ocurrio un error al realizar la consulta de pacientes al servidor'
          
+         /*
          // te doy datos de mentira :D
          patientList = [
             [uid:'1235-5756', firstName:'Carlos', lastName:'Nuñez',  dob:'19260225', sex:'M', idCode:'123456', idType:'CI'],
             [uid:'2556-3434', firstName:'Petra',  lastName:'Cabeza', dob:'19990912', sex:'F', idCode:'569790', idType:'CI'],
             [uid:'3457-2443', firstName:'Ronco',  lastName:'Vaca',   dob:'19810230', sex:'M', idCode:'247288', idType:'CI'],
          ]
+         */
       }
       
       // TIMER

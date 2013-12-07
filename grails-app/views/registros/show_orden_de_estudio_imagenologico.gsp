@@ -52,11 +52,11 @@
   <body>
     <div class="nav" role="navigation">
       <ul>
-        <li><g:link class="list" controller="registros" action="list">Registros</g:link></li>
+        <li><g:link class="list" controller="registros" action="currentSession">Registros</g:link></li>
       </ul>
     </div>
   
-    <h1>Registro de orden de estudio imagenologico</h1>
+    <h1>Orden de estudio imagenologico</h1>
 
     <div class="content">
       <table>

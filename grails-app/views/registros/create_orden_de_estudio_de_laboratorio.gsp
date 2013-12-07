@@ -133,7 +133,7 @@
   <body>
     <div class="nav" role="navigation">
       <ul>
-        <li><g:link class="list" controller="registros" action="list">Registros</g:link></li>
+        <li><g:link class="list" controller="registros" action="currentSession">Registros</g:link></li>
       </ul>
       <g:render template="/user/loggedUser" />
     </div>

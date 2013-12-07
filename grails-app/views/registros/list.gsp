@@ -1,3 +1,4 @@
+<%@ page import="sesion.ClinicalSession" %>
 <html>
   <head>
     <meta name="layout" content="main" />
@@ -40,58 +41,37 @@
       <ul>
         <li><g:link class="list" controller="patient" action="list">Pacientes</g:link></li>
         <li><g:link class="list" controller="clinicalSession" action="list">Sesiones</g:link></li>
+        <li>
+          <g:set var="cses" value="${ClinicalSession.findByPatientUidAndOpen(params.patientUid, true)}" />
+          <g:if test="${cses}">
+            <g:link class="create" controller="registros" action="continueSession" id="${cses.id}">Continuar sesi&oacute;n</g:link>
+          </g:if>
+          <g:else>
+            <g:form method="post" controller="registros" action="openSession">
+              <input type="hidden" name="patientUid" value="${params.patientUid}" />
+              <input type="hidden" name="datosPaciente.uid" value="${params.datosPaciente.uid}" />
+               <input type="hidden" name="datosPaciente.firstName" value="${params.datosPaciente.firstName}" />
+               <input type="hidden" name="datosPaciente.lastName" value="${params.datosPaciente.lastName}" />
+               <input type="hidden" name="datosPaciente.dob" value="${params.datosPaciente.dob}" />
+               <input type="hidden" name="datosPaciente.sex" value="${params.datosPaciente.sex}" />
+               <input type="hidden" name="datosPaciente.idCode" value="${params.datosPaciente.idCode}" />
+               <input type="hidden" name="datosPaciente.idType" value="${params.datosPaciente.idType}" />
+              <g:submitButton name="doit" value="Nueva sesión" />
+            </g:form>
+          </g:else>
+        </li>
       </ul>
       <g:render template="/user/loggedUser" />
     </div>
     
-    <g:render template="patientData" model="${session.clinicalSession.datosPaciente}" />
+    <g:render template="patientData" model="${params.datosPaciente}" />
     
-    <h1>Creaci&oacute;n de registros clinicos</h1>
+    <h1>Registros cl&iacute;nicos hist&oacute;ricos</h1>
     <div class="content">
-    
-      <%-- evita error de lazy load si se accede a session.clinicalSession.documents --%>
-      <g:set var="cses" value="${session.clinicalSession.refresh()}" />
-    
-      <g:each in="${archetypes}" var="archetype">
-        
-        <%-- hay un doc para el arquetipo en la sesion? --%>
-        <%-- <g:set var="doc" value="${cses.documents.find{ it.compositionArchetypeId == archetype.archetypeId.value }}" /> --%>
-        
-        <g:set var="doc" value="${cses.getDocumentForArchetype( archetype.archetypeId.value )}" />
-        
-        
-        <%-- nombre y descripcion del arquetipo --%>
-        <g:set var="term" value="${archetype.ontology.termDefinition("es", "at0000")}" />
-        
-        <g:if test="${doc}">
-          <g:link action="show" params="[id:doc.id]">${term.getText()}</g:link> *
-        </g:if>
-        <g:else>
-          <g:link action="create" params="[archetypeId:archetype.archetypeId.value]">${term.getText()}</g:link>
-        </g:else>
-        <br/>
-        ${term.getDescription()}
-        <br/><br/>
-      </g:each>
-      
-      <%-- debe haber algun registro hecho para poder ir a firmar --%>
-      <g:if test="${cses.documents.size() > 0}">
-        <div id="sign">
-          <g:link action="sign">Firmar</g:link>
-        </div>
-      </g:if>
-      
-      
+   
       <!-- Lista de registros en el EHR Server -->
-      <h1>Registros actuales</h1>
-      <g:include action="compositionList" />
+      <g:include action="compositionList" params="[patientUid: params.patientUid]" />
       
-      
-      <div class="help">
-        Esta aplicaci&oacute;n es para crear y enviar registros a un servidor remoto de registros cl&iacute;nicos.<br/>
-        Los identificadores &uacute;nicos de cada registro (registros cl&iacute;nicos, &oacute;rdenes de estudios, etc.) son asignados por el servidor al recibir cada registro.<br/>
-        La lectura de registros se realiza solicitando los mismos al servidor, seg&uacute;n alg&uacute;n criterio de b&uacute;squeda.<br/>
-      </div>
     </div>
   </body>
 </html>
