@@ -8,6 +8,7 @@ class Document {
    String category = "event"
    
    String authorId
+   String templateId
    String compositionArchetypeId
    
    // Datos tal cual fueron ingresados por el usuario en la ui
@@ -21,6 +22,7 @@ class Document {
    static constraints = {
       authorId (nullable: true)
       compositionArchetypeId (nullable: true)
+      templateId(nullable: false)
       end (nullable: true)
    }
    
