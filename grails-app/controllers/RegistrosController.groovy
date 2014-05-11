@@ -1,7 +1,6 @@
 
 import java.awt.image.RescaleOp;
 
-import archetype_repository.ArchetypeManager
 import binder.DataBinder
 import com.thoughtworks.xstream.XStream
 //import com.thoughtworks.xstream.XStream
@@ -35,15 +34,16 @@ class RegistrosController {
 
    static defaultAction = "currentSession"
    
-   static def manager = ArchetypeManager.getInstance()
+   static def manager = opt_repository.OperationalTemplateManager.getInstance()
    def config = ApplicationHolder.application.config.app
    
    /*
-    * FIXME: la aplicación debería incluir un creador de vistas y bindings en
-    *        función de arquetipos de COMPOSITION existentes localmente o en
+    * FIXME: la aplicaciï¿½n deberï¿½a incluir un creador de vistas y bindings en
+    *        funciï¿½n de arquetipos de COMPOSITION existentes localmente o en
     *        un repositorio remoto que se tenga conectado.
     */
    static def views = [
+      /*
       "openEHR-EHR-COMPOSITION.orden_de_estudio_de_laboratorio.v1":
        [ create: "create_orden_de_estudio_de_laboratorio",
            show: "show_orden_de_estudio_de_laboratorio"],
@@ -53,9 +53,14 @@ class RegistrosController {
       "openEHR-EHR-COMPOSITION.signos.v1":
        [ create: "create_registro_signos",
            show: "show_registro_signos"]
+      */
+      "Signos": // opts/Signos.opt
+      [ create: "create_registro_signos",
+          show: "show_registro_signos"]
    ]
    
    static def bindings = [
+      /*
       "create_orden_de_estudio_de_laboratorio":
          [
             "categoria_estudio_texto": "/content[at0002]/activities[at0003]/description[at0004]/items[at0005]/value/value",
@@ -108,6 +113,37 @@ class RegistrosController {
             "estatura_mag":                  "/content[at0028]/data[at0029]/events[at0030]/data[at0031]/items[at0032]/value/magnitude", // DvQuantity.magnitude
             "estatura_units":                "/content[at0028]/data[at0029]/events[at0030]/data[at0031]/items[at0032]/value/units"      // DvQuantity.units
          ]
+         */
+      "create_registro_signos":
+      [
+         "presion_sistolica":             "/content[archetype_id=openEHR-EHR-OBSERVATION.blood_pressure.v1]/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value", // Se necesita para pedir la restriccion de units (la path de units no funciona con arch.node()
+         "presion_sistolica_mag":         "/content[archetype_id=openEHR-EHR-OBSERVATION.blood_pressure.v1]/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value/magnitude", // DvQuantity.magnitude
+         "presion_sistolica_units":       "/content[archetype_id=openEHR-EHR-OBSERVATION.blood_pressure.v1]/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value/units",     // DvQuantity.units
+         
+         "presion_diastolica":            "/content[archetype_id=openEHR-EHR-OBSERVATION.blood_pressure.v1]/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value",           // DvQuantity
+         "presion_diastolica_mag":        "/content[archetype_id=openEHR-EHR-OBSERVATION.blood_pressure.v1]/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value/magnitude", // DvQuantity.magnitude
+         "presion_diastolica_units":      "/content[archetype_id=openEHR-EHR-OBSERVATION.blood_pressure.v1]/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value/units",     // DvQuantity.units
+         
+         "temperatura":                   "/content[archetype_id=openEHR-EHR-OBSERVATION.body_temperature.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value",           // DvQuantity
+         "temperatura_mag":               "/content[archetype_id=openEHR-EHR-OBSERVATION.body_temperature.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value/magnitude", // DvQuantity.magnitude
+         "temperatura_units":             "/content[archetype_id=openEHR-EHR-OBSERVATION.body_temperature.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value/units",     // DvQuantity.units
+         
+         "frecuencia_cardiaca":           "/content[archetype_id=openEHR-EHR-OBSERVATION.pulse.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value",           // DvQuantity
+         "frecuencia_cardiaca_mag":       "/content[archetype_id=openEHR-EHR-OBSERVATION.pulse.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value/magnitude", // DvQuantity.magnitude
+         "frecuencia_cardiaca_units":     "/content[archetype_id=openEHR-EHR-OBSERVATION.pulse.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value/units",     // DvQuantity.units
+         
+         "frecuencia_respiratoria":       "/content[archetype_id=openEHR-EHR-OBSERVATION.respiration.v1]/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value",           // DvQuantity
+         "frecuencia_respiratoria_mag":   "/content[archetype_id=openEHR-EHR-OBSERVATION.respiration.v1]/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/magnitude", // DvQuantity.magnitude
+         "frecuencia_respiratoria_units": "/content[archetype_id=openEHR-EHR-OBSERVATION.respiration.v1]/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/units",     // DvQuantity.units
+         
+         "peso":                          "/content[archetype_id=openEHR-EHR-OBSERVATION.body_weight.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value",           // DvQuantity
+         "peso_mag":                      "/content[archetype_id=openEHR-EHR-OBSERVATION.body_weight.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value/magnitude", // DvQuantity.magnitude
+         "peso_units":                    "/content[archetype_id=openEHR-EHR-OBSERVATION.body_weight.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value/units",     // DvQuantity.units
+         
+         "estatura":                      "/content[archetype_id=openEHR-EHR-OBSERVATION.height.v1]/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value",           // DvQuantity
+         "estatura_mag":                  "/content[archetype_id=openEHR-EHR-OBSERVATION.height.v1]/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/magnitude", // DvQuantity.magnitude
+         "estatura_units":                "/content[archetype_id=openEHR-EHR-OBSERVATION.height.v1]/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/units"      // DvQuantity.units
+      ]
    ]
    
    
@@ -192,19 +228,19 @@ class RegistrosController {
    }
    
    
-   def create(String archetypeId)
+   def create(String templateId)
    {
       // Verifica que exista la vista (avisa nomas para que no se olvide de crear la vista)
-      def uri = "registros/"+ views[archetypeId][actionName] +".gsp"
+      def uri = "registros/"+ views[templateId][actionName] +".gsp"
       def resource = grailsAttributes.pagesTemplateEngine.getResourceForUri(uri)
       if ( !(resource && resource.file && resource.exists()) )
       {
          throw new Exception("No existe la vista " + uri)
       }
       
-      def archetype = manager.getArchetype(archetypeId)
+      def template = manager.getTemplate(templateId)
       
-      render(view: views[archetypeId][actionName], model: [archetype: archetype, bindings: bindings])
+      render(view: views[templateId][actionName], model: [template: template, bindings: bindings])
    }
    
    
@@ -215,7 +251,7 @@ class RegistrosController {
     * @param archetypeId
     * @return
     */
-   def save(String archetypeId)
+   def save(String templateId)
    {
       //println params
       
@@ -243,7 +279,7 @@ class RegistrosController {
        *  urgente:on]
        */
       
-      def view = views[archetypeId]['create']
+      def view = views[templateId]['create']
       def bind_data = [:]
       params.each { key, value ->
          
@@ -279,12 +315,12 @@ class RegistrosController {
       println bind_data
       
       
-      def archetype = manager.getArchetype(archetypeId)
-      def binder = new DataBinder(archetype)
+      def template = manager.getTemplate(templateId)
+      def binder = new DataBinder(template)
       def doc = binder.bind(bind_data)
       
       // TODO: setearlo adentro
-      doc.compositionArchetypeId = archetypeId
+      doc.templateId = templateId
       
       
       /*
@@ -352,10 +388,10 @@ class RegistrosController {
    def show(long id)
    {
       def doc = Document.get(id)
-      def archetype = manager.getArchetype(doc.compositionArchetypeId)
+      def template = manager.getTemplate(doc.templateId)
       
-      render( view: views[doc.compositionArchetypeId][actionName],
-              model: [doc: doc, archetype: archetype, bindings: bindings] )
+      render( view: views[doc.templateId][actionName],
+              model: [doc: doc, template: template, bindings: bindings] )
    }
    
    
@@ -608,8 +644,7 @@ class RegistrosController {
          return
       }
       
-      def archetypes = manager.getArchetypes("composition", ".*")
-      return [archetypes: archetypes]
+      return [templates: manager.getTemplates()]
    }
    
    
@@ -710,7 +745,7 @@ class RegistrosController {
       }
       catch (groovyx.net.http.HttpResponseException e)
       {
-         // puedo acceder al response usando la excepción!
+         // puedo acceder al response usando la excepciï¿½n!
          // 500 class groovyx.net.http.HttpResponseDecorator
          println e.response.status.toString() +" "+ e.response.class.toString()
          

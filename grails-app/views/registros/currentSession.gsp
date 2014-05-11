@@ -53,25 +53,31 @@
       <%-- evita error de lazy load si se accede a session.clinicalSession.documents --%>
       <g:set var="cses" value="${session.clinicalSession.refresh()}" />
     
-      <g:each in="${archetypes}" var="archetype">
+      <g:each in="${templates}" var="template">
         
         <%-- hay un doc para el arquetipo en la sesion? --%>
         <%-- <g:set var="doc" value="${cses.documents.find{ it.compositionArchetypeId == archetype.archetypeId.value }}" /> --%>
         
-        <g:set var="doc" value="${cses.getDocumentForArchetype( archetype.archetypeId.value )}" />
+        <g:set var="doc" value="${cses.getDocumentForTemplate( tempalte.templateId )}" />
         
         
         <%-- nombre y descripcion del arquetipo --%>
-        <g:set var="term" value="${archetype.ontology.termDefinition("es", "at0000")}" />
+        <g:set var="term" value="${template.concept.text()}" />
         
         <g:if test="${doc}">
-          <g:link action="show" params="[id:doc.id]">${term.getText()}</g:link> *
+          <g:link action="show" params="[id:doc.id]">${term}</g:link> *
         </g:if>
         <g:else>
-          <g:link action="create" params="[archetypeId:archetype.archetypeId.value]">${term.getText()}</g:link>
+          <g:link action="create" params="[templateId: template.templateId]">${term}</g:link>
         </g:else>
         <br/>
-        ${term.getDescription()}
+        <%--
+        <template>
+          <definition> 
+            <term_definitions code="at0000">
+              <items id="description">unknown</items>
+        --%>
+        ${template.definition.term_definitions.find { it.@code == "at0000" }.items.find{ it.@id == "description" }.text()}
         <br/><br/>
       </g:each>
       
