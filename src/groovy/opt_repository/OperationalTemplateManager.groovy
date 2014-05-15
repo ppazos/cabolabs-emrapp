@@ -12,10 +12,10 @@ import groovy.util.slurpersupport.GPathResult
 class OperationalTemplateManager {
 
    // Parsed OPTs in memory, templateId -> OPT
-   private static Map<String, GPathResult> cache = [:]
+   private static Map<String, OperationalTemplate> _cache = [:]
    
    // templateId => timestamp de cuando fue usado por ultima vez.
-   private static Map<String, Date> timestamps = [:]
+   private static Map<String, Date> _timestamps = [:]
    
 
    private Logger log = Logger.getLogger(getClass())
@@ -37,41 +37,40 @@ class OperationalTemplateManager {
    public void loadAll(String from)
    {
       def root = new File( from )
+      def optxml
       def opt
-      def tempalteId
+      def templateId
       
       // FIXME: deberia filtrar solo archivos opt
       root.eachFile { f ->
          
-         opt = new XmlParser().parse( f )
-         templateId = opt.template_id.value.text()
-         
-         if (!templateId) throw new Exception(f.name + " is not a valid OPT, template_id is missing")
-         
-         this.timestamps[templateId] = new Date() // actualizo timestamp
-         this.cache[templateId] = opt
+         optxml = new XmlSlurper().parse( f )
+         opt = new OperationalTemplate(optxml)
+
+         this._timestamps[opt.templateId] = new Date() // actualizo timestamp
+         this._cache[opt.templateId] = opt
       }
    }
    
    
-   public GPathResult getTemplate(String templateId)
+   public OperationalTemplate getTemplate(String templateId)
    {
-      if (!this.cache[templateId])
+      if (!this._cache[templateId])
       {
          throw new Exception("Template ${templateId} not found")
       }
       
-      this.timestamps[templateId] = new Date() // actualizo timestamp
-      return this.cache[templateId]
+      this._timestamps[templateId] = new Date() // actualizo timestamp
+      return this._cache[templateId]
    }
    
    public Map getCache()
    {
-      return this.cache.asImmutable()
+      return this._cache.asImmutable()
    }
    
    public List getTemplates()
    {
-      return this.cache.values()
+      return this._cache.values()
    }
 }

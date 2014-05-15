@@ -58,7 +58,7 @@
         <%-- hay un doc para el arquetipo en la sesion? --%>
         <%-- <g:set var="doc" value="${cses.documents.find{ it.compositionArchetypeId == archetype.archetypeId.value }}" /> --%>
         
-        <g:set var="doc" value="${cses.getDocumentForTemplate( tempalte.templateId )}" />
+        <g:set var="doc" value="${cses.getDocumentForTemplate( template.templateId )}" />
         
         
         <%-- nombre y descripcion del arquetipo --%>
