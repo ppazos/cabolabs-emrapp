@@ -82,33 +82,8 @@ class XmlSerializer {
          println "getName(): No hay template en "+ templateId
          return ''
       }
-      
-      // Buscar entre todos los nodos ARCHETYPE_ROOT, el que tenga archetype_id.value = archetypeId
-      // o tambien buscar en template.definition que es el ROOT de todo el template.
-      // TODO
-      // <children xsi:type="C_ARCHETYPE_ROOT">
-      def root
-      if (template.definition.archetype_id.value.text() == archetypeId)
-      {
-         root = template.definition
-      }
-      else // busqueda en profundidad por archetype_root
-      {
-         root = template.definition.'**'.grep{ it.'@xsi:type' == 'C_ARCHETYPE_ROOT' && it.archetype_id.value.text() == archetypeId }
-      }
-      
-      if (!root)
-      {
-         println "root no encontrado para ${templateId} ${archetypeId}"
-         return ''
-      }
-      
-      // Buscar en ese nodo, dentro de sus term_definitions, el que tenga code nodeId y devolver su text
-      // Dentro de term_definitions, hay dos items: text y description (pueden haber mas)
-      return root.term_definitions.find { it.@code == nodeId }.items.find{ it.@id == "text" }.text()
-      
-      // TODO: el lenguage se debe sacar de config
-      //return archetype.ontology.termDefinition("es", nodeId).getText()
+
+      return template.getTerm(archetypeId, nodeId)
    }
    
    

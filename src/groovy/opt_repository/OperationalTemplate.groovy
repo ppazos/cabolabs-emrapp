@@ -20,24 +20,30 @@ class OperationalTemplate {
       assert this.archetypeId != null, "Template ${templateId} doesn't have a root archetypeId"
       
       this.opt = opt
-      
-      // test
-      def xsi = new groovy.xml.Namespace("http://www.w3.org/2001/XMLSchema-instance")
-      println xsi.type
    }
    
+   /*
    String test(String archetypeId, String code)
    {
+      println "test ${archetypeId} ${code}"
       if (this.archetypeId != archetypeId)
       {
-         
          //println opt.definition.'**'.grep{ it.'@xsi:type' && it.'@xsi:type'.text() == 'C_ARCHETYPE_ROOT' }
-         println opt.definition.'**'.grep{ it.'@xsi:type' && it.'@xsi:type'.text() == 'C_ARCHETYPE_ROOT' && it.archetype_id.value == archetypeId }.term_definitions.find { it.@code == code }
+         //println opt.definition.'**'.grep{ it.'@xsi:type' && it.'@xsi:type'.text() == 'C_ARCHETYPE_ROOT' && it.archetype_id.value == archetypeId }.term_definitions.find { it.@code == code }
          
          // depthFirst debe ser sobre Node no NodeList (opt.definition)
          //println opt.depthFirst().findAll { it.'@xsi:type' && it.'@xsi:type'.text() == 'C_ARCHETYPE_ROOT' }
-         println opt.depthFirst().findAll { it.'@xsi:type' && it.'@xsi:type'.text() == 'C_ARCHETYPE_ROOT' && it.archetype_id.value == archetypeId }.term_definitions
+         //println opt.depthFirst().findAll { it.'@xsi:type' && it.'@xsi:type'.text() == 'C_ARCHETYPE_ROOT' && it.archetype_id.value == archetypeId }.term_definitions
          
+         def archetypeRootNode = opt.depthFirst().find { it.'@xsi:type' && it.'@xsi:type'.text() == 'C_ARCHETYPE_ROOT' && it.archetype_id.value == archetypeId }
+         
+         println archetypeRootNode.term_definitions.getClass() // ArrayList
+         println archetypeRootNode.term_definitions.size() // 1
+
+         def term = archetypeRootNode.term_definitions.find { it.@code.text() == code }
+         
+         term.items.find { it.@id.text() == "text" }.text()
+
          
          //recursiveTest( opt.definition, archetypeId )
       }
@@ -77,9 +83,22 @@ class OperationalTemplate {
          }
       }
    }
+   */
    
    String getTerm(String archetypeId, String code)
    {
+      return this.getFromOntology(archetypeId, code, "text")
+   }
+   
+   String getDescription(String archetypeId, String code)
+   {
+      return this.getFromOntology(archetypeId, code, "description")
+   }
+   
+   private String getFromOntology(String archetypeId, String code, String part)
+   {
+      assert part == "text" || part == "description", "part should be text or description and is ${part}"
+      
       // Buscar entre todos los nodos ARCHETYPE_ROOT, el que tenga archetype_id.value = archetypeId
       // o tambien buscar en template.definition que es el ROOT de todo el template.
       // TODO
@@ -91,10 +110,7 @@ class OperationalTemplate {
       }
       else // busqueda en profundidad por archetype_root
       {
-         println opt.definition.'**'.grep{ it.'@xsi:type' == 'C_ARCHETYPE_ROOT' }
-         println opt.definition.'**'.grep{ it.'@xsi:type' == 'C_ARCHETYPE_ROOT' }.archetype_id
-         
-         root = opt.definition.'**'.grep{ it.'@xsi:type' == 'C_ARCHETYPE_ROOT' && it.archetype_id.value.text() == archetypeId }
+         root = opt.depthFirst().find { it.'@xsi:type' && it.'@xsi:type'.text() == 'C_ARCHETYPE_ROOT' && it.archetype_id.value == archetypeId }
       }
       
       if (!root)
@@ -105,6 +121,9 @@ class OperationalTemplate {
       
       // Buscar en ese nodo, dentro de sus term_definitions, el que tenga code nodeId y devolver su text
       // Dentro de term_definitions, hay dos items: text y description (pueden haber mas)
-      return root.term_definitions.find { it.@code == code }.items.find{ it.@id == "text" }.text()
+      
+      def term = root.term_definitions.find { it.@code.text() == code }
+      
+      return term.items.find { it.@id.text() == part }.text()
    }
 }

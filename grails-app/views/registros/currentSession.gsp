@@ -71,13 +71,7 @@
           <g:link action="create" params="[templateId: template.templateId]">${term}</g:link>
         </g:else>
         <br/>
-        <%--
-        <template>
-          <definition> 
-            <term_definitions code="at0000">
-              <items id="description">unknown</items>
-        --%>
-        ${template.definition.term_definitions.find { it.@code == "at0000" }.items.find{ it.@id == "description" }.text()}
+        ${template.getDescription(template.archetypeId, "at0000"}}
         <br/><br/>
       </g:each>
       

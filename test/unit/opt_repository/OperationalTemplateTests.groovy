@@ -25,13 +25,14 @@ class OperationalTemplateTests {
         optm.loadAll("opts")
         
         def opt = optm.getTemplate("Signos")
-        //assertEquals opt.getTerm("openEHR-EHR-COMPOSITION.signos.v1", "at0000"), "Signos vitales"
-        //assertEquals opt.getTerm("openEHR-EHR-COMPOSITION.signos.v1", "at0006"), "*OBSERVATION(es)"
+        assertEquals opt.getTerm("openEHR-EHR-COMPOSITION.signos.v1", "at0000"), "Signos vitales"
+        assertEquals opt.getTerm("openEHR-EHR-COMPOSITION.signos.v1", "at0006"), "*OBSERVATION(es)"
         
-        //assertEquals opt.getTerm("openEHR-EHR-OBSERVATION.blood_pressure.v1", "at0006"), "Blood Pressure"
-        //assertEquals opt.getTerm("openEHR-EHR-OBSERVATION.blood_pressure.v1", "at0008"), "Position"
+        assertEquals opt.getTerm("openEHR-EHR-OBSERVATION.blood_pressure.v1", "at0004"), "Systolic"
+        assertEquals opt.getTerm("openEHR-EHR-OBSERVATION.blood_pressure.v1", "at0008"), "Position"
+        assertEquals opt.getDescription("openEHR-EHR-OBSERVATION.blood_pressure.v1", "at0008"), "The position of the subject at the time of measurement."
         
-        opt.test("openEHR-EHR-OBSERVATION.blood_pressure.v1", "at0006")
+        //opt.test("openEHR-EHR-OBSERVATION.blood_pressure.v1", "at0006")
         //opt.test("openEHR-EHR-OBSERVATION.blood_pressure.v1", "at0008")
     }
 }
