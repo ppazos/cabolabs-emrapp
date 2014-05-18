@@ -63,6 +63,9 @@ class OperationalTemplate {
       
       this.nodes[path] = node
       
+      // Agrega la path al XML para que el nodo tenga su path
+      node.path(path)
+      
       node.attributes.each { xatn ->
       
          //obn.attributes << parseAttributeNode(xatn, path)
