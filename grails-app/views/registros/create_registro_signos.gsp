@@ -93,7 +93,8 @@
         <input type="hidden" name="templateId" value="${template.templateId.value}"/>
         
         <table>
-          <g:set var="node" value="${archetype.node( bindings['create_registro_signos']['presion_sistolica'])}" />
+          <g:set var="node" value="${template.getNode( bindings['create_registro_signos']['presion_sistolica'] )}" />
+          <!-- <textarea>${groovy.xml.XmlUtil.serialize(node)}</textarea> -->
           <tr>
             <td>
               Presión sistólica:
@@ -152,7 +153,7 @@
             </td>
           </tr>
           
-          <g:set var="node" value="${archetype.node( bindings['create_registro_signos']['presion_diastolica'])}" />
+          <g:set var="node" value="${template.getNode( bindings['create_registro_signos']['presion_diastolica'])}" />
           <tr>
             <td>
               Presión diastólica:
@@ -180,7 +181,7 @@
             </td>
           </tr>
           
-          <g:set var="node" value="${archetype.node( bindings['create_registro_signos']['temperatura'])}" />
+          <g:set var="node" value="${template.getNode( bindings['create_registro_signos']['temperatura'])}" />
           <tr>
             <td>
               Temperatura:
@@ -217,7 +218,7 @@
             </td>
           </tr>
           
-          <g:set var="node" value="${archetype.node( bindings['create_registro_signos']['frecuencia_cardiaca'])}" />
+          <g:set var="node" value="${template.getNode( bindings['create_registro_signos']['frecuencia_cardiaca'])}" />
           <tr>
             <td>
               Frecuencia cardíaca:
@@ -245,7 +246,7 @@
             </td>
           </tr>
           
-          <g:set var="node" value="${archetype.node( bindings['create_registro_signos']['frecuencia_respiratoria'])}" />
+          <g:set var="node" value="${template.getNode( bindings['create_registro_signos']['frecuencia_respiratoria'])}" />
           <tr>
             <td>
               Frecuencia respiratoria:
@@ -273,7 +274,7 @@
             </td>
           </tr>
           
-          <g:set var="node" value="${archetype.node( bindings['create_registro_signos']['peso'])}" />
+          <g:set var="node" value="${template.getNode( bindings['create_registro_signos']['peso'])}" />
           <tr>
             <td>
               Peso:
@@ -301,7 +302,7 @@
             </td>
           </tr>
           
-          <g:set var="node" value="${archetype.node( bindings['create_registro_signos']['estatura'] )}" />
+          <g:set var="node" value="${template.getNode( bindings['create_registro_signos']['estatura'] )}" />
           <tr>
             <td>
               Estatura:

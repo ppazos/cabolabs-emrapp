@@ -60,9 +60,8 @@
         
         <g:set var="doc" value="${cses.getDocumentForTemplate( template.templateId )}" />
         
-        
         <%-- nombre y descripcion del arquetipo --%>
-        <g:set var="term" value="${template.concept.text()}" />
+        <g:set var="term" value="${template.getTerm(template.archetypeId, "at0000")}" />
         
         <g:if test="${doc}">
           <g:link action="show" params="[id:doc.id]">${term}</g:link> *
@@ -71,7 +70,7 @@
           <g:link action="create" params="[templateId: template.templateId]">${term}</g:link>
         </g:else>
         <br/>
-        ${template.getDescription(template.archetypeId, "at0000"}}
+        ${template.getDescription(template.archetypeId, "at0000")}
         <br/><br/>
       </g:each>
       

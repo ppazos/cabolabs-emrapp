@@ -71,6 +71,6 @@ class OperationalTemplateManager {
    
    public List getTemplates()
    {
-      return this._cache.values()
+      return new ArrayList( this._cache.values() ) // Map.values() devuelve Map$Values
    }
 }

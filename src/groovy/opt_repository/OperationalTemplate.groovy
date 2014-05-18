@@ -8,6 +8,7 @@ class OperationalTemplate {
    String templateId
    String archetypeId // root archetype id
    GPathResult opt
+   Map nodes = [:] // TemplatePath -> GPathResult (node) para pedir restricciones
    
    OperationalTemplate(GPathResult opt)
    {
@@ -20,7 +21,83 @@ class OperationalTemplate {
       assert this.archetypeId != null, "Template ${templateId} doesn't have a root archetypeId"
       
       this.opt = opt
+      
+      parseObjectNode(this.opt.definition, '/')
    }
+   
+   GPathResult getNode(String path)
+   {
+      return this.nodes[path]
+   }
+   
+   // Parser ---------------------------------------------------------------------------------
+   private parseObjectNode(GPathResult node, String parentPath)
+   {
+      // Path calculation
+      def path = parentPath
+      if (path != '/')
+      {
+         // comienza de nuevo con las paths relativas al root de este arquetipo
+         if (!node.archetype_id.value.isEmpty())
+         {
+            path += '[archetype_id='+ node.archetype_id.value +']' // slot in the path instead of node_id
+         }
+         // para tag vacia empty da false pero text es vacio ej. <node_id/>
+         else if (!node.node_id.isEmpty() && node.node_id.text() != '')
+         {
+            path += '['+ node.node_id.text() + ']'
+         }
+      }
+      /*
+      def obn = new ObjectNode(
+         rmTypeName: node.rm_type_name.text(),
+         nodeId: node.node_id.text(),
+         type: node.'@xsi:type'.text(),
+         archetypeId: node.archetype_id.value.text(), // This is optional, just resolved slots have archId
+         path: path
+         // TODO: default_values
+      )
+      */
+      // TODO: parse occurrences
+      
+      
+      this.nodes[path] = node
+      
+      node.attributes.each { xatn ->
+      
+         //obn.attributes << parseAttributeNode(xatn, path)
+         parseAttributeNode(xatn, path)
+      }
+      
+      //return obn
+   }
+   
+   private parseAttributeNode(GPathResult node, String parentPath)
+   {
+      // Path calculation
+      def path = parentPath
+      if (path == '/') path += node.rm_attribute_name.text() // Avoids to repeat '/'
+      else path += '/'+ node.rm_attribute_name.text()
+      
+      /*
+      def atn = new AttributeNode(
+         rmAttributeName: node.rm_attribute_name.text(),
+         type: node.'@xsi:type'.text()
+         // TODO: cardinality
+         // TODO: existence
+      )
+      */
+      
+      node.children.each { xobn ->
+      
+         //atn.children << parseObjectNode(xobn, path)
+         parseObjectNode(xobn, path)
+      }
+      
+      //return atn
+   }
+   // /Parser ---------------------------------------------------------------------------------
+   
    
    /*
    String test(String archetypeId, String code)
