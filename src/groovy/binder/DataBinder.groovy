@@ -156,7 +156,7 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       
       String method
       Map filtered_data = [:]
-      CAttribute attr
+      GPathResult attr // CAttribute
       List items
       
       /*
@@ -834,7 +834,7 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
     * @param bind_data
     * @return
     */
-   Map bind_CPrimitiveObject_DvBoolean(CPrimitiveObject cobject, Map bind_data)
+   Map bind_CPrimitiveObject_DvBoolean(GPathResult cobject, Map bind_data)
    {
       // Crear Boolean
       //println "    ...bind_CPrimitiveObject_DvBoolean "+ cobject.path.text() +" "+ bind_data
@@ -853,7 +853,7 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
     * @param bind_data
     * @return
     */
-   Map bind_CPrimitiveObject_DvDateTime(CPrimitiveObject cobject, Map bind_data)
+   Map bind_CPrimitiveObject_DvDateTime(GPathResult cobject, Map bind_data)
    {
       // Crear DateTime
       //println "    ...bind_CPrimitiveObject_DvDateTime "+ cobject.path.text() +" "+ bind_data
@@ -881,7 +881,7 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
     * @param bind_data
     * @return
     */
-   Map bind_ConstraintRef_CodePhrase(ConstraintRef cobject, Map bind_data, String attrName)
+   Map bind_ConstraintRef_CodePhrase(GPathResult cobject, Map bind_data, String attrName)
    {
       //println "      bind_ConstraintRef_CodePhrase "+ cobject.path.text() +" "+ bind_data +" "+ attrName
       //println ""
@@ -932,7 +932,11 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
          ]]
        ]]
       */
-      def bindings = archetype.ontology.getConstraintBindingList()
+      //def bindings = archetype.ontology.getConstraintBindingList()
+      
+      // FIXME: verificar si la terminologia es la correcta para el CODE_PHRASE
+      // FIXME: que uso si tengo mas de una terminologia en bindings
+      def bindings = this.template.getTermBindings()
       
       //println bindings[0].terminology.class.getSimpleName() // String
       
@@ -940,7 +944,7 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       
       // Crea el equivalente al CodePhrase
       // TODO: terminology y version deben ir en el mismo campo codificado
-      return [codeString: bind_data[cobject.path.text()], terminologyIdName: bindings[0].terminology, terminologyIdVersion: "todo"]
+      return [codeString: bind_data[cobject.path.text()], terminologyIdName: bindings[0].@terminology /*bindings[0].terminology*/, terminologyIdVersion: "todo"]
    }
    
    /**
@@ -957,7 +961,7 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
                   at0013,  -- histologia
                   at0014]  -- microbiologia
     */
-   Map bind_CCodePhrase_CodePhrase(CCodePhrase cobject, Map bind_data, String attrName)
+   Map bind_C_CODE_PHRASE_CODE_PHRASE(GPathResult cobject, Map bind_data, String attrName)
    {
       //println "      bind_CCodePhrase_CodePhrase "+ cobject.path.text() +" " + bind_data +" "+ attrName
       //println ""
@@ -1004,6 +1008,7 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
          
          // Si es una referencia a otro arquetipo, el tipo de ADL es complex object
          adl_class = cobject.'@xsi:type'.text()
+         if (adl_class == "ARCHETYPE_SLOT") return // avoid SLOTS see https://github.com/ppazos/cabolabs-emrapp/issues/12
          if (adl_class == "C_ARCHETYPE_ROOT") adl_class = "C_COMPLEX_OBJECT"
 
          method = 'bind_'+ adl_class +'_'+ cobject.rm_type_name.text()
@@ -1036,6 +1041,7 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
          
          // Si es una referencia a otro arquetipo, el tipo de ADL es complex object
          adl_class = cobject.'@xsi:type'.text()
+         if (adl_class == "ARCHETYPE_SLOT") return // avoid SLOTS see https://github.com/ppazos/cabolabs-emrapp/issues/12
          if (adl_class == "C_ARCHETYPE_ROOT") adl_class = "C_COMPLEX_OBJECT"
          
          method = 'bind_'+ adl_class +'_'+ cobject.rm_type_name.text()

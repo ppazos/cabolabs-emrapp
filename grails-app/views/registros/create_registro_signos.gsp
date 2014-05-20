@@ -90,7 +90,7 @@
 
     <div class="content">
       <g:form action="save">
-        <input type="hidden" name="templateId" value="${template.templateId.value}"/>
+        <input type="hidden" name="templateId" value="${template.templateId}"/>
         
         <table>
           <g:set var="node" value="${template.getNode( bindings['create_registro_signos']['presion_sistolica'] )}" />

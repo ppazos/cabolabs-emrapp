@@ -23,6 +23,24 @@ class OperationalTemplate {
       this.opt = opt
       
       parseObjectNode(this.opt.definition, '/')
+      
+      
+      /*
+      // test: to see the inyected paths
+      println this.nodes.size() // son 66
+      this.nodes.each { k, v -> // Solo muestra algunos, imprimiendo key muestra 23, imprimiendo value muestra 2 !!!!
+         //println groovy.xml.XmlUtil.serialize( entry.value )
+         println "X"+ k +": "+ v
+      }
+      
+      println ""
+      println ""
+      //println this.nodes // meustra todas las paths y valores que no muestra en el each!!!
+      
+      def outputBuilder = new groovy.xml.StreamingMarkupBuilder()
+      String result = outputBuilder.bind{ mkp.yield this.opt }
+      println( result )
+      */
    }
    
    GPathResult getNode(String path)
@@ -33,6 +51,8 @@ class OperationalTemplate {
    // Parser ---------------------------------------------------------------------------------
    private parseObjectNode(GPathResult node, String parentPath)
    {
+      //println "parseObjectNode ${parentPath}"
+      
       // Path calculation
       def path = parentPath
       if (path != '/')
@@ -62,21 +82,26 @@ class OperationalTemplate {
       
       
       this.nodes[path] = node
+      //println " - add node ${path}"
+      
       
       // Agrega la path al XML para que el nodo tenga su path
-      node.path(path)
+      node.appendNode {
+         delegate.path(path)
+      }
+      
       
       node.attributes.each { xatn ->
       
          //obn.attributes << parseAttributeNode(xatn, path)
          parseAttributeNode(xatn, path)
       }
-      
-      //return obn
    }
    
    private parseAttributeNode(GPathResult node, String parentPath)
    {
+      //println "parseAttributeNode ${parentPath}"
+      
       // Path calculation
       def path = parentPath
       if (path == '/') path += node.rm_attribute_name.text() // Avoids to repeat '/'
@@ -96,13 +121,11 @@ class OperationalTemplate {
          //atn.children << parseObjectNode(xobn, path)
          parseObjectNode(xobn, path)
       }
-      
-      //return atn
    }
    // /Parser ---------------------------------------------------------------------------------
    
    
-   /*
+   /**
    String test(String archetypeId, String code)
    {
       println "test ${archetypeId} ${code}"
@@ -173,6 +196,49 @@ class OperationalTemplate {
    String getDescription(String archetypeId, String code)
    {
       return this.getFromOntology(archetypeId, code, "description")
+   }
+   
+   GPathResult getTermBindings(String archetypeId)
+   {
+      def root
+      if (this.archetypeId == archetypeId)
+      {
+         root = opt.definition
+      }
+      else // busqueda en profundidad por archetype_root
+      {
+         root = opt.depthFirst().find { it.'@xsi:type' && it.'@xsi:type'.text() == 'C_ARCHETYPE_ROOT' && it.archetype_id.value == archetypeId }
+      }
+      
+      if (!root)
+      {
+         println "root no encontrado para ${templateId} ${archetypeId}"
+         return ''
+      }
+      
+      // Buscar en ese nodo, dentro de sus term_definitions, el que tenga code nodeId y devolver su text
+      // Dentro de term_definitions, hay dos items: text y description (pueden haber mas)
+      
+      /**
+       *  <term_bindings terminology="SNOMED-CT">
+          <items code="at0000">
+            <value>
+              <terminology_id>
+                <value>SNOMED-CT(2003)</value>
+              </terminology_id>
+              <code_string>163020007</code_string>
+            </value>
+          </items>
+          <items code="at0004">
+            <value>
+              <terminology_id>
+                <value>SNOMED-CT(2003)</value>
+              </terminology_id>
+              <code_string>163030003</code_string>
+            </value>
+          </items>
+       */
+      return root.term_bindings
    }
    
    private String getFromOntology(String archetypeId, String code, String part)
