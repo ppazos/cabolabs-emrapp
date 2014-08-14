@@ -20,7 +20,7 @@
 	<body>
 		<div id="grailsLogo" role="banner">
 		  <span id="cb_logo"><img src="${resource(dir: 'images', file: 'emr_logo.png')}" /></span>
-		  <span id="cb_app">Medical Records</span>
+		  <span id="cb_app"><g:message code="layout.main.app" /></span>
 		  <span id="cb_link"><a href="http://cabolabs.com" target="_blank"><img src="${resource(dir: 'images', file: 'cabolabs_logo.png')}" /></a></span>
 		</div>
 		<g:layoutBody/>
