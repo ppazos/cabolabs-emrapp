@@ -50,10 +50,13 @@ class DataBinder {
    
    OperationalTemplate template
    
+   // Current archetypeId for the node being binded, used for context
+   String archetypeId
    
    DataBinder(OperationalTemplate template)
    {
       this.template = template
+      this.archetypeId = template.archetypeId
    }
    
    /**
@@ -153,6 +156,8 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       // esto se lo dejo a beforeInsert en Document
       
       Document doc = new Document(bindData: bind_data)
+      
+      doc.compositionArchetypeId = cobject.archetype_id.value.text()
       
       String method
       Map filtered_data = [:]
@@ -260,7 +265,13 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
    {
       println " bind_C_COMPLEX_OBJECT_EVENT_CONTEXT " //+ cobject.path.text()
       
-      Structure strct = new Structure(path:cobject.path.text(), nodeId:cobject.node_id.text(), type:cobject.rm_type_name.text(), aomType:'C_COMPLEX_OBJECT')
+      Structure strct = new Structure(
+         archetypeId: archetypeId,
+         path:cobject.path.text(),
+         nodeId:cobject.node_id.text(),
+         type:cobject.rm_type_name.text(),
+         aomType:'C_COMPLEX_OBJECT')
+      
       String method
       def filtered_data = [:]
       List items
@@ -300,11 +311,14 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
    {
       //println "  bind_C_COMPLEX_OBJECT_OBSERVATION "+ attrName
       
-      Structure strct = new Structure(path:    cobject.path.text(),
-                                      nodeId:  cobject.node_id.text(),
-                                      type:    cobject.rm_type_name.text(),
-                                      aomType: 'C_COMPLEX_OBJECT',
-                                      attr:    attrName)
+      Structure strct = new Structure(
+         archetypeId: archetypeId,
+         path:    cobject.path.text(),
+         nodeId:  cobject.node_id.text(),
+         type:    cobject.rm_type_name.text(),
+         aomType: 'C_COMPLEX_OBJECT',
+         attr:    attrName)
+      
       String method
       def filtered_data = [:]
       List items
@@ -336,6 +350,7 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       //println "  bind_C_COMPLEX_OBJECT_HISTORY "+ attrName
       
       Structure strct = new Structure(
+         archetypeId: archetypeId,
          path:     cobject.path.text(), 
          nodeId:   cobject.node_id.text(), 
          type:     cobject.rm_type_name.text(), 
@@ -377,12 +392,14 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
    {
       //println "  bind_C_COMPLEX_OBJECT_EVENT "+ attrName
       
-      Structure strct = new Structure(path: cobject.path.text(),
-         nodeId:  cobject.node_id.text(),
-         type:    cobject.rm_type_name.text(),
-         aomType: 'C_COMPLEX_OBJECT',
-         attr:    attrName,
-         attributes: ['time': new DvDateTime(value:new Date())]
+      Structure strct = new Structure(
+         archetypeId: archetypeId,
+         path:        cobject.path.text(),
+         nodeId:      cobject.node_id.text(),
+         type:        cobject.rm_type_name.text(),
+         aomType:     'C_COMPLEX_OBJECT',
+         attr:        attrName,
+         attributes:  ['time': new DvDateTime(value:new Date())]
       )
       
       String method
@@ -448,12 +465,13 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       //println "  bind_C_COMPLEX_OBJECT_INSTRUCTION"
       
       Structure strct = new Structure(
-         path:     cobject.path.text(),
-         nodeId:   cobject.node_id.text(),
-         type:     cobject.rm_type_name.text(),
-         aomType:  'C_COMPLEX_OBJECT',
-         attr:     attrName,
-         attributes: ['narrative': new DvText(value: 'TODO: instruction narrative')]
+         archetypeId: archetypeId,
+         path:        cobject.path.text(),
+         nodeId:      cobject.node_id.text(),
+         type:        cobject.rm_type_name.text(),
+         aomType:     'C_COMPLEX_OBJECT',
+         attr:        attrName,
+         attributes:  ['narrative': new DvText(value: 'TODO: instruction narrative')]
       )
       
       String method
@@ -485,6 +503,7 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       //println "   bind_C_COMPLEX_OBJECT_ACTIVITY"
       
       Structure strct = new Structure(
+         archetypeId: archetypeId,
          path: cobject.path.text(), 
          nodeId: cobject.node_id.text(), 
          type: cobject.rm_type_name.text(), 
@@ -519,11 +538,14 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
    {
       //println "    bind_C_COMPLEX_OBJECT_ITEM_TREE "+ cobject.path.text() +" "+ attrName
       
-      Structure strct = new Structure(path:    cobject.path.text(),
-                                      nodeId:  cobject.node_id.text(),
-                                      type:    cobject.rm_type_name.text(),
-                                      aomType: 'C_COMPLEX_OBJECT',
-                                      attr:    attrName)
+      Structure strct = new Structure(
+         archetypeId: archetypeId,
+         path:    cobject.path.text(),
+         nodeId:  cobject.node_id.text(),
+         type:    cobject.rm_type_name.text(),
+         aomType: 'C_COMPLEX_OBJECT',
+         attr:    attrName)
+      
       String method
       def filtered_data = [:]
       List items
@@ -554,6 +576,7 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       //println "     bind_C_COMPLEX_OBJECT_CLUSTER "+ attrName
       
       Structure strct = new Structure(
+         archetypeId: archetypeId,
          path:    cobject.path.text(), 
          nodeId:  cobject.node_id.text(),
          type:    cobject.rm_type_name.text(),
@@ -629,6 +652,7 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       {
          element = new Element(
             value:   items[0],
+            archetypeId: archetypeId,
             path:    cobject.path.text(),
             nodeId:  cobject.node_id.text(),
             type:    cobject.rm_type_name.text(),
@@ -739,6 +763,7 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       
       //println "PIDO TERMINO: "+ items[0]["codeString"]
       
+      // FIXME: hardcoded locale
       // Sino pregunto esto, el codeString es TODO y devuelve un termino null
       if (items[0]["terminologyIdName"] == "local")
       {
@@ -1009,7 +1034,11 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
          // Si es una referencia a otro arquetipo, el tipo de ADL es complex object
          adl_class = cobject.'@xsi:type'.text()
          if (adl_class == "ARCHETYPE_SLOT") return // avoid SLOTS see https://github.com/ppazos/cabolabs-emrapp/issues/12
-         if (adl_class == "C_ARCHETYPE_ROOT") adl_class = "C_COMPLEX_OBJECT"
+         if (adl_class == "C_ARCHETYPE_ROOT")
+         {
+            adl_class = "C_COMPLEX_OBJECT"
+            this.archetypeId = cobject.archetype_id.value.text() // if object is root it has a different archetypeId
+         }
 
          method = 'bind_'+ adl_class +'_'+ cobject.rm_type_name.text()
          attr = this."$method"(cobject, bind_data, cattr.rm_attribute_name.text())
@@ -1042,7 +1071,11 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
          // Si es una referencia a otro arquetipo, el tipo de ADL es complex object
          adl_class = cobject.'@xsi:type'.text()
          if (adl_class == "ARCHETYPE_SLOT") return // avoid SLOTS see https://github.com/ppazos/cabolabs-emrapp/issues/12
-         if (adl_class == "C_ARCHETYPE_ROOT") adl_class = "C_COMPLEX_OBJECT"
+         if (adl_class == "C_ARCHETYPE_ROOT")
+         {
+            adl_class = "C_COMPLEX_OBJECT"
+            this.archetypeId = cobject.archetype_id.value.text() // if object is root it has a different archetypeId
+         }
          
          method = 'bind_'+ adl_class +'_'+ cobject.rm_type_name.text()
          attr = this."$method"(cobject, bind_data, cattr.rm_attribute_name.text())
