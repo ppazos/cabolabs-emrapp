@@ -45,7 +45,7 @@
       
         <g:if test="${documentInstance?.compositionArchetypeId}">
           <li class="fieldcontain">
-            <span id="compositionArchetypeId-label" class="property-label"><g:message code="document.compositionArchetypeId.label" default="Composition Archetype Id" /></span>
+            <span id="compositionArchetypeId-label" class="property-label"><g:message code="document.compositionArchetypeId.label" default="Archetype Id" /></span>
             <span class="property-value" aria-labelledby="compositionArchetypeId-label"><g:fieldValue bean="${documentInstance}" field="compositionArchetypeId"/></span>
           </li>
         </g:if>

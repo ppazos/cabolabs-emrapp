@@ -44,3 +44,10 @@
   display: inline-block;
 }
 /* ===================>>>> Correccion a main.css para mostrar usuario logueado */
+
+tr>td:first-child {
+  font-size: 0.8em; /* Texto + chico para uids */
+}
+td {
+  vertical-align: middle;
+}

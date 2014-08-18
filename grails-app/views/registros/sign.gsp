@@ -1,7 +1,7 @@
 <html>
   <head>
     <meta name="layout" content="main" />
-    <title>Sign</title>
+    <title><g:messgae code="registros.sign.label" /></title>
     <link rel="stylesheet" type="text/css" href="${resource(dir:'css', file:'emr.css')}" />
     <style type="text/css">
       body {
@@ -92,14 +92,14 @@
   <body>
     <div class="nav" role="navigation">
       <ul>
-        <li><g:link class="list" controller="registros" action="list">Registros</g:link></li>
+        <li><g:link class="list" controller="registros" action="list"><g:message code="registros.sign.action.registros" /></g:link></li>
       </ul>
       <g:render template="/user/loggedUser" />
     </div>
     
     <g:render template="patientData" model="${session.clinicalSession.datosPaciente}" />
   
-    <h1>Sign records</h1>
+    <h1><g:message code="registros.sign.label" /></h1>
   
     <g:if test="${flash.message}">
       <div class="error"><g:message code="${flash.message}" /></div>
@@ -108,19 +108,18 @@
     <div id="sign_panel">
       <div>
 	    <g:form url="[action:'sign']" method="post" id="form1">
-	
 	      <table>
 	        <tr>
-	          <th>Usuario</th>
+	          <th><g:message code="registros.sign.field.user" /></th>
 	          <td><input type="text" id="user" name="user" size="24" /></td>
 	        </tr>
 	        <tr>
-	          <th>Clave</th>
+	          <th><g:message code="registros.sign.field.pass" /></th>
 	          <td><input type="password" name="pass" size="24" /></td>
 	        </tr>
 	        <tr>
 	          <th></th>
-	          <td><input type="submit" name="doit" value="Firmar" /></td>
+	          <td><input type="submit" name="doit" value="${g.message(code:'registros.sign.action.sign')}" /></td>
 	        </tr>
 	      </table>
 	    </g:form>

@@ -210,13 +210,13 @@ class RegistrosController {
          catch (org.apache.http.conn.HttpHostConnectException e) // no hay conectividad
          {
             println e.message
-            flash.message = 'En este momento no hay conexion con el servidor demografico, vuelva a intentarlo mas tarde'
+            flash.message = g.message(code:'registros.list.error.noServer')
          }
          catch (groovyx.net.http.HttpResponseException e) // hay conectividad pero da un error del lado del servidor
          {
             // TODO: log a disco
             println e.message
-            flash.message = 'Ocurrio un error al realizar la consulta de pacientes al servidor'
+            flash.message = g.message(code:'registros.list.error.serverError')
          }
       }
       
@@ -235,7 +235,7 @@ class RegistrosController {
       def resource = grailsAttributes.pagesTemplateEngine.getResourceForUri(uri)
       if ( !(resource && resource.file && resource.exists()) )
       {
-         throw new Exception("No existe la vista " + uri)
+         throw new Exception(g.message(code:'registros.create.error.viewDoesntExists') + uri)
       }
       
       def template = manager.getTemplate(templateId)
@@ -358,11 +358,11 @@ class RegistrosController {
       
       if (!cses.save(flush:true))
       {
-         println "Error al guardar la session clinica: " + cses.errors
+         println g.message(code:'registros.save.error.errorSavingSession') + cses.errors
       }
       else
       {
-         println "Guarda sesion clinica"
+         println g.message(code:'registros.save.feedback.sessionSaved')
       }
       
       // actualiza cses en session
@@ -680,7 +680,7 @@ class RegistrosController {
          def u = User.findByUserAndPass(user, pass)
          if (!u)
          {
-            flash.message = "Usuario o clave son incorrectos"
+            flash.message = g.message(code:'registros.sign.error.auth')
             return
          }
          
@@ -701,7 +701,7 @@ class RegistrosController {
          // TODO: el commit al server se hace con un job que busca las sesiones
          //       cerradas y no commiteadas y las va commiteando, cada sesion
          //       como una lista de versions. 
-         flash.message = "registro firmado y cerrado, pendiente de enviar a la historia del paciente"
+         flash.message = g.message(code:'registros.sign.feedback.signed')
          redirect(controller:'clinicalSession', action:'list')
       }
    }
