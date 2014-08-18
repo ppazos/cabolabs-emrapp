@@ -9,7 +9,7 @@ class Item {
    String type // rm_type_name
    String attr // rm_attr_name
    
-   //String archetypeId
+   String archetypeId
    String path
    String nodeId // atNNNN
    
