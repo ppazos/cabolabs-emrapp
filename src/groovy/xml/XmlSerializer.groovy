@@ -293,7 +293,7 @@ class XmlSerializer {
       builder."$tag"('xsi:type':struct.type, archetype_node_id:struct.nodeId) {
          name() {
             //value('TODO: lookup del nombre en el arquetipo')
-            value( getName(this.templateId, archetypeId, struct.nodeId))
+            value( getName(this.templateId, struct.archetypeId, struct.nodeId))
          }
          // language
          // encoding
@@ -319,7 +319,7 @@ class XmlSerializer {
       builder."$tag"('xsi:type':element.type, archetype_node_id:element.nodeId) {
          
          name() {
-            value( getName(this.templateId, archetypeId, element.nodeId))
+            value( getName(this.templateId, element.archetypeId, element.nodeId))
          }
          
          serializeDv( element.value, builder, 'value' )
