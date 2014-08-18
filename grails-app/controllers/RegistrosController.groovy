@@ -114,7 +114,7 @@ class RegistrosController {
             "estatura_units":                "/content[at0028]/data[at0029]/events[at0030]/data[at0031]/items[at0032]/value/units"      // DvQuantity.units
          ]
          */
-      "create_registro_signos":
+      "create_registro_signos": // Las paths son absolutas con respescto a la composition y contienen las rutas absolutas a cada arquetipo que se tenga un slot.
       [
          "presion_sistolica":             "/content[archetype_id=openEHR-EHR-OBSERVATION.blood_pressure.v1]/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value", // Se necesita para pedir la restriccion de units (la path de units no funciona con arch.node()
          "presion_sistolica_mag":         "/content[archetype_id=openEHR-EHR-OBSERVATION.blood_pressure.v1]/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value/magnitude", // DvQuantity.magnitude
@@ -289,7 +289,6 @@ class RegistrosController {
             /**
              * bind_data[field] = value
              */
-            //bind_data[key] = value
             bind_data[bindings[view][key]] = value // path->value
          }
          // Si es un dato multiple: nombre_campo__NN
@@ -298,14 +297,12 @@ class RegistrosController {
             def field_multi = key.split("__")
             if (!bind_data[field_multi[0]])
             {
-               //bind_data[field_multi[0]] = []
                bind_data[bindings[view][field_multi[0]]] = []
             }
             
             /**
              * bind_data[field] = [value0, value1, value2]
              */
-            //bind_data[field_multi[0]][ Integer.parseInt(field_multi[1]) ] = value
             bind_data[bindings[view][field_multi[0]]][ Integer.parseInt(field_multi[1]) ] = value // path->values
          }
       }
