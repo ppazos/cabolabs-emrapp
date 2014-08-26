@@ -1,14 +1,13 @@
 <table>
   <tr>
     <!-- <th>ehrId</th> -->
-    <th>uid</th>
-    <th>archetypeId</th>
+    <th><g:message code="registros.compositionList.field.uid" /></th>
+    <th><g:message code="registros.compositionList.field.archetypeId" /></th>
     <!-- <th>category</th> -->
-    <th>startTime</th>
-    <th>subjectId</th>
+    <th><g:message code="registros.compositionList.field.startTime" /></th>
+    <th><g:message code="registros.compositionList.field.subjectId" /></th>
     <th></th>
   </tr>
-  
   <%--
   cIdxList es NodeChild (XML Parseado) que devuelve EHRServer.findCompositions()
   el nombre del nodo cIdxList es 'list' y los hijos son compositionIndex.
@@ -22,7 +21,7 @@
 	     <td>${c.startTime}</td>
 	     <td>${c.subjectId}</td>
 	     <td>
-	       <g:link action="showComposition" params="[uid: c.uid]" class="showCompo">ver registro</g:link>
+	       <g:link action="showComposition" params="[uid: c.uid]" class="showCompo"><g:message code="registros.compositionList.action.showRecord" /></g:link>
 	     </td>
 	   </tr>
   </g:each>

@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="main" />
-    <title>Registros</title>
+    <title><g:message code="registros.list.label" /></title>
     <style>
       body {
         padding: 10px;
@@ -16,7 +16,6 @@
         font-size: 11px;
         padding: 5px;
       }
-      
       #sign {
         text-align: right;
         padding: 15px;
@@ -30,33 +29,31 @@
     <g:javascript src="jquery-1.8.2.min.js" />
     <g:javascript src="jquery.blockUI.js" />
     <g:javascript>
-    $(document).ready(function() {
-      
-    });
+      $(document).ready(function() {
+      });
     </g:javascript>
-    
   </head>
   <body>
     <div class="nav" role="navigation">
       <ul>
-        <li><g:link class="list" controller="patient" action="list">Pacientes</g:link></li>
-        <li><g:link class="list" controller="clinicalSession" action="list">Sesiones</g:link></li>
+        <li><g:link class="list" controller="patient" action="list"><g:message code="registros.currentSession.action.patients" /></g:link></li>
+        <li><g:link class="list" controller="clinicalSession" action="list"><g:message code="registros.currentSession.action.sessions" /></g:link></li>
         <li>
           <g:set var="cses" value="${ClinicalSession.findByPatientUidAndOpen(params.patientUid, true)}" />
           <g:if test="${cses}">
-            <g:link class="create" controller="registros" action="continueSession" id="${cses.id}">Continuar sesi&oacute;n</g:link>
+            <g:link class="create" controller="registros" action="continueSession" id="${cses.id}"><g:message code="registros.list.action.continueSession" /></g:link>
           </g:if>
           <g:else>
             <g:form method="post" controller="registros" action="openSession">
               <input type="hidden" name="patientUid" value="${params.patientUid}" />
               <input type="hidden" name="datosPaciente.uid" value="${params.datosPaciente.uid}" />
-               <input type="hidden" name="datosPaciente.firstName" value="${params.datosPaciente.firstName}" />
-               <input type="hidden" name="datosPaciente.lastName" value="${params.datosPaciente.lastName}" />
-               <input type="hidden" name="datosPaciente.dob" value="${params.datosPaciente.dob}" />
-               <input type="hidden" name="datosPaciente.sex" value="${params.datosPaciente.sex}" />
-               <input type="hidden" name="datosPaciente.idCode" value="${params.datosPaciente.idCode}" />
-               <input type="hidden" name="datosPaciente.idType" value="${params.datosPaciente.idType}" />
-              <g:submitButton name="doit" value="Nueva sesión" />
+              <input type="hidden" name="datosPaciente.firstName" value="${params.datosPaciente.firstName}" />
+              <input type="hidden" name="datosPaciente.lastName" value="${params.datosPaciente.lastName}" />
+              <input type="hidden" name="datosPaciente.dob" value="${params.datosPaciente.dob}" />
+              <input type="hidden" name="datosPaciente.sex" value="${params.datosPaciente.sex}" />
+              <input type="hidden" name="datosPaciente.idCode" value="${params.datosPaciente.idCode}" />
+              <input type="hidden" name="datosPaciente.idType" value="${params.datosPaciente.idType}" />
+              <g:submitButton name="doit" value="${g.message(code:'registros.list.action.newSession')}" />
             </g:form>
           </g:else>
         </li>
@@ -66,12 +63,10 @@
     
     <g:render template="patientData" model="${params.datosPaciente}" />
     
-    <h1>Registros cl&iacute;nicos hist&oacute;ricos</h1>
+    <h1><g:message code="registros.currentSession.action.history" /></h1>
     <div class="content">
-   
       <!-- Lista de registros en el EHR Server -->
       <g:include action="compositionList" params="[patientUid: params.patientUid]" />
-      
     </div>
   </body>
 </html>

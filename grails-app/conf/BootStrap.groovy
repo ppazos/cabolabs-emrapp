@@ -4,6 +4,10 @@ class BootStrap {
 
     def init = { servletContext ->
        
+       // OPT support
+       def optm = opt_repository.OperationalTemplateManager.getInstance()
+       optm.loadAll("opts")
+       
        def userData = [
           [name:'Dr. Pablo Pazos', user:'a', pass:'a'],
           [name:'Dra. Barbara Cardozo', user:'b', pass:'b'],

@@ -1,7 +1,7 @@
 <html>
   <head>
     <meta name="layout" content="main" />
-    <title>Registros</title>
+    <title><g:message code="registros.currentSession.label" /></title>
     <style>
       body {
         padding: 10px;
@@ -15,7 +15,6 @@
         font-size: 11px;
         padding: 5px;
       }
-      
       #sign {
         text-align: right;
         padding: 15px;
@@ -29,59 +28,55 @@
     <g:javascript src="jquery-1.8.2.min.js" />
     <g:javascript src="jquery.blockUI.js" />
     <g:javascript>
-    $(document).ready(function() {
-      
-    });
+      $(document).ready(function() {
+      });
     </g:javascript>
-    
   </head>
   <body>
     <div class="nav" role="navigation">
       <ul>
-        <li><g:link class="list" controller="patient" action="list">Pacientes</g:link></li>
-        <li><g:link class="list" controller="clinicalSession" action="list">Sesiones</g:link></li>
-        <li><g:link class="list" controller="registros" action="list" params="[patientUid:session.clinicalSession.patientUid]">Registros hist&oacute;ricos</g:link></li>
+        <li><g:link class="list" controller="patient" action="list"><g:message code="registros.currentSession.action.patients" /></g:link></li>
+        <li><g:link class="list" controller="clinicalSession" action="list"><g:message code="registros.currentSession.action.sessions" /></g:link></li>
+        <li><g:link class="list" controller="registros" action="list" params="[patientUid:session.clinicalSession.patientUid]"><g:message code="registros.currentSession.action.history" /></g:link></li>
       </ul>
       <g:render template="/user/loggedUser" />
     </div>
     
     <g:render template="patientData" model="${session.clinicalSession.datosPaciente}" />
     
-    <h1>Creaci&oacute;n de registros clinicos</h1>
+    <h1><g:message code="registros.currentSession.label.createRecord" /></h1>
     <div class="content">
     
       <%-- evita error de lazy load si se accede a session.clinicalSession.documents --%>
       <g:set var="cses" value="${session.clinicalSession.refresh()}" />
     
-      <g:each in="${archetypes}" var="archetype">
+      <g:each in="${templates}" var="template">
         
         <%-- hay un doc para el arquetipo en la sesion? --%>
         <%-- <g:set var="doc" value="${cses.documents.find{ it.compositionArchetypeId == archetype.archetypeId.value }}" /> --%>
         
-        <g:set var="doc" value="${cses.getDocumentForArchetype( archetype.archetypeId.value )}" />
-        
+        <g:set var="doc" value="${cses.getDocumentForTemplate( template.templateId )}" />
         
         <%-- nombre y descripcion del arquetipo --%>
-        <g:set var="term" value="${archetype.ontology.termDefinition("es", "at0000")}" />
+        <g:set var="term" value="${template.getTerm(template.archetypeId, "at0000")}" />
         
         <g:if test="${doc}">
-          <g:link action="show" params="[id:doc.id]">${term.getText()}</g:link> *
+          <g:link action="show" params="[id:doc.id]">${term}</g:link> *
         </g:if>
         <g:else>
-          <g:link action="create" params="[archetypeId:archetype.archetypeId.value]">${term.getText()}</g:link>
+          <g:link action="create" params="[templateId: template.templateId]">${term}</g:link>
         </g:else>
         <br/>
-        ${term.getDescription()}
+        ${template.getDescription(template.archetypeId, "at0000")}
         <br/><br/>
       </g:each>
       
       <%-- debe haber algun registro hecho para poder ir a firmar --%>
       <g:if test="${cses.documents.size() > 0}">
         <div id="sign">
-          <g:link action="sign">Firmar</g:link>
+          <g:link action="sign"><g:message code="registros.sign.action.sign" /></g:link>
         </div>
       </g:if>
-      
       
       <%-- ahora tengo una pantalla de registros historicos
       <!-- Lista de registros en el EHR Server -->

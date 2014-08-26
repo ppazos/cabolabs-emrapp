@@ -12,9 +12,7 @@ import registros.valores.DvCodedText
 import registros.valores.DvDateTime
 import registros.valores.DvQuantity
 import registros.valores.DvText
-import sesion.ClinicalSession;
-
-import archetype_repository.ArchetypeManager
+import sesion.ClinicalSession
 
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 
@@ -28,11 +26,11 @@ class XmlSerializer {
 
    //static def formatter = new SimpleDateFormat("yyyyMMdd'T'hhmmss.SSSSZ")
    def formatter = new SimpleDateFormat( ApplicationHolder.application.config.app.l10n.datetime_format )
-   static def manager = ArchetypeManager.getInstance()
+   static def manager = opt_repository.OperationalTemplateManager.getInstance()
    
    
-   // archetypeId de la composition a la que se le esta haciendo toXML
-   String archetypeId
+   // templateId de la composition a la que se le esta haciendo toXML
+   String templateId
    
    // Sesion clinica que tiene el composer de las compositions
    ClinicalSession cses
@@ -68,18 +66,24 @@ class XmlSerializer {
       return res
    }
    
-   private String getName(String archetypeId, String nodeId)
+   /**
+    * El texto dentro del template, depende del arquetipo y del nodeId
+    * @param templateId
+    * @param archetypeId
+    * @param nodeId
+    * @return
+    */
+   private String getName(String templateId, String archetypeId, String nodeId)
    {
-      def archetype = manager.getArchetype(archetypeId)
+      def template = manager.getTemplate(templateId)
       
-      if (!archetype)
+      if (!template)
       {
-         println "getName(): No hay archetype en "+ archetypeId
+         println "getName(): No hay template en "+ templateId
          return ''
       }
-      
-      // TODO: el lenguage se debe sacar de config
-      return archetype.ontology.termDefinition("es", nodeId).getText()
+
+      return template.getTerm(archetypeId, nodeId)
    }
    
    
@@ -89,7 +93,7 @@ class XmlSerializer {
       def writer = new StringWriter()
       def builder = new MarkupBuilder(writer)
       
-      archetypeId = doc.compositionArchetypeId
+      templateId = doc.templateId
       
       /**
        * Se incluye version para hacer commit al servidor
@@ -126,6 +130,7 @@ class XmlSerializer {
                }
             } // commit_audit
             
+            // FIXME: ver donde va el templateId
             data('xsi:type': 'COMPOSITION', archetype_node_id: doc.compositionArchetypeId) {
                
                compositionHeader(doc, builder) // name, language, territory, ...
@@ -160,10 +165,22 @@ class XmlSerializer {
    
    private void compositionHeader(Document doc, MarkupBuilder builder)
    {
+      // Campos heredados de LOCATABLE
       builder.name() {
          //value('TODO: lookup al arquetipo para obtener el valor por el at0000')
-         value( getName(doc.compositionArchetypeId, 'at0000') )
+         value( getName(this.templateId, doc.compositionArchetypeId, 'at0000') )
       }
+      builder.archetype_details() { // ARCHETYPED
+         archetype_id() { // ARCHETYPE_ID
+            value(doc.compositionArchetypeId)
+         }
+         template_id() { // TEMPLATE_ID
+            value(doc.templateId)
+         }
+         rm_version('1.0.2')
+      }
+      
+      // Campos de COMPOSITION
       builder.language() {
          terminology_id() {
             value('ISO_639-1')
@@ -275,7 +292,7 @@ class XmlSerializer {
       builder."$tag"('xsi:type':struct.type, archetype_node_id:struct.nodeId) {
          name() {
             //value('TODO: lookup del nombre en el arquetipo')
-            value( getName(archetypeId, struct.nodeId))
+            value( getName(this.templateId, struct.archetypeId, struct.nodeId))
          }
          // language
          // encoding
@@ -301,7 +318,7 @@ class XmlSerializer {
       builder."$tag"('xsi:type':element.type, archetype_node_id:element.nodeId) {
          
          name() {
-            value( getName(archetypeId, element.nodeId))
+            value( getName(this.templateId, element.archetypeId, element.nodeId))
          }
          
          serializeDv( element.value, builder, 'value' )

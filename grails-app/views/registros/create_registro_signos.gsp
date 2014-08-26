@@ -41,7 +41,7 @@
       label {
         margin: 0 5px 0 5px;
       }
-      .units_constraint {
+      .magnitude_constraint {
         display: none;
       }
     </style>
@@ -62,8 +62,8 @@
       
       
       // habria que apagar si hay alguno mostrandose ahora
-      //temperatura_units_constraint
-      $( "#"+field+"_units_constraint" ).children().hide(); // esconde todas las constraints
+      //temperatura_magnitude_constraint
+      $( "#"+field+"_magnitude_constraint" ).children().hide(); // esconde todas las constraints
       
       
       // id="temperatura_(cdvq_item.units)"
@@ -90,10 +90,11 @@
 
     <div class="content">
       <g:form action="save">
-        <input type="hidden" name="archetypeId" value="${archetype.archetypeId.value}"/>
+        <input type="hidden" name="templateId" value="${template.templateId}"/>
         
         <table>
-          <g:set var="node" value="${archetype.node( bindings['create_registro_signos']['presion_sistolica'])}" />
+          <g:set var="node" value="${template.getNode( bindings['create_registro_signos']['presion_sistolica'] )}" />
+          <!-- <textarea>${groovy.xml.XmlUtil.serialize(node)}</textarea> -->
           <tr>
             <td>
               Presión sistólica:
@@ -103,7 +104,7 @@
                 </g:if>
               </g:if>
               <g:else>
-                TODO: al cambiar la unidad seleccionada, poner el rango respectivo si esta definido.
+                <!-- TODO: al cambiar la unidad seleccionada, poner el rango respectivo si esta definido. -->
               </g:else>
             </td>
             <td>
@@ -145,14 +146,14 @@
                     </CDvQuantityItem>
                   */
                   --%>
-                    
+                  
                   <label><input type="radio" value="${item.units}" name="presion_sistolica_units" />${item.units}</label>
                 </g:each>
               </g:else>
             </td>
           </tr>
           
-          <g:set var="node" value="${archetype.node( bindings['create_registro_signos']['presion_diastolica'])}" />
+          <g:set var="node" value="${template.getNode( bindings['create_registro_signos']['presion_diastolica'])}" />
           <tr>
             <td>
               Presión diastólica:
@@ -180,12 +181,11 @@
             </td>
           </tr>
           
-          <g:set var="node" value="${archetype.node( bindings['create_registro_signos']['temperatura'])}" />
+          <g:set var="node" value="${template.getNode( bindings['create_registro_signos']['temperatura'])}" />
           <tr>
             <td>
               Temperatura:
-              
-              <span id="temperatura_units_constraint">
+              <span id="temperatura_magnitude_constraint">
 	             <g:if test="${node?.list.size() == 1}">
 	               <g:if test="${node.list[0].magnitude}">
 	                 (${node?.list[0].magnitude.lower}..${node?.list[0].magnitude.upper})
@@ -193,7 +193,7 @@
 	             </g:if>
 	             <g:else>
 	               <g:each in="${node.list}" var="cdvq_item">
-	                 <span class="units_constraint" id="temperatura_${cdvq_item.units}">
+	                 <span class="magnitude_constraint" id="temperatura_${cdvq_item.units}">
 	                   <g:if test="${node.list[0].magnitude}">
 	                     (${cdvq_item.magnitude.lower}..${cdvq_item.magnitude.upper})
 	                   </g:if>
@@ -217,7 +217,7 @@
             </td>
           </tr>
           
-          <g:set var="node" value="${archetype.node( bindings['create_registro_signos']['frecuencia_cardiaca'])}" />
+          <g:set var="node" value="${template.getNode( bindings['create_registro_signos']['frecuencia_cardiaca'])}" />
           <tr>
             <td>
               Frecuencia cardíaca:
@@ -245,7 +245,7 @@
             </td>
           </tr>
           
-          <g:set var="node" value="${archetype.node( bindings['create_registro_signos']['frecuencia_respiratoria'])}" />
+          <g:set var="node" value="${template.getNode( bindings['create_registro_signos']['frecuencia_respiratoria'])}" />
           <tr>
             <td>
               Frecuencia respiratoria:
@@ -255,7 +255,7 @@
                 </g:if>
               </g:if>
               <g:else>
-                TODO: al cambiar la unidad seleccionada, poner el rango respectivo si esta definido.
+                <!-- TODO: al cambiar la unidad seleccionada, poner el rango respectivo si esta definido. -->
               </g:else>
             </td>
             <td>
@@ -273,18 +273,27 @@
             </td>
           </tr>
           
-          <g:set var="node" value="${archetype.node( bindings['create_registro_signos']['peso'])}" />
+          <g:set var="node" value="${template.getNode( bindings['create_registro_signos']['peso'])}" />
           <tr>
             <td>
               Peso:
-              <g:if test="${node?.list.size() == 1}">
-                <g:if test="${node.list[0].magnitude}">
-                  (${node?.list[0].magnitude.lower}..${node?.list[0].magnitude.upper})
-                </g:if>
-              </g:if>
-              <g:else>
-                TODO: al cambiar la unidad seleccionada, poner el rango respectivo si esta definido.
-              </g:else>
+              <span id="peso_magnitude_constraint">
+	             <g:if test="${node?.list.size() == 1}">
+	                <g:if test="${node.list[0].magnitude}">
+	                  (${node?.list[0].magnitude.lower}..${node?.list[0].magnitude.upper})
+	                </g:if>
+	              </g:if>
+	              <g:else>
+	                <!-- Al cambiar la unidad seleccionada, poner el rango respectivo si esta definido. -->
+	                <g:each in="${node.list}" var="cdvq_item">
+                    <span class="magnitude_constraint" id="peso_${cdvq_item.units}">
+                      <g:if test="${node.list[0].magnitude}">
+                        (${cdvq_item.magnitude.lower}..${cdvq_item.magnitude.upper})
+                      </g:if>
+                    </span>
+                  </g:each>
+	             </g:else>
+              </span>
             </td>
             <td>
               <input type="text" name="peso_mag" id="peso_mag" />
@@ -301,18 +310,27 @@
             </td>
           </tr>
           
-          <g:set var="node" value="${archetype.node( bindings['create_registro_signos']['estatura'] )}" />
+          <g:set var="node" value="${template.getNode( bindings['create_registro_signos']['estatura'] )}" />
           <tr>
             <td>
               Estatura:
-              <g:if test="${node?.list.size() == 1}">
-                <g:if test="${node.list[0].magnitude}">
-                  (${node?.list[0].magnitude.lower}..${node?.list[0].magnitude.upper})
-                </g:if>
-              </g:if>
-              <g:else>
-                TODO: al cambiar la unidad seleccionada, poner el rango respectivo si esta definido.
-              </g:else>
+              <span id="estatura_magnitude_constraint">
+	             <g:if test="${node?.list.size() == 1}">
+	               <g:if test="${node.list[0].magnitude}">
+	                 (${node?.list[0].magnitude.lower}..${node?.list[0].magnitude.upper})
+	               </g:if>
+	             </g:if>
+	             <g:else>
+	               <!-- Al cambiar la unidad seleccionada, poner el rango respectivo si esta definido. -->
+                  <g:each in="${node.list}" var="cdvq_item">
+                    <span class="magnitude_constraint" id="estatura_${cdvq_item.units}">
+                      <g:if test="${node.list[0].magnitude}">
+                        (${cdvq_item.magnitude.lower}..${cdvq_item.magnitude.upper})
+                      </g:if>
+                    </span>
+                  </g:each>
+	             </g:else>
+              </span>
             </td>
             <td>
               <input type="text" name="estatura_mag" id="estatura_mag" />

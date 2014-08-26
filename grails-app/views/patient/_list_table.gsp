@@ -9,13 +9,13 @@ TODO: busqueda de pacientes por nombre
 
 <table>
   <tr>
-    <th>uid</th>
-    <th>first name</th>
-    <th>last name</th>
-    <th>dob</th>
-    <th>sex</th>
-    <th>id</th>
-    <th>id type</th>
+    <th><g:message code="patient.list_table.field.uid" /></th>
+    <th><g:message code="patient.list_table.field.firstName" /></th>
+    <th><g:message code="patient.list_table.field.lastName" /></th>
+    <th><g:message code="patient.list_table.field.dob" /></th>
+    <th><g:message code="patient.list_table.field.sex" /></th>
+    <th><g:message code="patient.list_table.field.id" /></th>
+    <th><g:message code="patient.list_table.field.idType" /></th>
     <th></th>
   </tr>
   <g:each in="${patientList}" var="pat">
@@ -30,7 +30,7 @@ TODO: busqueda de pacientes por nombre
      <td>
        <g:set var="cses" value="${ClinicalSession.findByPatientUidAndOpen(pat.uid, true)}" />
        <g:if test="${cses}">
-         <g:link controller="registros" action="continueSession" id="${cses.id}">continuar sesi&oacute;n</g:link>
+         <g:link controller="registros" action="continueSession" id="${cses.id}"><g:message code="patient.list_table.action.continue" /></g:link>
        </g:if>
        <g:else>
          <g:form method="post" controller="registros" action="openSession">
@@ -42,7 +42,7 @@ TODO: busqueda de pacientes por nombre
             <input type="hidden" name="datosPaciente.sex" value="${pat.sex}" />
             <input type="hidden" name="datosPaciente.idCode" value="${pat.idCode}" />
             <input type="hidden" name="datosPaciente.idType" value="${pat.idType}" />
-           <g:submitButton name="doit" value="nueva sesión" />
+           <g:submitButton name="doit" value="${g.message(code:'patient.list_table.action.newSession')}" />
          </g:form>
        </g:else>
        
@@ -56,7 +56,7 @@ TODO: busqueda de pacientes por nombre
          <input type="hidden" name="datosPaciente.sex" value="${pat.sex}" />
          <input type="hidden" name="datosPaciente.idCode" value="${pat.idCode}" />
          <input type="hidden" name="datosPaciente.idType" value="${pat.idType}" />
-         <g:submitButton name="doit" value="ver histórico" controller="registros" action="list" />
+         <g:submitButton name="doit" value="${g.message(code:'patient.list_table.action.history')}" controller="registros" action="list" />
        </g:form>
      </td>
    </tr>

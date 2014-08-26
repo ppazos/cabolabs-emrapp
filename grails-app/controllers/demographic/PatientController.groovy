@@ -122,13 +122,13 @@ class PatientController {
       catch (org.apache.http.conn.HttpHostConnectException e) // no hay conectividad
       {
          println e.message
-         flash.message = 'En este momento no hay conexion con el servidor demografico, vuelva a intentarlo mas tarde'
+         flash.message = g.message(code:'patient.patientList.error.noServer')
       }
       catch (groovyx.net.http.HttpResponseException e) // hay conectividad pero da un error del lado del servidor
       {
          // TODO: log a disco
          println e.message
-         flash.message = 'Ocurrio un error al realizar la consulta de pacientes al servidor'
+         flash.message = g.message(code:'patient.patientList.error.serverError')
          
          /*
          // te doy datos de mentira :D
@@ -145,7 +145,6 @@ class PatientController {
       println "listPatients - execution time: " + (now - start) + " ms"
 
       render (template:'list_table', model:[patientList: patientList])
-   }
-   
-   
+      
+   } // patientList
 }

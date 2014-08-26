@@ -31,9 +31,9 @@ class ClinicalSession {
    
    static transients = ['documentForArchetype']
    
-   def getDocumentForArchetype(String archetypeId)
+   def getDocumentForTemplate(String templateId)
    {
-      return this.documents.find{ it.compositionArchetypeId == archetypeId }
+      return this.documents.find{ it.templateId == templateId }
    }
    
    /*
