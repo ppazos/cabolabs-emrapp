@@ -5,7 +5,7 @@ package emr
 import groovyx.net.http.*
 //import groovyx.net.http.HTTPBuilder
 import static groovyx.net.http.ContentType.URLENC
-
+import java.text.SimpleDateFormat
 import sesion.ClinicalSession
 import xml.XmlSerializer
 
@@ -102,6 +102,13 @@ class CommitJob {
          try
          {
             params['ehrId'] = ehrId
+            
+            def formatter = new SimpleDateFormat( config.l10n.datetime_format )
+            params['auditTimeCommitted'] = formatter.format( cses.dateClosed )
+            
+            params['auditSystemId'] = 'CABOLABS_EHR' // TODO: should be configurable
+            
+            params['auditCommitter'] = cses.composer.name
             
             // Sin URLENC da error null pointer exception sin mas datos... no se porque es. PREGUNTAR!
             res = ehr.post( path:'rest/commit', body:params, requestContentType: URLENC ) // query:[ehrId:ehrId] si es post creo que no acepta query
