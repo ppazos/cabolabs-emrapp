@@ -99,11 +99,10 @@ class XmlSerializer {
          builder.version(xmlns:'http://schemas.openehr.org/v1',
                          'xmlns:xsi':'http://www.w3.org/2001/XMLSchema-instance') {
             commit_audit() {
-               // system_id() // lo setea el servidor
-               // FIXME: es el id del sistema que envia o del que recibe?
-               // en la doc parece el que recibe pero donde va el id del que envia???
+               system_id('CABOLABS_EHR') // TODO: should be configurable
                
-               // time_committed lo pone el server
+               time_committed(formatter.format( cses.dateClosed ))
+               
                change_type() {
                   value('creation') // por ahora solo soporta creation
                   defining_code() {
@@ -123,7 +122,7 @@ class XmlSerializer {
                   // FIXME: Si este no es el id del sistema que comitea, donde va ese id?
                   //name('ISIS_EMR_APP') // id de esta aplicaicon TODO: sacarlo de config
                   name(cses.composer.name)
-                  // TODO: poenr algun id
+                  // TODO: poner id para PartyProxy en el server
                }
             } // commit_audit
             
