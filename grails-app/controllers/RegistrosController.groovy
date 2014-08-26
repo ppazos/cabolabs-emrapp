@@ -654,6 +654,7 @@ class RegistrosController {
          
          cses.open = false
          cses.composer = u // TODO> si el usuario en sesion es distinto al que firma, habria que dejar constancia del que esta en sesion para audit.
+         cses.dateClosed = new Date()
          
          if (!cses.save())
          {
