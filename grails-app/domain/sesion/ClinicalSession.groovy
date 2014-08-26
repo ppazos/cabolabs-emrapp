@@ -7,6 +7,13 @@ class ClinicalSession {
 
    String patientUid
    Date dateCreated
+   
+   /* fecha en la que se firma el registro y se cierra, es el commit logico al sistema,
+    * no el momento que se envia al server (ese es un log del server).
+    * Este campo se mapea a auditTimeCommitted en CommitJob.
+    */
+   Date dateClosed
+   
    boolean open = true // se cierra cuando se firma
    boolean committed = false // true cuando se commitea al server
    
@@ -19,6 +26,7 @@ class ClinicalSession {
    static constraints = {
       patientUid(nullable:false)
       composer(nullable:true)
+      dateClosed(nullable:true)
    }
    
    static transients = ['documentForArchetype']
