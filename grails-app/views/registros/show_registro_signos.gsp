@@ -79,7 +79,7 @@
             Presión sistólica:
           
             <%-- restriccion para las unidades ingresadas, quiero mostrar el rango para esa restriccion --%>
-            <g:set var="cdvq_item" value="${node.list.find{ it.units == doc.bindData[ bindings['create_registro_signos']['presion_sistolica_units'] ] }}" />
+            <g:set var="cdvq_item" value="${node.xmlNode.list.find{ it.units == doc.bindData[ bindings['create_registro_signos']['presion_sistolica_units'] ] }}" />
             <g:if test="${cdvq_item?.magnitude}">
             (${cdvq_item.magnitude.lower}..${cdvq_item.magnitude.upper})
             </g:if>
@@ -98,7 +98,7 @@
             Presión diastólica:
             
             <%-- restriccion para las unidades ingresadas, quiero mostrar el rango para esa restriccion --%>
-            <g:set var="cdvq_item" value="${node.list.find{ it.units == doc.bindData[ bindings['create_registro_signos']['presion_diastolica_units'] ] }}" />
+            <g:set var="cdvq_item" value="${node.xmlNode.list.find{ it.units == doc.bindData[ bindings['create_registro_signos']['presion_diastolica_units'] ] }}" />
             <g:if test="${cdvq_item?.magnitude}">
             (${cdvq_item.magnitude.lower}..${cdvq_item.magnitude.upper})
             </g:if>
@@ -117,7 +117,7 @@
             Temperatura:
             
             <%-- restriccion para las unidades ingresadas, quiero mostrar el rango para esa restriccion --%>
-            <g:set var="cdvq_item" value="${node.list.find{ it.units == doc.bindData[ bindings['create_registro_signos']['temperatura_units'] ] }}" />
+            <g:set var="cdvq_item" value="${node.xmlNode.list.find{ it.units == doc.bindData[ bindings['create_registro_signos']['temperatura_units'] ] }}" />
             <g:if test="${cdvq_item?.magnitude}">
             (${cdvq_item.magnitude.lower}..${cdvq_item.magnitude.upper})
             </g:if>
@@ -136,7 +136,7 @@
             Frecuencia cardíaca:
             
             <%-- restriccion para las unidades ingresadas, quiero mostrar el rango para esa restriccion --%>
-            <g:set var="cdvq_item" value="${node.list.find{ it.units == doc.bindData[ bindings['create_registro_signos']['frecuencia_cardiaca_units'] ] }}" />
+            <g:set var="cdvq_item" value="${node.xmlNode.list.find{ it.units == doc.bindData[ bindings['create_registro_signos']['frecuencia_cardiaca_units'] ] }}" />
             <g:if test="${cdvq_item?.magnitude}">
             (${cdvq_item.magnitude.lower}..${cdvq_item.magnitude.upper})
             </g:if>
@@ -155,7 +155,7 @@
             Frecuencia respiratoria:
             
             <%-- restriccion para las unidades ingresadas, quiero mostrar el rango para esa restriccion --%>
-            <g:set var="cdvq_item" value="${node.list.find{ it.units == doc.bindData[ bindings['create_registro_signos']['frecuencia_respiratoria_units'] ] }}" />
+            <g:set var="cdvq_item" value="${node.xmlNode.list.find{ it.units == doc.bindData[ bindings['create_registro_signos']['frecuencia_respiratoria_units'] ] }}" />
             <g:if test="${cdvq_item?.magnitude}">
             (${cdvq_item.magnitude.lower}..${cdvq_item.magnitude.upper})
             </g:if>
@@ -174,7 +174,7 @@
             Peso:
             
             <%-- restriccion para las unidades ingresadas, quiero mostrar el rango para esa restriccion --%>
-            <g:set var="cdvq_item" value="${node.list.find{ it.units == doc.bindData[ bindings['create_registro_signos']['peso_units'] ] }}" />
+            <g:set var="cdvq_item" value="${node.xmlNode.list.find{ it.units == doc.bindData[ bindings['create_registro_signos']['peso_units'] ] }}" />
             <g:if test="${cdvq_item?.magnitude}">
             (${cdvq_item.magnitude.lower}..${cdvq_item.magnitude.upper})
             </g:if>
@@ -193,7 +193,7 @@
             Estatura:
             
             <%-- restriccion para las unidades ingresadas, quiero mostrar el rango para esa restriccion --%>
-            <g:set var="cdvq_item" value="${node.list.find{ it.units == doc.bindData[ bindings['create_registro_signos']['estatura_units'] ] }}" />
+            <g:set var="cdvq_item" value="${node.xmlNode.list.find{ it.units == doc.bindData[ bindings['create_registro_signos']['estatura_units'] ] }}" />
             <g:if test="${cdvq_item?.magnitude}">
             (${cdvq_item.magnitude.lower}..${cdvq_item.magnitude.upper})
             </g:if>

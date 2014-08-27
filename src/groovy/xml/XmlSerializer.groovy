@@ -93,6 +93,8 @@ class XmlSerializer {
       def writer = new StringWriter()
       def builder = new MarkupBuilder(writer)
       
+      builder.setDoubleQuotes(true) // Use double quotes on attributes
+      
       templateId = doc.templateId
       
       /**
@@ -269,22 +271,6 @@ class XmlSerializer {
      
       // Item deberia tener la clase correcta Structure o Element
       compositionContentRecursive(item, builder, tag)
-     
-     /*
-     if (item.class == 'registros.Structure')
-	  {
-	     compositionContentRecursive( (Structure)struct, builder, tag)
-	  }
-	  else if (item.class == 'registros.Element')
-	  {
-	     compositionContentRecursive( (Element)struct, builder, tag)
-	  }
-	  else
-	  {
-	     // Clase no soportada class registros.Item_$$_javassist_13
-	     println "Clase no soportada "+ item.class
-	  }
-     */
    }
    
    private void compositionContentRecursive(Structure struct, MarkupBuilder builder, String tag)

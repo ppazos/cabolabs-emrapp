@@ -3,14 +3,14 @@ package opt_repository
 import groovy.util.Node
 import groovy.util.slurpersupport.GPathResult
 
-class OperationalTemplate {
+class OperationalTemplate1 {
 
    String templateId
    String archetypeId // root archetype id
    GPathResult opt
    Map nodes = [:] // TemplatePath -> GPathResult (node) para pedir restricciones
-   
-   OperationalTemplate(GPathResult opt)
+
+   OperationalTemplate1(GPathResult opt)
    {
       // TODO: validate XML XSD
       
@@ -24,6 +24,9 @@ class OperationalTemplate {
       
       parseObjectNode(this.opt.definition, '/')
       
+      
+      // DEBUG
+      //println groovy.xml.XmlUtil.serialize( opt )
       
       /*
       // test: to see the inyected paths
@@ -48,24 +51,25 @@ class OperationalTemplate {
       return this.nodes[path]
    }
    
+   
    // Parser ---------------------------------------------------------------------------------
    private parseObjectNode(GPathResult node, String parentPath)
    {
       //println "parseObjectNode ${parentPath}"
       
       // Path calculation
-      def path = parentPath
-      if (path != '/')
+      def currentPath = parentPath
+      if (currentPath != '/')
       {
          // comienza de nuevo con las paths relativas al root de este arquetipo
          if (!node.archetype_id.value.isEmpty())
          {
-            path += '[archetype_id='+ node.archetype_id.value +']' // slot in the path instead of node_id
+            currentPath += '[archetype_id='+ node.archetype_id.value +']' // slot in the path instead of node_id
          }
          // para tag vacia empty da false pero text es vacio ej. <node_id/>
          else if (!node.node_id.isEmpty() && node.node_id.text() != '')
          {
-            path += '['+ node.node_id.text() + ']'
+            currentPath += '['+ node.node_id.text() + ']'
          }
       }
       /*
@@ -81,20 +85,22 @@ class OperationalTemplate {
       // TODO: parse occurrences
       
       
-      this.nodes[path] = node
+      this.nodes[currentPath] = node
+      
       //println " - add node ${path}"
       
       
       // Agrega la path al XML para que el nodo tenga su path
       node.appendNode {
-         delegate.path(path)
+         //delegate.path(path)
+         path(currentPath)
       }
       
       
       node.attributes.each { xatn ->
       
          //obn.attributes << parseAttributeNode(xatn, path)
-         parseAttributeNode(xatn, path)
+         parseAttributeNode(xatn, currentPath)
       }
    }
    

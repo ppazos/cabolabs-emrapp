@@ -1,9 +1,12 @@
 package binder
 
+import com.cabolabs.openehr.opt.model.AttributeNode
+import com.cabolabs.openehr.opt.model.ObjectNode
+import com.cabolabs.openehr.opt.model.OperationalTemplate
 import groovy.util.slurpersupport.GPathResult
 import java.util.List
 import java.util.Map
-import opt_repository.OperationalTemplate
+//import opt_repository.OperationalTemplate
 import org.apache.log4j.Logger
 
 /*
@@ -56,7 +59,7 @@ class DataBinder {
    DataBinder(OperationalTemplate template)
    {
       this.template = template
-      this.archetypeId = template.archetypeId
+      this.archetypeId = template.definition.archetypeId
    }
    
    /**
@@ -124,16 +127,23 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       // muestra: 2012-11-21 14:45:42,980 [http-bio-8080-exec-5] INFO  binder.DataBinder  - log DataBinder.bind()
       // TODO: ver como customizar los datos del mensaje en stdout
       // TODO: ver como guardar en archivo
-      log.info('log DataBinder.bind()')
+      log.info('bind()')
+      
+      
+      // DEBUG
+      //new File("test_template.xml") << groovy.xml.XmlUtil.serialize( template )
+      
       
       // bind_C_COMPLEX_OBJECT_COMPOSITION
-      String method = 'bind_C_COMPLEX_OBJECT_'+ template.opt.definition.rm_type_name
+      String method = 'bind_C_COMPLEX_OBJECT_'+ template.definition.rmTypeName
 
-      return this."$method"(template.opt.definition, bind_data)
+      return this."$method"(template.definition, bind_data)
    }
    
    Map filterData(Map bind_data, String filter_path)
    {
+      log.info('filterData()')
+      
       Map filtered_data = [:]
 
       // Filtra bind_data por path
@@ -148,20 +158,20 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       return filtered_data
    }
    
-   Document bind_C_COMPLEX_OBJECT_COMPOSITION(GPathResult cobject, Map bind_data)
+   Document bind_C_COMPLEX_OBJECT_COMPOSITION(ObjectNode cobject, Map bind_data)
    {
-      //println " bind_C_COMPLEX_OBJECT_COMPOSITION"
+      log.info('bind_C_COMPLEX_OBJECT_COMPOSITION() '+ cobject.path)
       
       // bind_data values DEBEN ser todos strings para poder salvarlos
       // esto se lo dejo a beforeInsert en Document
       
       Document doc = new Document(bindData: bind_data)
       
-      doc.compositionArchetypeId = cobject.archetype_id.value.text()
+      doc.compositionArchetypeId = cobject.archetypeId
       
       String method
       Map filtered_data = [:]
-      GPathResult attr // CAttribute
+      AttributeNode attr // CAttribute
       List items
       
       /*
@@ -240,10 +250,10 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       
       // ------------------------------------------------------------------------------
       // bind attribute: content
-      attr = cobject.attributes.find { it.rm_attribute_name.text() == "content" } // COMSPOSITION tiene content y category
+      attr = cobject.attributes.find { it.rmAttributeName == "content" } // COMSPOSITION tiene content y category
       filtered_data = filterData(bind_data, "/content")
       
-      method = 'bind_'+ attr.'@xsi:type'.text() // bind_C_MULTIPLE_ATTRIBUTE
+      method = 'bind_'+ attr.type // bind_C_MULTIPLE_ATTRIBUTE
       items = this."$method"(attr, filtered_data)
       
       //println " content items: " + items
@@ -261,9 +271,9 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       return doc
    }
    
-   Structure bind_C_COMPLEX_OBJECT_EVENT_CONTEXT(GPathResult cobject, Map bind_data)
+   Structure bind_C_COMPLEX_OBJECT_EVENT_CONTEXT(ObjectNode cobject, Map bind_data)
    {
-      println " bind_C_COMPLEX_OBJECT_EVENT_CONTEXT " //+ cobject.path.text()
+      log.info('bind_C_COMPLEX_OBJECT_EVENT_CONTEXT() '+ cobject.path.text())
       
       Structure strct = new Structure(
          archetypeId: archetypeId,
@@ -307,15 +317,15 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       return strct
    }
    
-   Structure bind_C_COMPLEX_OBJECT_OBSERVATION(GPathResult cobject, Map bind_data, String attrName)
+   Structure bind_C_COMPLEX_OBJECT_OBSERVATION(ObjectNode cobject, Map bind_data, String attrName)
    {
-      //println "  bind_C_COMPLEX_OBJECT_OBSERVATION "+ attrName
+      log.info('bind_C_COMPLEX_OBJECT_OBSERVATION() '+ cobject.path)
       
       Structure strct = new Structure(
          archetypeId: archetypeId,
-         path:    cobject.path.text(),
-         nodeId:  cobject.node_id.text(),
-         type:    cobject.rm_type_name.text(),
+         path:    cobject.path,
+         nodeId:  cobject.nodeId,
+         type:    cobject.rmTypeName,
          aomType: 'C_COMPLEX_OBJECT',
          attr:    attrName)
       
@@ -325,11 +335,11 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       
       cobject.attributes.each { attr ->
          
-         filtered_data = filterData(bind_data, cobject.path.text())
+         filtered_data = filterData(bind_data, cobject.path)
 
          // bind_CMultipleAttribute
          // bind_CSingleName
-         method = 'bind_'+ attr.'@xsi:type'.text()
+         method = 'bind_'+ attr.type
          
          items = this."$method"(attr, filtered_data)
          
@@ -345,15 +355,15 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       
    } // bind_C_COMPLEX_OBJECT_OBSERVATION
    
-   Structure bind_C_COMPLEX_OBJECT_HISTORY(GPathResult cobject, Map bind_data, String attrName)
+   Structure bind_C_COMPLEX_OBJECT_HISTORY(ObjectNode cobject, Map bind_data, String attrName)
    {
-      //println "  bind_C_COMPLEX_OBJECT_HISTORY "+ attrName
+      log.info('bind_C_COMPLEX_OBJECT_HISTORY() '+ cobject.path)
       
       Structure strct = new Structure(
          archetypeId: archetypeId,
-         path:     cobject.path.text(), 
-         nodeId:   cobject.node_id.text(), 
-         type:     cobject.rm_type_name.text(), 
+         path:     cobject.path, 
+         nodeId:   cobject.nodeId, 
+         type:     cobject.rmTypeName, 
          aomType:  'C_COMPLEX_OBJECT', 
          attr:     attrName,
          attributes: ['origin': new DvDateTime(value:new Date())]
@@ -368,11 +378,11 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       
       cobject.attributes.each { attr ->
          
-         filtered_data = filterData(bind_data, cobject.path.text())
+         filtered_data = filterData(bind_data, cobject.path)
 
          // bind_CMultipleAttribute
          // bind_CSingleName
-         method = 'bind_'+ attr.'@xsi:type'.text()
+         method = 'bind_'+ attr.type
          
          items = this."$method"(attr, filtered_data)
          
@@ -388,15 +398,15 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       
    } // bind_C_COMPLEX_OBJECT_HISTORY
    
-   Structure bind_C_COMPLEX_OBJECT_EVENT(GPathResult cobject, Map bind_data, String attrName)
+   Structure bind_C_COMPLEX_OBJECT_EVENT(ObjectNode cobject, Map bind_data, String attrName)
    {
-      //println "  bind_C_COMPLEX_OBJECT_EVENT "+ attrName
+      log.info('bind_C_COMPLEX_OBJECT_EVENT()'+ cobject.path)
       
       Structure strct = new Structure(
          archetypeId: archetypeId,
-         path:        cobject.path.text(),
-         nodeId:      cobject.node_id.text(),
-         type:        cobject.rm_type_name.text(),
+         path:        cobject.path,
+         nodeId:      cobject.nodeId,
+         type:        cobject.rmTypeName,
          aomType:     'C_COMPLEX_OBJECT',
          attr:        attrName,
          attributes:  ['time': new DvDateTime(value:new Date())]
@@ -408,11 +418,11 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       
       cobject.attributes.each { attr ->
          
-         filtered_data = filterData(bind_data, cobject.path.text())
+         filtered_data = filterData(bind_data, cobject.path)
 
          // bind_CMultipleAttribute
          // bind_CSingleName
-         method = 'bind_'+ attr.'@xsi:type'.text()
+         method = 'bind_'+ attr.type
          items = this."$method"(attr, filtered_data)
          
          items.each { item ->
@@ -427,12 +437,23 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       
    } // bind_C_COMPLEX_OBJECT_EVENT
    
-   DataValue bind_C_DV_QUANTITY_DV_QUANTITY(GPathResult cdv, Map bind_data, String attrName)
+   DataValue bind_C_DV_QUANTITY_DV_QUANTITY(ObjectNode cdv, Map bind_data, String attrName)
    {
       // Crear Boolean
       //println "    ...bind_CDvQuantity_DvQuantity "+ cdv.path.text() +" "+ bind_data +" "+ attrName
       //println cdv.list
       //println ""
+      log.info('bind_C_DV_QUANTITY_DV_QUANTITY()')
+      
+      println "+++++++++++++++++++++++++++++++"
+      
+      //println template.paths
+      //println cdv
+      println cdv.path
+      
+      println "===================="
+      println bind_data[cdv.path + "/magnitude"]
+      println "===================="
       
       /*
        * cdv.property: CodePhrase
@@ -453,22 +474,22 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
        *  [org.openehr.am.openehrprofile.datatypes.quantity.CDvQuantityItem@88db432c]
        */
       
-      return new DvQuantity( magnitude: bind_data[cdv.path.text()+"/magnitude"],
-                             units:     bind_data[cdv.path.text()+"/units"],
+      return new DvQuantity( magnitude: bind_data[cdv.path + "/magnitude"],
+                             units:     bind_data[cdv.path + "/units"],
                              aomType:   'C_DV_QUANTITY' )
    }
    
    
    
-   Structure bind_C_COMPLEX_OBJECT_INSTRUCTION(GPathResult cobject, Map bind_data, String attrName)
+   Structure bind_C_COMPLEX_OBJECT_INSTRUCTION(ObjectNode cobject, Map bind_data, String attrName)
    {
-      //println "  bind_C_COMPLEX_OBJECT_INSTRUCTION"
+      log.info('bind_C_COMPLEX_OBJECT_INSTRUCTION()'+ cobject.path)
       
       Structure strct = new Structure(
          archetypeId: archetypeId,
-         path:        cobject.path.text(),
-         nodeId:      cobject.node_id.text(),
-         type:        cobject.rm_type_name.text(),
+         path:        cobject.path,
+         nodeId:      cobject.nodeId,
+         type:        cobject.rmTypeName,
          aomType:     'C_COMPLEX_OBJECT',
          attr:        attrName,
          attributes:  ['narrative': new DvText(value: 'TODO: instruction narrative')]
@@ -480,11 +501,11 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       
       cobject.attributes.each { attr ->
          
-         filtered_data = filterData(bind_data, cobject.path.text())
+         filtered_data = filterData(bind_data, cobject.path)
 
          // bind_CMultipleAttribute
          // bind_CSingleName
-         method = 'bind_'+ attr.'@xsi:type'.text()
+         method = 'bind_'+ attr.type
          items = this."$method"(attr, filtered_data)
          
          items.each { item ->
@@ -498,15 +519,15 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       return strct
    }
    
-   Structure bind_C_COMPLEX_OBJECT_ACTIVITY(GPathResult cobject, Map bind_data, String attrName)
+   Structure bind_C_COMPLEX_OBJECT_ACTIVITY(ObjectNode cobject, Map bind_data, String attrName)
    {
-      //println "   bind_C_COMPLEX_OBJECT_ACTIVITY"
+      log.info('bind_C_COMPLEX_OBJECT_ACTIVITY()'+ cobject.path)
       
       Structure strct = new Structure(
          archetypeId: archetypeId,
-         path: cobject.path.text(), 
-         nodeId: cobject.node_id.text(), 
-         type: cobject.rm_type_name.text(), 
+         path: cobject.path,
+         nodeId: cobject.nodeId, 
+         type: cobject.rmTypeName, 
          aomType: 'C_COMPLEX_OBJECT', 
          attr: attrName)
       
@@ -516,11 +537,11 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       
       cobject.attributes.each { attr ->
          
-         filtered_data = filterData(bind_data, cobject.path.text())
+         filtered_data = filterData(bind_data, cobject.path)
          
          // bind_CMultipleAttribute
          // bind_CSingleName
-         method = 'bind_'+ attr.'@xsi:type'.text()
+         method = 'bind_'+ attr.type
          items = this."$method"(attr, filtered_data)
          
          items.each { item ->
@@ -534,15 +555,15 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       return strct
    }
    
-   Structure bind_C_COMPLEX_OBJECT_ITEM_TREE(GPathResult cobject, Map bind_data, String attrName)
+   Structure bind_C_COMPLEX_OBJECT_ITEM_TREE(ObjectNode cobject, Map bind_data, String attrName)
    {
-      //println "    bind_C_COMPLEX_OBJECT_ITEM_TREE "+ cobject.path.text() +" "+ attrName
+      log.info('bind_C_COMPLEX_OBJECT_ITEM_TREE()'+ cobject.path)
       
       Structure strct = new Structure(
          archetypeId: archetypeId,
-         path:    cobject.path.text(),
-         nodeId:  cobject.node_id.text(),
-         type:    cobject.rm_type_name.text(),
+         path:    cobject.path,
+         nodeId:  cobject.nodeId,
+         type:    cobject.rmTypeName,
          aomType: 'C_COMPLEX_OBJECT',
          attr:    attrName)
       
@@ -552,11 +573,11 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       
       cobject.attributes.each { attr ->
          
-         filtered_data = filterData(bind_data, cobject.path.text())
+         filtered_data = filterData(bind_data, cobject.path)
 
          // bind_CMultipleAttribute
          // bind_CSingleName
-         method = 'bind_'+ attr.'@xsi:type'.text()
+         method = 'bind_'+ attr.type
          
          items = this."$method"(attr, filtered_data)
          
@@ -571,15 +592,15 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       return strct
    }
    
-   Structure bind_C_COMPLEX_OBJECT_CLUSTER(GPathResult cobject, Map bind_data, String attrName)
+   Structure bind_C_COMPLEX_OBJECT_CLUSTER(ObjectNode cobject, Map bind_data, String attrName)
    {
-      //println "     bind_C_COMPLEX_OBJECT_CLUSTER "+ attrName
+      log.info('bind_C_COMPLEX_OBJECT_CLUSTER()'+ cobject.path)
       
       Structure strct = new Structure(
          archetypeId: archetypeId,
-         path:    cobject.path.text(), 
-         nodeId:  cobject.node_id.text(),
-         type:    cobject.rm_type_name.text(),
+         path:    cobject.path,
+         nodeId:  cobject.nodeId,
+         type:    cobject.rmTypeName,
          aomType: 'C_COMPLEX_OBJECT', 
          attr:attrName)
       
@@ -589,11 +610,11 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
             
       cobject.attributes.each { attr ->
          
-         filtered_data = filterData(bind_data, cobject.path.text())
+         filtered_data = filterData(bind_data, cobject.path)
 
          // bind_CMultipleAttribute
          // bind_CSingleName
-         method = 'bind_'+ attr.'@xsi:type'.text()
+         method = 'bind_'+ attr.type
          
          items = this."$method"(attr, filtered_data)
          
@@ -608,10 +629,11 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       return strct
    }
    
-   Element bind_C_COMPLEX_OBJECT_ELEMENT(GPathResult cobject, Map bind_data, String attrName)
+   Element bind_C_COMPLEX_OBJECT_ELEMENT(ObjectNode cobject, Map bind_data, String attrName)
    {
       //println "     bind_C_COMPLEX_OBJECT_ELEMENT " + cobject.path.text() +" "+ attrName
       //println "     - cobject.attrs: "+ cobject.attributes.rmAttributeName
+      log.info('bind_C_COMPLEX_OBJECT_ELEMENT()'+ cobject.path)
       
       String method
       def filtered_data = [:]
@@ -622,11 +644,11 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       // Tiene restriccion solo para value (podria tener para nullFlavour)
       cobject.attributes.each { attr ->
          
-         filtered_data = filterData(bind_data, cobject.path.text())
+         filtered_data = filterData(bind_data, cobject.path)
 
          // bind_CMultipleAttribute
          // bind_CSingleName
-         method = 'bind_'+ attr.'@xsi:type'.text()
+         method = 'bind_'+ attr.type
          
          //println "ELEMENT.value: " + method
          
@@ -643,7 +665,8 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       // crear los datavalues.
       if (!items[0].validate())
       {
-         //println " ELEMENT.value no valida: "+ items[0].errors
+         println " ELEMENT.value no valida: "+ items[0].errors
+         items[0].errors.allErrors.each { println it }
          
          // Sino tiene valores para bindear ELEMENT.value, retorna null.
          // TODO: hacer tambien validacion de valores contra restricciones del arquetipo. 
@@ -653,9 +676,9 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
          element = new Element(
             value:   items[0],
             archetypeId: archetypeId,
-            path:    cobject.path.text(),
-            nodeId:  cobject.node_id.text(),
-            type:    cobject.rm_type_name.text(),
+            path:    cobject.path,
+            nodeId:  cobject.nodeId,
+            type:    cobject.rmTypeName,
             aomType: 'C_COMPLEX_OBJECT',
             attr:    attrName)
          
@@ -668,22 +691,24 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
          if (element.value)
             println "       tipo del valor de ELEMENT: " + element.value.class + " valor="+ element.value
          else
-            println "       dice que ELEMENT.value es null para "+ cobject.path.text()
+            println "       dice que ELEMENT.value es null para "+ cobject.path
             
       }
       return element
    }
    
-   DataValue bind_C_COMPLEX_OBJECT_DV_TEXT(GPathResult cobject, Map bind_data, String attrName)
+   DataValue bind_C_COMPLEX_OBJECT_DV_TEXT(ObjectNode cobject, Map bind_data, String attrName)
    {
       //println "     .bind_C_COMPLEX_OBJECT_DV_TEXT "+ cobject.path.text() +" "+ bind_data +" "+ attrName
+      log.info('bind_C_COMPLEX_OBJECT_DV_TEXT()'+ cobject.path)
+      
       
       if (!cobject.attributes || cobject.attributes.size() == 0)
       {
          //println "-- bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: " + cobject.rm_type_name.text() + " "+ bind_data
          //println ""
          
-         return new DvText(value:bind_data[cobject.path.text()], aomType: 'C_COMPLEX_OBJECT')
+         return new DvText(value:bind_data[cobject.path], aomType: 'C_COMPLEX_OBJECT')
       }
       
       String method
@@ -692,11 +717,11 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       
       cobject.attributes.each { attr ->
          
-         filtered_data = filterData(bind_data, cobject.path.text())
+         filtered_data = filterData(bind_data, cobject.path)
 
          // bind_CMultipleAttribute
          // bind_CSingleName
-         method = 'bind_'+ attr.'@xsi:type'.text()
+         method = 'bind_'+ attr.type
          
          items = this."$method"(attr, filtered_data)
          
@@ -710,8 +735,10 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       return new DvText(value:"todo", aomType: 'C_COMPLEX_OBJECT')
    }
    
-   DataValue bind_C_COMPLEX_OBJECT_DV_CODED_TEXT(GPathResult cobject, Map bind_data, String attrName)
+   DataValue bind_C_COMPLEX_OBJECT_DV_CODED_TEXT(ObjectNode cobject, Map bind_data, String attrName)
    {
+      log.info('bind_C_COMPLEX_OBJECT_DV_CODED_TEXT()'+ cobject.path)
+      
       /*
        * .bind_C_COMPLEX_OBJECT_DV_CODED_TEXT
        * /content[at0002]/activities[at0003]/description[at0004]/items[at0006]/value
@@ -734,11 +761,11 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       
       cobject.attributes.each { attr ->
          
-         filtered_data = filterData(bind_data, cobject.path.text())
+         filtered_data = filterData(bind_data, cobject.path)
 
          // bind_CMultipleAttribute
          // bind_CSingleName
-         method = 'bind_'+ attr.'@xsi:type'.text()
+         method = 'bind_'+ attr.type
          
          /**
           * [[code_string:todo, terminology_id_name:todo, terminology_id_version:todo]] viene de bind_xxxx_CodePhrase
@@ -789,7 +816,7 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
          // [/content[at0002]/activities[at0003]/description[at0004]/items[at0006]/value/defining_code:13535-0,
          //  /content[at0002]/activities[at0003]/description[at0004]/items[at0006]/value/value:hem├│lisis en sacarosa] <<< este es el value
          //println "DATA: " + bind_data[cobject.path.text() + "/value"]
-         items[0]["value"] = bind_data[cobject.path.text() + "/value"] // Debe venir el value de la ui como path()/value (.../value/value)
+         items[0]["value"] = bind_data[cobject.path + "/value"] // Debe venir el value de la ui como path()/value (.../value/value)
       }
       
       //println "DV_CODED_TEXT items: "+ items
@@ -802,8 +829,10 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       return new DvCodedText(items[0])
    }
    
-   DataValue bind_C_COMPLEX_OBJECT_DV_BOOLEAN(GPathResult cobject, Map bind_data, String attrName)
+   DataValue bind_C_COMPLEX_OBJECT_DV_BOOLEAN(ObjectNode cobject, Map bind_data, String attrName)
    {
+      log.info('bind_C_COMPLEX_OBJECT_DV_BOOLEAN()'+ cobject.path)
+      
       /*
        * .bind_C_COMPLEX_OBJECT_DV_BOOLEAN
        * /content[at0002]/activities[at0003]/description[at0004]/items[at0007]/value
@@ -819,12 +848,14 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       // En bind_data[cobject.path.text()] hay un string true o false
       // TODO: podria NO venir valor
       // TODO: podrian venir multiples valores
-      return new DvBoolean(value: Boolean.parseBoolean( bind_data[cobject.path.text()] ),
+      return new DvBoolean(value: Boolean.parseBoolean( bind_data[cobject.path] ),
                            aomType: 'C_COMPLEX_OBJECT')
    }
    
-   DataValue bind_C_COMPLEX_OBJECT_DV_DATE_TIME(GPathResult cobject, Map bind_data, String attrName)
+   DataValue bind_C_COMPLEX_OBJECT_DV_DATE_TIME(ObjectNode cobject, Map bind_data, String attrName)
    {
+      log.info('bind_C_COMPLEX_OBJECT_DV_DATE_TIME()'+ cobject.path)
+      
       /*
        * .bind_C_COMPLEX_OBJECT_DV_DATE_TIME
        * /content[at0002]/activities[at0003]/description[at0004]/items[at0009]/value
@@ -848,7 +879,7 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       // se castea a String y este hace referencia a al mismo objeto que luego es
       // un String y tira una except al salvar porque espera un Date (Grails ya
       // bindea el java.util.Date)
-      return new DvDateTime(value: bind_data[cobject.path.text()], //.clone(),
+      return new DvDateTime(value: bind_data[cobject.path], //.clone(),
                             aomType: 'C_COMPLEX_OBJECT')
    }
    
@@ -859,8 +890,10 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
     * @param bind_data
     * @return
     */
-   Map bind_CPrimitiveObject_DvBoolean(GPathResult cobject, Map bind_data)
+   Map bind_CPrimitiveObject_DvBoolean(ObjectNode cobject, Map bind_data)
    {
+      log.info('bind_CPrimitiveObject_DvBoolean()'+ cobject.path)
+      
       // Crear Boolean
       //println "    ...bind_CPrimitiveObject_DvBoolean "+ cobject.path.text() +" "+ bind_data
       //println ""
@@ -878,8 +911,10 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
     * @param bind_data
     * @return
     */
-   Map bind_CPrimitiveObject_DvDateTime(GPathResult cobject, Map bind_data)
+   Map bind_CPrimitiveObject_DvDateTime(ObjectNode cobject, Map bind_data)
    {
+      log.info('bind_CPrimitiveObject_DvDateTime()'+ cobject.path)
+      
       // Crear DateTime
       //println "    ...bind_CPrimitiveObject_DvDateTime "+ cobject.path.text() +" "+ bind_data
       //println ""
@@ -906,8 +941,10 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
     * @param bind_data
     * @return
     */
-   Map bind_ConstraintRef_CodePhrase(GPathResult cobject, Map bind_data, String attrName)
+   Map bind_ConstraintRef_CodePhrase(ObjectNode cobject, Map bind_data, String attrName)
    {
+      log.info('bind_ConstraintRef_CodePhrase()'+ cobject.path)
+      
       //println "      bind_ConstraintRef_CodePhrase "+ cobject.path.text() +" "+ bind_data +" "+ attrName
       //println ""
       
@@ -969,7 +1006,7 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       
       // Crea el equivalente al CodePhrase
       // TODO: terminology y version deben ir en el mismo campo codificado
-      return [codeString: bind_data[cobject.path.text()], terminologyIdName: bindings[0].@terminology /*bindings[0].terminology*/, terminologyIdVersion: "todo"]
+      return [codeString: bind_data[cobject.path], terminologyIdName: bindings[0].@terminology /*bindings[0].terminology*/, terminologyIdVersion: "todo"]
    }
    
    /**
@@ -986,8 +1023,10 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
                   at0013,  -- histologia
                   at0014]  -- microbiologia
     */
-   Map bind_C_CODE_PHRASE_CODE_PHRASE(GPathResult cobject, Map bind_data, String attrName)
+   Map bind_C_CODE_PHRASE_CODE_PHRASE(ObjectNode cobject, Map bind_data, String attrName)
    {
+      log.info('bind_C_CODE_PHRASE_CODE_PHRASE()'+ cobject.path)
+      
       //println "      bind_CCodePhrase_CodePhrase "+ cobject.path.text() +" " + bind_data +" "+ attrName
       //println ""
       
@@ -1009,7 +1048,7 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       
       // Crea el equivalente al CodePhrase
       // FIXME: ver de donde sacar la version (si es local, no hay version)
-      return [codeString: bind_data[cobject.path.text()], terminologyIdName: cobject.terminologyId.name, terminologyIdVersion: cobject.terminologyId.version]
+      return [codeString: bind_data[cobject.path], terminologyIdName: cobject.xmlNode.terminologyId.name.text(), terminologyIdVersion: cobject.xmlNode.terminologyId.version.text()]
    }
    
    
@@ -1019,9 +1058,9 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
     * @param bind_data
     * @return
     */
-   List bind_C_SINGLE_ATTRIBUTE(GPathResult cattr, Map bind_data)
+   List bind_C_SINGLE_ATTRIBUTE(AttributeNode cattr, Map bind_data)
    {
-      //println " CSingleAttribute "+ cattr.rmAttributeName
+      log.info('bind_C_SINGLE_ATTRIBUTE()'+ cattr.rmAttributeName)
       
       String method
       def attrs = []
@@ -1032,16 +1071,16 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
          //println "  attr obj: "+ cobject.rm_type_name.text()
          
          // Si es una referencia a otro arquetipo, el tipo de ADL es complex object
-         adl_class = cobject.'@xsi:type'.text()
+         adl_class = cobject.type
          if (adl_class == "ARCHETYPE_SLOT") return // avoid SLOTS see https://github.com/ppazos/cabolabs-emrapp/issues/12
          if (adl_class == "C_ARCHETYPE_ROOT")
          {
             adl_class = "C_COMPLEX_OBJECT"
-            this.archetypeId = cobject.archetype_id.value.text() // if object is root it has a different archetypeId
+            this.archetypeId = cobject.archetypeId // if object is root it has a different archetypeId
          }
 
-         method = 'bind_'+ adl_class +'_'+ cobject.rm_type_name.text()
-         attr = this."$method"(cobject, bind_data, cattr.rm_attribute_name.text())
+         method = 'bind_'+ adl_class +'_'+ cobject.rmTypeName
+         attr = this."$method"(cobject, bind_data, cattr.rmAttributeName)
          
          // Si no vienen valores para bindear un datavalue, el binder de element retorna null
          // Aqui se verifica si lo que se devuelve es null, y si es, no se considera para enviarselo al nodo padre
@@ -1056,9 +1095,9 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
     * @param bind_data
     * @return
     */
-   List bind_C_MULTIPLE_ATTRIBUTE(GPathResult cattr, Map bind_data)
+   List bind_C_MULTIPLE_ATTRIBUTE(AttributeNode cattr, Map bind_data)
    {
-      //println " CMultipleAttribute "+ cattr.rmAttributeName
+      log.info('bind_C_MULTIPLE_ATTRIBUTE()'+ cattr.rmAttributeName)
       
       String method
       def attrs = []
@@ -1069,16 +1108,16 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
          //println "  attr obj: "+ cobject.rm_type_name.text()
          
          // Si es una referencia a otro arquetipo, el tipo de ADL es complex object
-         adl_class = cobject.'@xsi:type'.text()
+         adl_class = cobject.type
          if (adl_class == "ARCHETYPE_SLOT") return // avoid SLOTS see https://github.com/ppazos/cabolabs-emrapp/issues/12
          if (adl_class == "C_ARCHETYPE_ROOT")
          {
             adl_class = "C_COMPLEX_OBJECT"
-            this.archetypeId = cobject.archetype_id.value.text() // if object is root it has a different archetypeId
+            this.archetypeId = cobject.archetypeId // if object is root it has a different archetypeId
          }
          
-         method = 'bind_'+ adl_class +'_'+ cobject.rm_type_name.text()
-         attr = this."$method"(cobject, bind_data, cattr.rm_attribute_name.text())
+         method = 'bind_'+ adl_class +'_'+ cobject.rmTypeName
+         attr = this."$method"(cobject, bind_data, cattr.rmAttributeName)
          
          // Si no vienen valores para bindear un datavalue, el binder de element retorna null
          // Aqui se verifica si lo que se devuelve es null, y si es, no se considera para enviarselo al nodo padre

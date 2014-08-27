@@ -2,6 +2,7 @@ package opt_repository
 
 import org.apache.log4j.Logger
 import groovy.util.slurpersupport.GPathResult
+import com.cabolabs.openehr.opt.model.OperationalTemplate
 
 /**
  * Placeholder for a complete OTP manager with parser etc. (will integrate https://github.com/ppazos/openEHR-OPT).
@@ -44,8 +45,16 @@ class OperationalTemplateManager {
       // FIXME: deberia filtrar solo archivos opt
       root.eachFile { f ->
          
+         /*
+         // XmlSlurper(boolean validating, boolean namespaceAware)
          optxml = new XmlSlurper().parse( f )
+         optxml.declareNamespace(['': "http://schemas.openehr.org/v1", 'xsd':"http://www.w3.org/2001/XMLSchema", 'xsi':"http://www.w3.org/2001/XMLSchema-instance"])
          opt = new OperationalTemplate(optxml)
+         */
+         def parser = new com.cabolabs.openehr.opt.parser.OperationalTemplateParser()
+         opt = parser.parse( f.text )
+         
+         println opt
 
          this._timestamps[opt.templateId] = new Date() // actualizo timestamp
          this._cache[opt.templateId] = opt

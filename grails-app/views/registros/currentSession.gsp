@@ -53,12 +53,10 @@
       <g:each in="${templates}" var="template">
         
         <%-- hay un doc para el arquetipo en la sesion? --%>
-        <%-- <g:set var="doc" value="${cses.documents.find{ it.compositionArchetypeId == archetype.archetypeId.value }}" /> --%>
-        
         <g:set var="doc" value="${cses.getDocumentForTemplate( template.templateId )}" />
         
         <%-- nombre y descripcion del arquetipo --%>
-        <g:set var="term" value="${template.getTerm(template.archetypeId, "at0000")}" />
+        <g:set var="term" value="${template.getTerm(template.definition.archetypeId, "at0000")}" />
         
         <g:if test="${doc}">
           <g:link action="show" params="[id:doc.id]">${term}</g:link> *
@@ -67,7 +65,7 @@
           <g:link action="create" params="[templateId: template.templateId]">${term}</g:link>
         </g:else>
         <br/>
-        ${template.getDescription(template.archetypeId, "at0000")}
+        ${template.getDescription(template.definition.archetypeId, "at0000")}
         <br/><br/>
       </g:each>
       

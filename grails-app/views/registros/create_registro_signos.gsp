@@ -94,13 +94,13 @@
         
         <table>
           <g:set var="node" value="${template.getNode( bindings['create_registro_signos']['presion_sistolica'] )}" />
-          <!-- <textarea>${groovy.xml.XmlUtil.serialize(node)}</textarea> -->
+          <!-- <textarea>${groovy.xml.XmlUtil.serialize(node.xmlNode)}</textarea> -->
           <tr>
             <td>
               Presión sistólica:
-              <g:if test="${node?.list.size() == 1}">
-                <g:if test="${node.list[0].magnitude}">
-                (${node?.list[0].magnitude.lower}..${node?.list[0].magnitude.upper})
+              <g:if test="${node?.xmlNode.list.size() == 1}">
+                <g:if test="${node.xmlNode.list[0].magnitude}">
+                (${node?.xmlNode.list[0].magnitude.lower}..${node?.xmlNode.list[0].magnitude.upper})
                 </g:if>
               </g:if>
               <g:else>
@@ -121,11 +121,11 @@
               TODO: si hay un solo item, mostrarlo como label con hidden
               TODO: taglib
               --%>
-              <g:if test="${node?.list.size() == 1}">
-                <input type="text" value="${node?.list[0].units}" readonly="readonly" name="presion_sistolica_units" />
+              <g:if test="${node?.xmlNode.list.size() == 1}">
+                <input type="text" value="${node?.xmlNode.list[0].units}" readonly="readonly" name="presion_sistolica_units" />
               </g:if>
               <g:else>
-                <g:each in="${node?.list}" var="item">
+                <g:each in="${node?.xmlNode.list}" var="item">
                   
                   <%--
                   ${item as grails.converters.XML}
@@ -157,9 +157,9 @@
           <tr>
             <td>
               Presión diastólica:
-              <g:if test="${node?.list.size() == 1}">
-                <g:if test="${node.list[0].magnitude}">
-                (${node?.list[0].magnitude.lower}..${node?.list[0].magnitude.upper})
+              <g:if test="${node?.xmlNode.list.size() == 1}">
+                <g:if test="${node.xmlNode.list[0].magnitude}">
+                (${node?.xmlNode.list[0].magnitude.lower}..${node?.xmlNode.list[0].magnitude.upper})
                 </g:if>
               </g:if>
               <g:else>
@@ -170,11 +170,11 @@
               <input type="text" name="presion_diastolica_mag" id="presion_diastolica_mag" />
             </td>
             <td>
-              <g:if test="${node?.list.size() == 1}">
-                <input type="text" value="${node?.list[0].units}" readonly="readonly" name="presion_diastolica_units" />
+              <g:if test="${node?.xmlNode.list.size() == 1}">
+                <input type="text" value="${node?.xmlNode.list[0].units}" readonly="readonly" name="presion_diastolica_units" />
               </g:if>
               <g:else>
-                <g:each in="${node?.list}" var="item">
+                <g:each in="${node?.xmlNode.list}" var="item">
                   <label><input type="radio" value="${item.units}" name="presion_diastolica_units" />${item.units}</label>
                 </g:each>
               </g:else>
@@ -186,15 +186,15 @@
             <td>
               Temperatura:
               <span id="temperatura_magnitude_constraint">
-	             <g:if test="${node?.list.size() == 1}">
-	               <g:if test="${node.list[0].magnitude}">
-	                 (${node?.list[0].magnitude.lower}..${node?.list[0].magnitude.upper})
+	             <g:if test="${node?.xmlNode.list.size() == 1}">
+	               <g:if test="${node?.xmlNode.list[0].magnitude}">
+	                 (${node?.xmlNode.list[0].magnitude.lower}..${node?.xmlNode.list[0].magnitude.upper})
 	               </g:if>
 	             </g:if>
 	             <g:else>
-	               <g:each in="${node.list}" var="cdvq_item">
+	               <g:each in="${node?.xmlNode.list}" var="cdvq_item">
 	                 <span class="magnitude_constraint" id="temperatura_${cdvq_item.units}">
-	                   <g:if test="${node.list[0].magnitude}">
+	                   <g:if test="${node?.xmlNode.list[0].magnitude}">
 	                     (${cdvq_item.magnitude.lower}..${cdvq_item.magnitude.upper})
 	                   </g:if>
 	                 </span>
@@ -206,11 +206,11 @@
               <input type="text" name="temperatura_mag" id="temperatura_mag" />
             </td>
             <td>
-              <g:if test="${node?.list.size() == 1}">
-                <input type="text" value="${node?.list[0].units}" readonly="readonly" name="temperatura_units" />
+              <g:if test="${node?.xmlNode.list.size() == 1}">
+                <input type="text" value="${node?.xmlNode.list[0].units}" readonly="readonly" name="temperatura_units" />
               </g:if>
               <g:else>
-                <g:each in="${node?.list}" var="item">
+                <g:each in="${node?.xmlNode.list}" var="item">
                   <label><input type="radio" value="${item.units}" name="temperatura_units" />${item.units}</label>
                 </g:each>
               </g:else>
@@ -221,9 +221,9 @@
           <tr>
             <td>
               Frecuencia cardíaca:
-              <g:if test="${node?.list.size() == 1}">
-                <g:if test="${node.list[0].magnitude}">
-                (${node?.list[0].magnitude.lower}..${node?.list[0].magnitude.upper})
+              <g:if test="${node?.xmlNode.list.size() == 1}">
+                <g:if test="${node?.xmlNode.list[0].magnitude}">
+                (${node?.xmlNode.list[0].magnitude.lower}..${node?.xmlNode.list[0].magnitude.upper})
                 </g:if>
               </g:if>
               <g:else>
@@ -234,11 +234,11 @@
               <input type="text" name="frecuencia_cardiaca_mag" id="frecuencia_cardiaca_mag" />
             </td>
             <td>
-              <g:if test="${node?.list.size() == 1}">
-                <input type="text" value="${node?.list[0].units}" readonly="readonly" name="frecuencia_cardiaca_units" />
+              <g:if test="${node?.xmlNode.list.size() == 1}">
+                <input type="text" value="${node?.xmlNode.list[0].units}" readonly="readonly" name="frecuencia_cardiaca_units" />
               </g:if>
               <g:else>
-                <g:each in="${node?.list}" var="item">
+                <g:each in="${node?.xmlNode.list}" var="item">
                   <label><input type="radio" value="${item.units}" name="frecuencia_cardiaca_units" />${item.units}</label>
                 </g:each>
               </g:else>
@@ -249,9 +249,9 @@
           <tr>
             <td>
               Frecuencia respiratoria:
-              <g:if test="${node?.list.size() == 1}">
-                <g:if test="${node.list[0].magnitude}">
-                (${node?.list[0].magnitude.lower}..${node?.list[0].magnitude.upper})
+              <g:if test="${node?.xmlNode.list.size() == 1}">
+                <g:if test="${node.xmlNode.list[0].magnitude}">
+                (${node?.xmlNode.list[0].magnitude.lower}..${node?.xmlNode.list[0].magnitude.upper})
                 </g:if>
               </g:if>
               <g:else>
@@ -262,11 +262,11 @@
               <input type="text" name="frecuencia_respiratoria_mag" id="frecuencia_respiratoria_mag" />
             </td>
             <td>
-              <g:if test="${node?.list.size() == 1}">
-                <input type="text" value="${node?.list[0].units}" readonly="readonly" name="frecuencia_respiratoria_units" />
+              <g:if test="${node?.xmlNode.list.size() == 1}">
+                <input type="text" value="${node?.xmlNode.list[0].units}" readonly="readonly" name="frecuencia_respiratoria_units" />
               </g:if>
               <g:else>
-                <g:each in="${node?.list}" var="item">
+                <g:each in="${node?.xmlNode.list}" var="item">
                   <label><input type="radio" value="${item.units}" name="frecuencia_respiratoria_units" />${item.units}</label>
                 </g:each>
               </g:else>
@@ -278,16 +278,16 @@
             <td>
               Peso:
               <span id="peso_magnitude_constraint">
-	             <g:if test="${node?.list.size() == 1}">
-	                <g:if test="${node.list[0].magnitude}">
-	                  (${node?.list[0].magnitude.lower}..${node?.list[0].magnitude.upper})
+	             <g:if test="${node?.xmlNode.list.size() == 1}">
+	                <g:if test="${node.xmlNode.list[0].magnitude}">
+	                  (${node?.xmlNode.list[0].magnitude.lower}..${node?.xmlNode.list[0].magnitude.upper})
 	                </g:if>
 	              </g:if>
 	              <g:else>
 	                <!-- Al cambiar la unidad seleccionada, poner el rango respectivo si esta definido. -->
-	                <g:each in="${node.list}" var="cdvq_item">
+	                <g:each in="${node.xmlNode.list}" var="cdvq_item">
                     <span class="magnitude_constraint" id="peso_${cdvq_item.units}">
-                      <g:if test="${node.list[0].magnitude}">
+                      <g:if test="${node.xmlNode.list[0].magnitude}">
                         (${cdvq_item.magnitude.lower}..${cdvq_item.magnitude.upper})
                       </g:if>
                     </span>
@@ -299,11 +299,11 @@
               <input type="text" name="peso_mag" id="peso_mag" />
             </td>
             <td>
-              <g:if test="${node?.list.size() == 1}">
-                <input type="text" value="${node?.list[0].units}" readonly="readonly" name="peso_units" />
+              <g:if test="${node?.xmlNode.list.size() == 1}">
+                <input type="text" value="${node?.xmlNode.list[0].units}" readonly="readonly" name="peso_units" />
               </g:if>
               <g:else>
-                <g:each in="${node?.list}" var="item">
+                <g:each in="${node?.xmlNode.list}" var="item">
                   <label><input type="radio" value="${item.units}" name="peso_units" />${item.units}</label>
                 </g:each>
               </g:else>
@@ -315,16 +315,16 @@
             <td>
               Estatura:
               <span id="estatura_magnitude_constraint">
-	             <g:if test="${node?.list.size() == 1}">
-	               <g:if test="${node.list[0].magnitude}">
-	                 (${node?.list[0].magnitude.lower}..${node?.list[0].magnitude.upper})
+	             <g:if test="${node?.xmlNode.list.size() == 1}">
+	               <g:if test="${node.xmlNode.list[0].magnitude}">
+	                 (${node?.xmlNode.list[0].magnitude.lower}..${node?.xmlNode.list[0].magnitude.upper})
 	               </g:if>
 	             </g:if>
 	             <g:else>
 	               <!-- Al cambiar la unidad seleccionada, poner el rango respectivo si esta definido. -->
-                  <g:each in="${node.list}" var="cdvq_item">
+                  <g:each in="${node.xmlNode.list}" var="cdvq_item">
                     <span class="magnitude_constraint" id="estatura_${cdvq_item.units}">
-                      <g:if test="${node.list[0].magnitude}">
+                      <g:if test="${node.xmlNode.list[0].magnitude}">
                         (${cdvq_item.magnitude.lower}..${cdvq_item.magnitude.upper})
                       </g:if>
                     </span>
@@ -336,11 +336,11 @@
               <input type="text" name="estatura_mag" id="estatura_mag" />
             </td>
             <td>
-              <g:if test="${node?.list.size() == 1}">
+              <g:if test="${node?.xmlNode.list.size() == 1}">
                 <input type="text" value="${node?.list[0].units}" readonly="readonly" name="estatura_units" />
               </g:if>
               <g:else>
-                <g:each in="${node?.list}" var="item">
+                <g:each in="${node?.xmlNode.list}" var="item">
                   <label><input type="radio" value="${item.units}" name="estatura_units" />${item.units}</label>
                 </g:each>
               </g:else>

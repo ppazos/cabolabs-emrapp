@@ -342,6 +342,12 @@ class RegistrosController {
       if (!doc.save(flush:true))
       {
          println doc.errors
+         println "doc.save errors!"
+         doc.errors.allErrors.each { pritnln it }
+      }
+      else
+      {
+         println "doc saved ok"
       }
       
       
