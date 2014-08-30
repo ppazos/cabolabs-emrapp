@@ -105,7 +105,7 @@ class XmlSerializer {
          builder.version(xmlns:'http://schemas.openehr.org/v1',
                          'xmlns:xsi':'http://www.w3.org/2001/XMLSchema-instance') {
             commit_audit() {
-               system_id('CABOLABS_EHR') // TODO: should be configurable
+               system_id('CABOLABS_EHR') // TODO: should be configurable and the same as auditSystemId sent to the commit service from CommitJob
                
                time_committed(formatter.format( cses.dateClosed ))
                
@@ -216,7 +216,7 @@ class XmlSerializer {
          }
          else
          {
-            // FIXME: podria tener mas datos en User, ej. algun id unico de uso interno.
+            // FIXME: add id
             name(cses.composer.name)
          }
       }
@@ -275,7 +275,9 @@ class XmlSerializer {
    
    private void compositionContentRecursive(Structure struct, MarkupBuilder builder, String tag)
    {
-      builder."$tag"('xsi:type':struct.type, archetype_node_id:struct.nodeId) {
+      def _archetype_node_id = ((struct.nodeId == 'at0000') ? struct.archetypeId : struct.nodeId)
+      
+      builder."$tag"('xsi:type':struct.type, archetype_node_id: _archetype_node_id) {
          name() {
             //value('TODO: lookup del nombre en el arquetipo')
             value( getName(this.templateId, struct.archetypeId, struct.nodeId))

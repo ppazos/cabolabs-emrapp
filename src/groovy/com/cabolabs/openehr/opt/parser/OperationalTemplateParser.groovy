@@ -41,11 +41,13 @@ class OperationalTemplateParser {
       
       
       // DEBUG
+      /*
       def xstream = new XStream()
       def xml = xstream.toXML(this.template)
       def random = new Random()
       def randomInt = random.nextInt(20000)
       new File("template_"+ randomInt +".xml").write( xml )
+      */
       // /DEBUG
       
       return this.template
