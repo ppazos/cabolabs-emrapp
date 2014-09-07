@@ -208,7 +208,6 @@
           </state>
         </events>
       </data>
-      
     </content>
     <content xsi:type="OBSERVATION" archetype_node_id="openEHR-EHR-OBSERVATION.pulse.v1">
       <name>

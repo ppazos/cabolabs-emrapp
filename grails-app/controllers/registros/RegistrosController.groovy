@@ -1,3 +1,4 @@
+package registros
 
 import java.awt.image.RescaleOp;
 
