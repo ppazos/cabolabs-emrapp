@@ -398,15 +398,38 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       
    } // bind_C_COMPLEX_OBJECT_HISTORY
    
+   // ==============================================================================
+   // EVENTS
+   // ==============================================================================
+   
+   // The template should not use the abstract type EVENT, just added this for testing.
    Structure bind_C_COMPLEX_OBJECT_EVENT(ObjectNode cobject, Map bind_data, String attrName)
    {
       log.info('bind_C_COMPLEX_OBJECT_EVENT()'+ cobject.path)
+      return bindGenericEvent(cobject, bind_data, attrName)
+   }
+   
+   Structure bind_C_COMPLEX_OBJECT_POINT_EVENT(ObjectNode cobject, Map bind_data, String attrName)
+   {
+      log.info('bind_C_COMPLEX_OBJECT_POINT_EVENT()'+ cobject.path)
+      return bindGenericEvent(cobject, bind_data, attrName)
+   }
+   
+   Structure bind_C_COMPLEX_OBJECT_INTERVAL_EVENT(ObjectNode cobject, Map bind_data, String attrName)
+   {
+      log.info('bind_C_COMPLEX_OBJECT_INTERVAL_EVENT()'+ cobject.path)
+      return bindGenericEvent(cobject, bind_data, attrName)
+   }
+   
+   private Structure bindGenericEvent(ObjectNode cobject, Map bind_data, String attrName)
+   {
+      log.info('bindGenericEvent()'+ cobject.path)
       
       Structure strct = new Structure(
          archetypeId: archetypeId,
          path:        cobject.path,
          nodeId:      cobject.nodeId,
-         type:        'POINT_EVENT', //cobject.rmTypeName,
+         type:        ((cobject.rmTypeName == 'EVENT')?'POINT_EVENT':cobject.rmTypeName), // Use concrete type POINT_EVENT if abstract type EVENT is detected.
          aomType:     'C_COMPLEX_OBJECT',
          attr:        attrName,
          attributes:  ['time': new DvDateTime(value:new Date())]
@@ -435,19 +458,11 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       
       return strct
       
-   } // bind_C_COMPLEX_OBJECT_EVENT
+   } // bindGenericEvent
    
-   
-   Structure bind_C_COMPLEX_OBJECT_POINT_EVENT(ObjectNode cobject, Map bind_data, String attrName)
-   {
-      // TODO
-   }
-   
-   Structure bind_C_COMPLEX_OBJECT_INTERVAL_EVENT(ObjectNode cobject, Map bind_data, String attrName)
-   {
-      // TODO
-   }
-      
+   // ==============================================================================
+   // /EVENTS
+   // ==============================================================================
       
    DataValue bind_C_DV_QUANTITY_DV_QUANTITY(ObjectNode cdv, Map bind_data, String attrName)
    {
