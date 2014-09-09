@@ -406,7 +406,7 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
          archetypeId: archetypeId,
          path:        cobject.path,
          nodeId:      cobject.nodeId,
-         type:        cobject.rmTypeName,
+         type:        'POINT_EVENT', //cobject.rmTypeName,
          aomType:     'C_COMPLEX_OBJECT',
          attr:        attrName,
          attributes:  ['time': new DvDateTime(value:new Date())]
@@ -437,6 +437,18 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       
    } // bind_C_COMPLEX_OBJECT_EVENT
    
+   
+   Structure bind_C_COMPLEX_OBJECT_POINT_EVENT(ObjectNode cobject, Map bind_data, String attrName)
+   {
+      // TODO
+   }
+   
+   Structure bind_C_COMPLEX_OBJECT_INTERVAL_EVENT(ObjectNode cobject, Map bind_data, String attrName)
+   {
+      // TODO
+   }
+      
+      
    DataValue bind_C_DV_QUANTITY_DV_QUANTITY(ObjectNode cdv, Map bind_data, String attrName)
    {
       // Crear Boolean

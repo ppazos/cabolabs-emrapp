@@ -42,8 +42,8 @@ class OperationalTemplateManager {
       def opt
       def templateId
       
-      // FIXME: deberia filtrar solo archivos opt
-      root.eachFile { f ->
+      // FIXME: check if the id is duplicated
+      root.eachFileMatch(~/.*.opt/) { f ->
          
          /*
          // XmlSlurper(boolean validating, boolean namespaceAware)
