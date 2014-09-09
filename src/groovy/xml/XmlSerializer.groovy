@@ -341,6 +341,15 @@ class XmlSerializer {
          {
             //println " <<<< struct.type: "+ struct.type +", struct.attributes " + struct.attributes
             
+            // TEST
+            if (struct.type == 'HISTORY')
+            {
+               println "HISTORY attributes"
+               struct.attributes.each { k, v ->
+                  println k +"="+ v
+               }
+            }
+            
             struct.attributes.each { attrName, dv ->
                
                //println "   >>>> " + attrName + " " + dv
@@ -489,10 +498,18 @@ class XmlSerializer {
          // hacer refresh no funciona para obtener la clase real
          // cargando el item a mano si funciona!
          dv = DataValue.get(dv.id)
+         
+         // Now dv should have the specific type and not the abstract DataValue
+         serializeDv(dv, builder, tag)
       }
+      else
+         throw new Exception("Type "+ dv.getClass().getSimpleName() +" is not supported yet")
    }
+   
    private void serializeDv(DvDateTime dv, MarkupBuilder builder, String tag)
    {
+      println "serializeDv DvDateTime"
+      
       builder."$tag"('xsi:type':'DV_DATE_TIME') {
          value( formatter.format( dv.value ) )
       }

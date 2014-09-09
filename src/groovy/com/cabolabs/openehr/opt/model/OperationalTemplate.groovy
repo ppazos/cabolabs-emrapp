@@ -84,7 +84,7 @@ class OperationalTemplate {
    }
    private ObjectNode findRootRecursive(ObjectNode obj, String archetypeId)
    {
-      println "findRootRecursive aid="+ archetypeId +" o.aid="+ obj.archetypeId
+      //println "findRootRecursive aid="+ archetypeId +" o.aid="+ obj.archetypeId
       if (obj.archetypeId == archetypeId) return obj // Stop recursion
       
       // can use any or find:
@@ -100,7 +100,7 @@ class OperationalTemplate {
    {
       def root
       attr.children.any { obj ->
-         println "each obj.aid="+ obj.archetypeId
+         //println "each obj.aid="+ obj.archetypeId
          root = findRootRecursive(obj, archetypeId)
          if (root) return true // any break, each does not break
       }
