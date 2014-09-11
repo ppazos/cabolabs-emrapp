@@ -105,6 +105,17 @@ class XmlSerializer {
          builder.version(xmlns:       'http://schemas.openehr.org/v1',
                          'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
                          'xsi:type':  'ORIGINAL_VERSION') {
+            /**
+             * required by the XSD
+             */
+            contribution {
+              id('xsi:type':'HIER_OBJECT_ID') {
+                value(java.util.UUID.randomUUID())
+              }
+              namespace('EHR::COMMON')
+              type('CONTRIBUTION')
+            }
+           
             commit_audit() {
                system_id('CABOLABS_EHR') // TODO: should be configurable and the same as auditSystemId sent to the commit service from CommitJob
                
@@ -238,7 +249,7 @@ class XmlSerializer {
             value( formatter.format( doc.start ) )
          }
          setting() {
-            value('Hospital Montevideo')
+            value('Hospital Montevideo') // FIXME
             defining_code() {
                terminology_id() {
                   value('openehr')
@@ -284,9 +295,21 @@ class XmlSerializer {
       compositionContentRecursive(item, builder, tag)
    }
    
+   // Check for abstract ENTRY super class
    private boolean isEntry(Item item)
    {
       return ['OBSERVATION', 'EVALUATION', 'INSTRUCTION', 'ACTION', 'ADMIN_ENTRY'].contains(item.type)
+   }
+   
+   private boolean hasSpecificBuild(Item item)
+   {
+      return ['HISTORY'].contains(item.type)
+   }
+   
+   // Check for abstract EVENT super class
+   private boolean isEvent(Item item)
+   {
+      return ['POINT_EVENT', 'INTERVAL_EVENT'].contains(item.type)
    }
    
    /**
@@ -299,7 +322,6 @@ class XmlSerializer {
    {
       def _archetype_node_id = ((struct.nodeId == 'at0000') ? struct.archetypeId : struct.nodeId)
       
-      
       builder."$tag"('xsi:type':struct.type, archetype_node_id: _archetype_node_id) {
          
          // LOCATABLE mandatory attributes
@@ -308,47 +330,24 @@ class XmlSerializer {
             value( getName(this.templateId, struct.archetypeId, struct.nodeId))
          }
          
+         // The build methods are used to maintain the order of the attributes
+         // in the XML to be compliant with the XSD.
          if (isEntry(struct))
          {
-            // ENTRY mandatory attributes
-            language {
-               terminology_id {
-                  value('ISO_639-1') // TODO: config
-               }
-               code_string('es') // TODO: config
-            }
-            encoding {
-               terminology_id {
-                  value('UNICODE') // TODO: config
-               }
-               code_string('UTF-8')
-            }
-            subject('xsi:type': 'PARTY_IDENTIFIED') {
-               external_ref {
-                  id('xsi:type': 'HIER_OBJECT_ID') {
-                     value(cses.patientUid)
-                  }
-                  namespace('DEMOGRAPHIC')
-                  type('PERSON')
-               }
-            }
-            
-            // Serialize the rest of the structure for each entry
-            String entryBuildMethod = 'build'+ struct.type
-            this."$entryBuildMethod"(struct, builder)
+            this.buildENTRY(struct, builder)
+         }
+         else if (isEvent(struct))
+         {
+            this.buildEVENT(struct, builder)
+         }
+         else if (hasSpecificBuild(struct))
+         {
+            String buildMethod = 'build'+ struct.type
+            this."$buildMethod"(struct, builder)
          }
          else // Generic serialization
          {
             //println " <<<< struct.type: "+ struct.type +", struct.attributes " + struct.attributes
-            
-            // TEST
-            if (struct.type == 'HISTORY')
-            {
-               println "HISTORY attributes"
-               struct.attributes.each { k, v ->
-                  println k +"="+ v
-               }
-            }
             
             struct.attributes.each { attrName, dv ->
                
@@ -377,6 +376,36 @@ class XmlSerializer {
    // order in the XSD, and the generic build might not generate the attributes
    // in the right order into the XML.
    // =============================================================================
+   
+   private void buildENTRY(Structure struct, MarkupBuilder builder)
+   {
+      // ENTRY mandatory attributes in order!
+      builder.language {
+         terminology_id {
+            value('ISO_639-1') // TODO: config
+         }
+         code_string('es') // TODO: config
+      }
+      builder.encoding {
+         terminology_id {
+            value('UNICODE') // TODO: config
+         }
+         code_string('UTF-8')
+      }
+      builder.subject('xsi:type': 'PARTY_IDENTIFIED') {
+         external_ref {
+            id('xsi:type': 'HIER_OBJECT_ID') {
+               value(cses.patientUid)
+            }
+            namespace('DEMOGRAPHIC')
+            type('PERSON')
+         }
+      }
+      
+      // Serialize the rest of the structure for each entry
+      String entryBuildMethod = 'build'+ struct.type
+      this."$entryBuildMethod"(struct, builder)
+   }
    
    private void buildOBSERVATION(Structure struct, MarkupBuilder builder)
    {
@@ -416,7 +445,7 @@ class XmlSerializer {
       if (protocol) compositionContentRecursive(protocol, builder, 'protocol')
       
       // narrative (DV_TEXT) is mandatory
-      def narrative = struct.attributes.find { it.key == 'narrative' } // attributes is a map name->dv
+      def narrative = struct.attributes.find { it.key == 'narrative' }.value // attributes is a map name->dv
       serializeDv(narrative, builder, 'narrative')
       
       // activities are optional, so might be 0 activities
@@ -438,7 +467,7 @@ class XmlSerializer {
       if (protocol) compositionContentRecursive(protocol, builder, 'protocol')
       
       // time (DV_DATE_TIME) is mandatory
-      def time = struct.attributes.find { it.key == 'time' } // attributes is a map name->dv
+      def time = struct.attributes.find { it.key == 'time' }.value // attributes is a map name->dv
       serializeDv(time, builder, 'time')
       
       // description (ITEM_STRUCTURE), is mandatory
@@ -459,6 +488,70 @@ class XmlSerializer {
       // data (ADMIN_ENTRY), is mandatory
       def data = struct.items.find { it.attr == 'data' }
       compositionContentRecursive(data, builder, 'data')
+   }
+   
+   private void buildHISTORY(Structure struct, MarkupBuilder builder)
+   {
+      // HISTORY attributes in order:
+      // - origin (DV_DATE_TIME, mandatory),
+      // - period (DV_DURATION, optional),
+      // - duration (DV_DURATION, optional)
+      // - events (EVENT, 0..N)
+      // - summary (ITEM_STRUCTURE, optional)
+      
+      def origin = struct.attributes.find { it.key == 'origin' }.value // attributes is a map name->dv
+      serializeDv(origin, builder, 'origin')
+      
+      def period = struct.attributes.find { it.key == 'period' } // attributes is a map name->dv
+      if (period) serializeDv(period.value, builder, 'period')
+      
+      def duration = struct.attributes.find { it.key == 'duration' } // attributes is a map name->dv
+      if (duration) serializeDv(duration.value, builder, 'duration')
+      
+      // TODO: verify!
+      def events = struct.items.find { it.attr == 'events' }
+      events.each { event ->
+         compositionContentRecursive(event, builder, 'events')
+      }
+      
+      def summary = struct.items.find { it.attr == 'summary' }
+      if (summary) compositionContentRecursive(summary, builder, 'summary')
+   }
+   
+   private void buildEVENT(Structure struct, MarkupBuilder builder)
+   {
+      // EVENT attributes in order:
+      // - time (DV_DATE_TIME, mandatory),
+      // - data (ITEM_STRUCTURE, mandatory),
+      // - state (ITEM_STRUCTURE, optional)
+      
+      def time = struct.attributes.find { it.key == 'time' }.value // attributes is a map name->dv
+      serializeDv(time, builder, 'time')
+      
+      def data = struct.items.find { it.attr == 'data' }
+      compositionContentRecursive(data, builder, 'data')
+      
+      def state = struct.items.find { it.attr == 'state' }
+      if (state) compositionContentRecursive(state, builder, 'state')
+      
+      // Serialize the rest of the structure for each entry
+      String entryBuildMethod = 'build'+ struct.type
+      this."$entryBuildMethod"(struct, builder)
+   }
+   
+   private void buildPOINT_EVENT(Structure struct, MarkupBuilder builder)
+   {
+      return // Doesn't add attributes to EVENT
+   }
+   
+   private void buildINTERVAL_EVENT(Structure struct, MarkupBuilder builder)
+   {
+      // INTERVAL_EVENT attributes in order:
+      // - width (DV_DURATION, mandatory),
+      // - sample_count (int, optional),
+      // - math_function (DV_CODED_TEXT, mandatory)
+      
+      throw new Exception("INTERVAL_EVENT is not supported yet")
    }
    
    // =============================================================================
