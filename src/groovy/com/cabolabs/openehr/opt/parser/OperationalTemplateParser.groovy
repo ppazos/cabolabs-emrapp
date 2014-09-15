@@ -79,7 +79,7 @@ class OperationalTemplateParser {
          }
       }
       
-      println "OperationalTemplateParser.parseObjectNode.rmTypeName="+ node.rm_type_name.text()
+      //println "OperationalTemplateParser.parseObjectNode.rmTypeName="+ node.rm_type_name.text()
       
       def obn = new ObjectNode(
          rmTypeName: node.rm_type_name.text(),

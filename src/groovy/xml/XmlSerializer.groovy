@@ -150,7 +150,9 @@ class XmlSerializer {
              * version.uid is mandatory by the schema.
              */
             uid {
-               value(java.util.UUID.randomUUID())
+               // versioned_object_id + creating_system_id + version_tree_id
+               // FIXME: not 100% if the version tree id should be set by the client or by the server
+               value(java.util.UUID.randomUUID() +'::EMR_APP::1')
             }
            
             
@@ -388,7 +390,7 @@ class XmlSerializer {
       }
       builder.encoding {
          terminology_id {
-            value('UNICODE') // TODO: config
+            value('Unicode') // TODO: config
          }
          code_string('UTF-8')
       }
