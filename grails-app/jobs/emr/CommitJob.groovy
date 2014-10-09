@@ -43,7 +43,7 @@ class CommitJob {
       // path para el commit
       // ehr/commit ?ehrId
       
-     
+      Random random = new Random()
       csess.each { cses ->
          
          println "Commit de sesion: "+ cses.id + " para patUid: "+ cses.patientUid
@@ -58,15 +58,13 @@ class CommitJob {
          serializedDocs.eachWithIndex { serDoc, i ->
          
             // logging
-            def compoFile = new File('committed' + File.separator +'composition_'+ cses.id +'_'+ i +'.xml')
+            def compoFile = new File('committed' + File.separator +'composition_'+ random.nextInt(10000) +'_'+ i +'.xml')
             compoFile << serDoc
             // /logging
          
             params['versions'] << serDoc
          }
          
-         //println "lookup de ehrId"
-       
          // lookup de ehrId
          try
          {
@@ -103,12 +101,9 @@ class CommitJob {
          {
             params['ehrId'] = ehrId
             
-            def formatter = new SimpleDateFormat( config.l10n.datetime_format )
-            params['auditTimeCommitted'] = formatter.format( cses.dateClosed )
-            
             params['auditSystemId'] = 'CABOLABS_EHR' // TODO: should be configurable
-            
             params['auditCommitter'] = cses.composer.name
+            // TODO: auditCommitterId
             
             // Sin URLENC da error null pointer exception sin mas datos... no se porque es. PREGUNTAR!
             res = ehr.post( path:'rest/commit', body:params, requestContentType: URLENC ) // query:[ehrId:ehrId] si es post creo que no acepta query
