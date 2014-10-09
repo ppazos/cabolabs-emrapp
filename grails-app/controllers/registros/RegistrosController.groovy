@@ -691,6 +691,13 @@ class RegistrosController {
          // FIXME: verificar que hay una sesion clinica activa en sesion
          def cses = session.clinicalSession
          
+         if (!cses)
+         {
+            flash.message = "No active clinical session" // TODO: I18N
+            redirect(controller:'person', action:'list')
+            return
+         }
+         
          cses.open = false
          cses.composer = u // TODO> si el usuario en sesion es distinto al que firma, habria que dejar constancia del que esta en sesion para audit.
          cses.dateClosed = new Date()
