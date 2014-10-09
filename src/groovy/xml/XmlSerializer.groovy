@@ -130,7 +130,16 @@ class XmlSerializer {
                   name(cses.composer.name)
                   // TODO: poner id para PartyProxy en el server
                }
-                   
+               
+               /*
+                * This time will be overriden by the server to be copliant with this rule:
+                * 
+                * The time_committed attribute in both the Contribution and Version audits
+                * should reflect the time of committal to an EHR server, i.e. the time of
+                * availability to other users in the same system. It should therefore be
+                * computed on the server in implementations where the data are created
+                * in a separate client context.
+                */
                time_committed {
                   value(formatter.format( cses.dateClosed ))
                }
@@ -152,7 +161,7 @@ class XmlSerializer {
             uid {
                // versioned_object_id + creating_system_id + version_tree_id
                // FIXME: not 100% if the version tree id should be set by the client or by the server
-               value(java.util.UUID.randomUUID() +'::EMR_APP::1')
+               value( (java.util.UUID.randomUUID() as String) +'::EMR_APP::1' )
             }
            
             
