@@ -24,7 +24,6 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
  */
 class XmlSerializer {
 
-   //static def formatter = new SimpleDateFormat("yyyyMMdd'T'hhmmss.SSSSZ")
    def formatter = new SimpleDateFormat( ApplicationHolder.application.config.app.l10n.datetime_format )
    static def manager = opt_repository.OperationalTemplateManager.getInstance()
    
