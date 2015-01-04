@@ -22,6 +22,7 @@
 	     <td>${c.subjectId}</td>
 	     <td>
 	       <g:link action="showComposition" params="[uid: c.uid]" class="showCompo"><g:message code="registros.compositionList.action.showRecord" /></g:link>
+	       <g:link action="checkoutComposition" params="[uid: c.uid, patientUid: params.patientUid]" class="showCompo"><g:message code="registros.compositionList.action.checkout" /></g:link>
 	     </td>
 	   </tr>
   </g:each>
@@ -38,10 +39,26 @@
       e.preventDefault();
       
       modal = $('#composition_modal');
-      //console.log( modal.children()[0] );
-      //console.log( this.href );
+
+      var iframe = modal.children()[0];
+      iframe.src = this.href;
       
-      modal.children()[0].src = this.href;
+      // Pretty print the version XML just for testing
+      $(iframe).load(function() {
+        console.log('carga modal');
+        
+        var content = (this.contentWindow || this.contentDocument);
+        if (content.document) content = content.document;
+        
+        var versionXML = content.body.children[0];
+        content.body.removeChild( content.body.children[0] );
+        
+        pre = document.createElement('pre');
+        xml = document.createTextNode( xmlToString(versionXML) );
+        pre.appendChild( xml );
+        content.body.appendChild( pre );
+        
+      });
       
       $.blockUI({
         message: modal,
@@ -59,6 +76,21 @@
     });
     
   });
+  
+  // http://stackoverflow.com/questions/6507293/convert-xml-to-string-with-jquery
+  function xmlToString(xmlData) { 
+
+     var xmlString;
+     //IE
+     if (window.ActiveXObject){
+         xmlString = xmlData.xml;
+     }
+     // code for Mozilla, Firefox, Opera, etc.
+     else{
+         xmlString = (new XMLSerializer()).serializeToString(xmlData);
+     }
+     return xmlString;
+  }
 </g:javascript>
 
 <!--

@@ -728,6 +728,85 @@ class RegistrosController {
    def compositionList(String patientUid)
    {
       def res
+      def ehrId = getEhrIdByPatientId(patientUid)
+      
+      
+      /* ****
+
+      // Pide datos al EHR Server
+      //def ehr = new RESTClient('http://192.168.1.101:8090/ehr/')
+      def ehr = new RESTClient('http://'+ config.ehr_ip +':8090/ehr/')
+      
+      
+      // Lookup de ehrId por subjectId
+      // FIXME: esto se puede evitar si viene el dato con el paciente
+      try
+      {
+         // Si ocurre un error (status >399), tira una exception porque el defaultFailureHandler asi lo hace.
+         // Para obtener la respuesta del XML que devuelve el servidor, se accede al campo "response" en la exception.
+         res = ehr.get( path:'rest/ehrForSubject', query:[subjectUid:patientUid, format:'json'] )
+         
+         // FIXME: el paciente puede existir y no tener EHR, verificar si devuelve el EHR u otro error, ej. paciente no existe...
+         // WONTFIX: siempre tira una excepcion en cada caso de error porque el servidor tira error 500 not found en esos casos.
+         ehrId = res.data.ehrId
+      }
+      catch (org.apache.http.conn.HttpHostConnectException e) // no hay conectividad
+      {
+         render e.message
+         return
+      }
+      catch (groovyx.net.http.HttpResponseException e)
+      {
+         // puedo acceder al response usando la excepci�n!
+         // 500 class groovyx.net.http.HttpResponseDecorator
+         println e.response.status.toString() +" "+ e.response.class.toString()
+         
+         // errorEHR no encontrado para el paciente $subjectId, se debe crear un EHR para el paciente
+         println e.response.data
+         
+         // WARNING: es el XML parseado, no el texto en bruto!
+         // class groovy.util.slurpersupport.NodeChild
+         println e.response.data.getClass()
+         
+         // Procesando el XML
+         println e.response.data.code.text() // error
+         println e.response.data.message.text() // el texto
+         
+         // text/xml
+         println e.response.contentType
+         
+         // TODO: log a disco
+         // no debe serguir si falla el lookup
+         //render "Ocurrio un error al obtener el ehr del paciente "+ e.message
+         render e.response.data.message.text()
+         return
+      }
+      */
+      
+      println "ehrId: $ehrId"
+      
+      try
+      {
+         def ehr = new RESTClient('http://'+ config.ehr_ip +':8090/ehr/')
+         res = ehr.get( path:'test/findCompositions', query:[ehrId:ehrId] ) // Por ahora no hay format, findCompositions tira siempre XML
+         
+         //println res.data // TEST NodeChild (XML parseado)
+      }
+      catch (Exception e)
+      {
+         // TODO: log a disco
+         render "Ocurrio un error al obtener los registros del paciente "+ e.message
+         return
+      }
+      
+      // TODO: meterle el modelo
+      render (template:'compositionList', model:[compositionIdxList:res.data])
+   }
+   
+   
+   private String getEhrIdByPatientId(String patientUid)
+   {
+      def res
       def ehrId
       
       /*
@@ -782,23 +861,7 @@ class RegistrosController {
          return
       }
       
-      println "ehrId: $ehrId"
-      
-      try
-      {
-         res = ehr.get( path:'test/findCompositions', query:[ehrId:ehrId] ) // Por ahora no hay format, findCompositions tira siempre XML
-         
-         //println res.data // TEST NodeChild (XML parseado)
-      }
-      catch (Exception e)
-      {
-         // TODO: log a disco
-         render "Ocurrio un error al obtener los registros del paciente "+ e.message
-         return
-      }
-      
-      // TODO: meterle el modelo
-      render (template:'compositionList', model:[compositionIdxList:res.data])
+      return ehrId
    }
    
    
@@ -836,5 +899,46 @@ class RegistrosController {
       }
       
       render (text:res.data.text, contentType:'text/html', encoding:'UTF-8')
+   }
+   
+   /**
+    * Gets a composition to be updated.
+    * @param uid
+    * @return
+    */
+   def checkoutComposition(String uid, String patientUid)
+   {
+      def ehrId = getEhrIdByPatientId(patientUid)
+      
+      def ehr = new RESTClient('http://'+ config.ehr_ip +':8090/ehr/')
+      
+      def res
+      try
+      {
+         res = ehr.get( path:'rest/checkout', contentType: TEXT, query:[ehrId:ehrId, compositionUid:uid] )
+      }
+      catch (Exception e)
+      {
+         // TODO: log a disco
+         render "Ocurrio un error al obtener el registro clinico "+ e.message
+         return
+      }
+      
+      def versionXML = res.data.text
+      def version = new XmlSlurper(true, false).parseText(versionXML)
+      // version.uid.value = version uid
+      // version.data.archetype_details.archetype_id.value = root archetype
+      // version.data.archetype_details.template_id.value = opt
+      
+      println version.uid.value.text()
+      println version.data.archetype_details.archetype_id.value.text()
+      println version.data.archetype_details.template_id.value.text()
+      
+      // TODO: based on this data
+      // 1. Look for the correspondent view to edit the information.
+      // 2. Render the view and add an extra input to say what was the modification type (to be used in the new commit).
+      // 3. The UID of the new version should be the same as the version that was checked out, the server will update the version uid for the new data.
+      
+      render (text:versionXML, contentType:'text/html', encoding:'UTF-8')
    }
 }
