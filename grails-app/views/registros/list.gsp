@@ -46,13 +46,6 @@
           <g:else>
             <g:form method="post" controller="registros" action="openSession">
               <input type="hidden" name="patientUid" value="${params.patientUid}" />
-              <input type="hidden" name="datosPaciente.uid" value="${params.datosPaciente.uid}" />
-              <input type="hidden" name="datosPaciente.firstName" value="${params.datosPaciente.firstName}" />
-              <input type="hidden" name="datosPaciente.lastName" value="${params.datosPaciente.lastName}" />
-              <input type="hidden" name="datosPaciente.dob" value="${params.datosPaciente.dob}" />
-              <input type="hidden" name="datosPaciente.sex" value="${params.datosPaciente.sex}" />
-              <input type="hidden" name="datosPaciente.idCode" value="${params.datosPaciente.idCode}" />
-              <input type="hidden" name="datosPaciente.idType" value="${params.datosPaciente.idType}" />
               <g:submitButton name="doit" value="${g.message(code:'registros.list.action.newSession')}" />
             </g:form>
           </g:else>

@@ -62,35 +62,35 @@
     <div class="content">
       <table>
         <%--
-        <g:set var="node" value="${archetype.node( bindings['create_orden_de_estudio_de_laboratorio']['categoria_estudio'])}" />
+        <g:set var="node" value="${archetype.node( bindings['categoria_estudio'])}" />
         --%>
         <tr>
           <td>Categoria:</td>
           <td>
-            ${doc.bindData[ bindings['create_orden_de_estudio_de_laboratorio']['categoria_estudio_texto'] ]}
-            <span class="code">${doc.bindData[ bindings['create_orden_de_estudio_de_laboratorio']['categoria_estudio'] ]}</span>
+            ${doc.bindData[ bindings['categoria_estudio_texto'] ]}
+            <span class="code">${doc.bindData[ bindings['categoria_estudio'] ]}</span>
           </td>
         </tr>
         
         <%--
-        <g:set var="node" value="${archetype.node( bindings['create_orden_de_estudio_de_laboratorio']['tipo_estudio_texto'])}" />
+        <g:set var="node" value="${archetype.node( bindings['tipo_estudio_texto'])}" />
         --%>
         <tr>
           <td>Tipo de estudio:</td>
           <td>
-            ${doc.bindData[ bindings['create_orden_de_estudio_de_laboratorio']['tipo_estudio_texto'] ]}
-            <span class="code">${doc.bindData[ bindings['create_orden_de_estudio_de_laboratorio']['tipo_estudio'] ]}</span>
+            ${doc.bindData[ bindings['tipo_estudio_texto'] ]}
+            <span class="code">${doc.bindData[ bindings['tipo_estudio'] ]}</span>
           </td>
         </tr>
         
         <%--
-        <g:set var="node" value="${archetype.node( bindings['create_orden_de_estudio_de_laboratorio']['urgente'])}" />
+        <g:set var="node" value="${archetype.node( bindings['urgente'])}" />
         --%>
         <tr>
           <td>¿Es urgente?:</td>
           <td>
             <%-- FIXME: render de boolean debe ser i18n --%>
-            <g:if test="${doc.bindData[ bindings['create_orden_de_estudio_de_laboratorio']['urgente'] ]}">
+            <g:if test="${doc.bindData[ bindings['urgente'] ]}">
               Si
             </g:if>
             <g:else>
@@ -100,23 +100,23 @@
         </tr>
         
         <%--
-        <g:set var="node" value="${archetype.node( bindings['create_orden_de_estudio_de_laboratorio']['descripcion'])}" />
+        <g:set var="node" value="${archetype.node( bindings['descripcion'])}" />
         --%>
         <tr>
           <td>Descripcion:</td>
           <td>
-            ${doc.bindData[ bindings['create_orden_de_estudio_de_laboratorio']['descripcion'] ]}
+            ${doc.bindData[ bindings['descripcion'] ]}
           </td>
         </tr>
         
         <%--
-        <g:set var="node" value="${archetype.node( bindings['create_orden_de_estudio_de_laboratorio']['fecha_espera'])}" />
+        <g:set var="node" value="${archetype.node( bindings['fecha_espera'])}" />
         --%>
         <tr>
           <td>Fecha esperada del resultado:</td>
           <td>
             <%-- FIXME: formatear segun configuracion de i18n del Congif.groovy --%>
-            ${doc.bindData[ bindings['create_orden_de_estudio_de_laboratorio']['fecha_espera'] ]}
+            ${doc.bindData[ bindings['fecha_espera'] ]}
           </td>
         </tr>
       </table>

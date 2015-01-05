@@ -25,6 +25,7 @@ import registros.Structure
 import registros.valores.DataValue
 import sesion.ClinicalSession
 import auth.User
+import ehr.EhrService
 
 import groovyx.net.http.*
 import static groovyx.net.http.ContentType.TEXT
@@ -34,6 +35,8 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
 class RegistrosController {
 
    static defaultAction = "currentSession"
+   
+   EhrService ehrService
    
    static def manager = opt_repository.OperationalTemplateManager.getInstance()
    def config = ApplicationHolder.application.config.app
@@ -55,9 +58,10 @@ class RegistrosController {
        [ create: "create_registro_signos",
            show: "show_registro_signos"]
       */
-      "Signos": // opts/Signos.opt
+      "Signos": // opts/Signos.opt (Template id)
       [ create: "create_registro_signos",
-          show: "show_registro_signos"]
+          show: "show_registro_signos",
+          edit: "edit_registro_signos"] // Edit is used to version committed data or change uncommitted data
    ]
    
    static def bindings = [
@@ -144,6 +148,68 @@ class RegistrosController {
          "estatura":                      "/content[archetype_id=openEHR-EHR-OBSERVATION.height.v1]/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value",           // DvQuantity
          "estatura_mag":                  "/content[archetype_id=openEHR-EHR-OBSERVATION.height.v1]/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/magnitude", // DvQuantity.magnitude
          "estatura_units":                "/content[archetype_id=openEHR-EHR-OBSERVATION.height.v1]/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/units"      // DvQuantity.units
+      ],
+      
+      "show_registro_signos": // Iguales a las de create, TODO: refactor
+      [
+         "presion_sistolica":             "/content[archetype_id=openEHR-EHR-OBSERVATION.blood_pressure.v1]/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value", // Se necesita para pedir la restriccion de units (la path de units no funciona con arch.node()
+         "presion_sistolica_mag":         "/content[archetype_id=openEHR-EHR-OBSERVATION.blood_pressure.v1]/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value/magnitude", // DvQuantity.magnitude
+         "presion_sistolica_units":       "/content[archetype_id=openEHR-EHR-OBSERVATION.blood_pressure.v1]/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value/units",     // DvQuantity.units
+         
+         "presion_diastolica":            "/content[archetype_id=openEHR-EHR-OBSERVATION.blood_pressure.v1]/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value",           // DvQuantity
+         "presion_diastolica_mag":        "/content[archetype_id=openEHR-EHR-OBSERVATION.blood_pressure.v1]/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value/magnitude", // DvQuantity.magnitude
+         "presion_diastolica_units":      "/content[archetype_id=openEHR-EHR-OBSERVATION.blood_pressure.v1]/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value/units",     // DvQuantity.units
+         
+         "temperatura":                   "/content[archetype_id=openEHR-EHR-OBSERVATION.body_temperature.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value",           // DvQuantity
+         "temperatura_mag":               "/content[archetype_id=openEHR-EHR-OBSERVATION.body_temperature.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value/magnitude", // DvQuantity.magnitude
+         "temperatura_units":             "/content[archetype_id=openEHR-EHR-OBSERVATION.body_temperature.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value/units",     // DvQuantity.units
+         
+         "frecuencia_cardiaca":           "/content[archetype_id=openEHR-EHR-OBSERVATION.pulse.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value",           // DvQuantity
+         "frecuencia_cardiaca_mag":       "/content[archetype_id=openEHR-EHR-OBSERVATION.pulse.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value/magnitude", // DvQuantity.magnitude
+         "frecuencia_cardiaca_units":     "/content[archetype_id=openEHR-EHR-OBSERVATION.pulse.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value/units",     // DvQuantity.units
+         
+         "frecuencia_respiratoria":       "/content[archetype_id=openEHR-EHR-OBSERVATION.respiration.v1]/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value",           // DvQuantity
+         "frecuencia_respiratoria_mag":   "/content[archetype_id=openEHR-EHR-OBSERVATION.respiration.v1]/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/magnitude", // DvQuantity.magnitude
+         "frecuencia_respiratoria_units": "/content[archetype_id=openEHR-EHR-OBSERVATION.respiration.v1]/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/units",     // DvQuantity.units
+         
+         "peso":                          "/content[archetype_id=openEHR-EHR-OBSERVATION.body_weight.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value",           // DvQuantity
+         "peso_mag":                      "/content[archetype_id=openEHR-EHR-OBSERVATION.body_weight.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value/magnitude", // DvQuantity.magnitude
+         "peso_units":                    "/content[archetype_id=openEHR-EHR-OBSERVATION.body_weight.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value/units",     // DvQuantity.units
+         
+         "estatura":                      "/content[archetype_id=openEHR-EHR-OBSERVATION.height.v1]/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value",           // DvQuantity
+         "estatura_mag":                  "/content[archetype_id=openEHR-EHR-OBSERVATION.height.v1]/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/magnitude", // DvQuantity.magnitude
+         "estatura_units":                "/content[archetype_id=openEHR-EHR-OBSERVATION.height.v1]/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/units"      // DvQuantity.units
+      ],
+      
+      "edit_registro_signos": // Iguales a las de create, TODO: refactor
+      [
+         "presion_sistolica":             "/content[archetype_id=openEHR-EHR-OBSERVATION.blood_pressure.v1]/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value", // Se necesita para pedir la restriccion de units (la path de units no funciona con arch.node()
+         "presion_sistolica_mag":         "/content[archetype_id=openEHR-EHR-OBSERVATION.blood_pressure.v1]/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value/magnitude", // DvQuantity.magnitude
+         "presion_sistolica_units":       "/content[archetype_id=openEHR-EHR-OBSERVATION.blood_pressure.v1]/data[at0001]/events[at0006]/data[at0003]/items[at0004]/value/units",     // DvQuantity.units
+         
+         "presion_diastolica":            "/content[archetype_id=openEHR-EHR-OBSERVATION.blood_pressure.v1]/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value",           // DvQuantity
+         "presion_diastolica_mag":        "/content[archetype_id=openEHR-EHR-OBSERVATION.blood_pressure.v1]/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value/magnitude", // DvQuantity.magnitude
+         "presion_diastolica_units":      "/content[archetype_id=openEHR-EHR-OBSERVATION.blood_pressure.v1]/data[at0001]/events[at0006]/data[at0003]/items[at0005]/value/units",     // DvQuantity.units
+         
+         "temperatura":                   "/content[archetype_id=openEHR-EHR-OBSERVATION.body_temperature.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value",           // DvQuantity
+         "temperatura_mag":               "/content[archetype_id=openEHR-EHR-OBSERVATION.body_temperature.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value/magnitude", // DvQuantity.magnitude
+         "temperatura_units":             "/content[archetype_id=openEHR-EHR-OBSERVATION.body_temperature.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value/units",     // DvQuantity.units
+         
+         "frecuencia_cardiaca":           "/content[archetype_id=openEHR-EHR-OBSERVATION.pulse.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value",           // DvQuantity
+         "frecuencia_cardiaca_mag":       "/content[archetype_id=openEHR-EHR-OBSERVATION.pulse.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value/magnitude", // DvQuantity.magnitude
+         "frecuencia_cardiaca_units":     "/content[archetype_id=openEHR-EHR-OBSERVATION.pulse.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value/units",     // DvQuantity.units
+         
+         "frecuencia_respiratoria":       "/content[archetype_id=openEHR-EHR-OBSERVATION.respiration.v1]/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value",           // DvQuantity
+         "frecuencia_respiratoria_mag":   "/content[archetype_id=openEHR-EHR-OBSERVATION.respiration.v1]/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/magnitude", // DvQuantity.magnitude
+         "frecuencia_respiratoria_units": "/content[archetype_id=openEHR-EHR-OBSERVATION.respiration.v1]/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/units",     // DvQuantity.units
+         
+         "peso":                          "/content[archetype_id=openEHR-EHR-OBSERVATION.body_weight.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value",           // DvQuantity
+         "peso_mag":                      "/content[archetype_id=openEHR-EHR-OBSERVATION.body_weight.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value/magnitude", // DvQuantity.magnitude
+         "peso_units":                    "/content[archetype_id=openEHR-EHR-OBSERVATION.body_weight.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value/units",     // DvQuantity.units
+         
+         "estatura":                      "/content[archetype_id=openEHR-EHR-OBSERVATION.height.v1]/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value",           // DvQuantity
+         "estatura_mag":                  "/content[archetype_id=openEHR-EHR-OBSERVATION.height.v1]/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/magnitude", // DvQuantity.magnitude
+         "estatura_units":                "/content[archetype_id=openEHR-EHR-OBSERVATION.height.v1]/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/units"      // DvQuantity.units
       ]
    ]
    
@@ -159,66 +225,7 @@ class RegistrosController {
       // se los pido al servidor.
       if (!params.datosPaciente)
       {
-         def http = new HTTPBuilder('http://'+ config.ehr_ip +':8090/ehr/rest/getPatient')
-         
-         // Si no hay conexion con el servidor tira excepcion
-         try
-         {
-            // perform a GET request, expecting TEXT response data
-            http.request( Method.GET, ContentType.JSON ) { req ->
-              
-              //uri.path = '/ajax/services/search/web'
-              //uri.query = [ v:'1.0', q: 'Calvin and Hobbes' ]
-              uri.query = [ format: 'json', uid: patientUid ]
-            
-              headers.'User-Agent' = 'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4'
-              
-              // Begin: java code to set HTTP Parameters/Properties
-              // Groovy HTTPBuilder doesn't provide convenience methods
-              // for many of these yet.
-              req.getParams().setParameter("http.connection.timeout", new Integer(10000));
-              req.getParams().setParameter("http.socket.timeout", new Integer(10000));
-              // End java code to set HTTP Parameters/Properties
-            
-              // response handler for a success response code:
-              response.success = { resp, json ->
-              
-                 //println json
-                 /* es un map...
-                 [uid:3fe33dee-0a9a-43cd-a2b7-ce88b25734ba, 
-                 firstName:Pablo, 
-                 lastName:Pazos, 
-                 dob:19811024, 
-                 sex:M, 
-                 idCode:4116238-0, 
-                 idType:CI]
-                 */
-                 
-                 params.datosPaciente = json
-              }
-            
-              // handler for any failure status code:
-              response.failure = { resp ->
-                 
-                 println "response: " + resp.getAllHeaders() + " curr thrd id: " + Thread.currentThread().getId()
-                 
-                 //println "Unexpected error: ${resp.statusLine.statusCode} : ${resp.statusLine.reasonPhrase}"
-                 throw new Exception("Unexpected error: ${resp.statusLine.statusCode} : ${resp.statusLine.reasonPhrase}")
-              }
-            }
-         
-         }
-         catch (org.apache.http.conn.HttpHostConnectException e) // no hay conectividad
-         {
-            println e.message
-            flash.message = g.message(code:'registros.list.error.noServer')
-         }
-         catch (groovyx.net.http.HttpResponseException e) // hay conectividad pero da un error del lado del servidor
-         {
-            // TODO: log a disco
-            println e.message
-            flash.message = g.message(code:'registros.list.error.serverError')
-         }
+         params.datosPaciente = ehrService.getPatient(patientUid)
       }
       
       // Solo renderea la vista
@@ -241,7 +248,7 @@ class RegistrosController {
       
       def template = manager.getTemplate(templateId)
       
-      render(view: views[templateId][actionName], model: [template: template, bindings: bindings])
+      render(view: views[templateId][actionName], model: [template: template, bindings: bindings[views[templateId][actionName]]])
    }
    
    
@@ -395,7 +402,7 @@ class RegistrosController {
       def template = manager.getTemplate(doc.templateId)
       
       render( view: views[doc.templateId][actionName],
-              model: [doc: doc, template: template, bindings: bindings] )
+              model: [doc: doc, template: template, bindings: bindings[views[doc.templateId][actionName]]] )
    }
    
    
@@ -620,7 +627,7 @@ class RegistrosController {
       // 2. creo sesion con el ehrId
       
       def cses = new ClinicalSession(patientUid: patientUid)
-      cses.datosPaciente = params.datosPaciente // map
+      cses.datosPaciente = ehrService.getPatient(patientUid)
       
       if (!cses.save())
       {
@@ -728,7 +735,7 @@ class RegistrosController {
    def compositionList(String patientUid)
    {
       def res
-      def ehrId = getEhrIdByPatientId(patientUid)
+      def ehrId = ehrService.getEhrIdByPatientId(patientUid)
       
       
       /* ****
@@ -804,65 +811,7 @@ class RegistrosController {
    }
    
    
-   private String getEhrIdByPatientId(String patientUid)
-   {
-      def res
-      def ehrId
-      
-      /*
-       * FIXME: que IP y puerto sean configurables.
-       */
-      // Pide datos al EHR Server
-      //def ehr = new RESTClient('http://192.168.1.101:8090/ehr/')
-      def ehr = new RESTClient('http://'+ config.ehr_ip +':8090/ehr/')
-      
-      
-      // Lookup de ehrId por subjectId
-      // FIXME: esto se puede evitar si viene el dato con el paciente
-      try
-      {
-         // Si ocurre un error (status >399), tira una exception porque el defaultFailureHandler asi lo hace.
-         // Para obtener la respuesta del XML que devuelve el servidor, se accede al campo "response" en la exception.
-         res = ehr.get( path:'rest/ehrForSubject', query:[subjectUid:patientUid, format:'json'] )
-         
-         // FIXME: el paciente puede existir y no tener EHR, verificar si devuelve el EHR u otro error, ej. paciente no existe...
-         // WONTFIX: siempre tira una excepcion en cada caso de error porque el servidor tira error 500 not found en esos casos.
-         ehrId = res.data.ehrId
-      }
-      catch (org.apache.http.conn.HttpHostConnectException e) // no hay conectividad
-      {
-         render e.message
-         return
-      }
-      catch (groovyx.net.http.HttpResponseException e)
-      {
-         // puedo acceder al response usando la excepci�n!
-         // 500 class groovyx.net.http.HttpResponseDecorator
-         println e.response.status.toString() +" "+ e.response.class.toString()
-         
-         // errorEHR no encontrado para el paciente $subjectId, se debe crear un EHR para el paciente
-         println e.response.data
-         
-         // WARNING: es el XML parseado, no el texto en bruto!
-         // class groovy.util.slurpersupport.NodeChild
-         println e.response.data.getClass()
-         
-         // Procesando el XML
-         println e.response.data.code.text() // error
-         println e.response.data.message.text() // el texto
-         
-         // text/xml
-         println e.response.contentType
-         
-         // TODO: log a disco
-         // no debe serguir si falla el lookup
-         //render "Ocurrio un error al obtener el ehr del paciente "+ e.message
-         render e.response.data.message.text()
-         return
-      }
-      
-      return ehrId
-   }
+   
    
    
    /**
@@ -908,7 +857,7 @@ class RegistrosController {
     */
    def checkoutComposition(String uid, String patientUid)
    {
-      def ehrId = getEhrIdByPatientId(patientUid)
+      def ehrId = ehrService.getEhrIdByPatientId(patientUid)
       
       def ehr = new RESTClient('http://'+ config.ehr_ip +':8090/ehr/')
       
@@ -935,10 +884,53 @@ class RegistrosController {
       println version.data.archetype_details.template_id.value.text()
       
       // TODO: based on this data
+      // 0. Open a new clinical session to edit the data.
       // 1. Look for the correspondent view to edit the information.
       // 2. Render the view and add an extra input to say what was the modification type (to be used in the new commit).
       // 3. The UID of the new version should be the same as the version that was checked out, the server will update the version uid for the new data.
       
-      render (text:versionXML, contentType:'text/html', encoding:'UTF-8')
+      
+      // =========================================================================
+      // 0. Open a new clinical session to edit the data.
+      // Same code as RegistrosController.openSession
+      // TODO: refactor
+
+
+      def cses = new ClinicalSession(patientUid: patientUid)
+      cses.datosPaciente = ehrService.getPatient(patientUid)
+      
+      if (!cses.save())
+      {
+         println cses.errors
+      }
+      
+      // Solo una clinical session puede estar seleccionada para crear registros,
+      // aunque varias clinical sessions pueden estar abiertas y el medico puede
+      // entrar y salir de cada una para ver o crear registros.
+      session.clinicalSession = cses
+      // =========================================================================
+      
+      // =========================================================================
+      // 1. Look for the correspondent view to edit the information.
+      // Similar code to the show action
+      def templateId = version.data.archetype_details.template_id.value.text()
+      def view = views[ templateId ][ 'edit' ]
+      def template = manager.getTemplate(templateId)
+
+      
+      // xml to document to extract the path-value mapping used in the view to show the values.
+      def xmlu = new xml.XmlUnserializer()
+      def doc = xmlu.toDocument(versionXML)
+      
+      //println doc.bindData
+      
+      // Similar code to RegistrosController.create
+
+      render( view: view,
+              model: [doc: doc, template: template, bindings: bindings[view]] )
+      // =========================================================================
+      
+      
+      //render (text:versionXML, contentType:'text/html', encoding:'UTF-8')
    }
 }

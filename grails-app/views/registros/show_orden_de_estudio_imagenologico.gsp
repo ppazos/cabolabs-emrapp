@@ -61,46 +61,46 @@
     <div class="content">
       <table>
         <%--
-        <g:set var="node" value="${archetype.node( bindings['create_orden_de_estudio_imagenologico']['categoria_estudio'])}" />
+        <g:set var="node" value="${archetype.node( ['categoria_estudio'])}" />
         --%>
         <tr>
           <td>Categoria:</td>
           <td>
-            ${doc.bindData[ bindings['create_orden_de_estudio_imagenologico']['categoria_estudio_texto'] ]}
-            <span class="code">${doc.bindData[ bindings['create_orden_de_estudio_imagenologico']['categoria_estudio'] ]}</span>
+            ${doc.bindData[ ['categoria_estudio_texto'] ]}
+            <span class="code">${doc.bindData[ ['categoria_estudio'] ]}</span>
           </td>
         </tr>
         
         <%--
-        <g:set var="node" value="${archetype.node( bindings['create_orden_de_estudio_imagenologico']['tipo_estudio_texto'])}" />
+        <g:set var="node" value="${archetype.node( ['tipo_estudio_texto'])}" />
         --%>
         <tr>
           <td>Tipo de estudio:</td>
           <td>
-            ${doc.bindData[ bindings['create_orden_de_estudio_imagenologico']['tipo_estudio_texto'] ]}
-            <span class="code">${doc.bindData[ bindings['create_orden_de_estudio_imagenologico']['tipo_estudio'] ]}</span>
+            ${doc.bindData[ ['tipo_estudio_texto'] ]}
+            <span class="code">${doc.bindData[ ['tipo_estudio'] ]}</span>
           </td>
         </tr>
         
         <%--
-        <g:set var="node" value="${archetype.node( bindings['create_orden_de_estudio_imagenologico']['localizacion_anatomica'])}" />
+        <g:set var="node" value="${archetype.node( ['localizacion_anatomica'])}" />
         --%>
         <tr>
           <td>Localización anatómica:</td>
           <td>
-            ${doc.bindData[ bindings['create_orden_de_estudio_imagenologico']['localizacion_anatomica_texto'] ]}
-            <span class="code">${doc.bindData[ bindings['create_orden_de_estudio_imagenologico']['localizacion_anatomica'] ]}</span>
+            ${doc.bindData[ ['localizacion_anatomica_texto'] ]}
+            <span class="code">${doc.bindData[ ['localizacion_anatomica'] ]}</span>
           </td>
         </tr>
         
         <%--
-        <g:set var="node" value="${archetype.node( bindings['create_orden_de_estudio_imagenologico']['urgente'])}" />
+        <g:set var="node" value="${archetype.node( ['urgente'])}" />
         --%>
         <tr>
           <td>¿Es urgente?:</td>
           <td>
             <%-- FIXME: render de boolean debe ser i18n --%>
-            <g:if test="${doc.bindData[ bindings['create_orden_de_estudio_imagenologico']['urgente'] ]}">
+            <g:if test="${doc.bindData[ ['urgente'] ]}">
               Si
             </g:if>
             <g:else>
@@ -110,23 +110,23 @@
         </tr>
         
         <%--
-        <g:set var="node" value="${archetype.node( bindings['create_orden_de_estudio_imagenologico']['descripcion'])}" />
+        <g:set var="node" value="${archetype.node( ['descripcion'])}" />
         --%>
         <tr>
           <td>Descripcion:</td>
           <td>
-            ${doc.bindData[ bindings['create_orden_de_estudio_imagenologico']['descripcion'] ]}
+            ${doc.bindData[ ['descripcion'] ]}
           </td>
         </tr>
         
         <%--
-        <g:set var="node" value="${archetype.node( bindings['create_orden_de_estudio_imagenologico']['fecha_espera'])}" />
+        <g:set var="node" value="${archetype.node( ['fecha_espera'])}" />
         --%>
         <tr>
           <td>Fecha esperada del resultado:</td>
           <td>
             <%-- FIXME: formatear segun configuracion de i18n del Congif.groovy --%>
-            ${doc.bindData[ bindings['create_orden_de_estudio_imagenologico']['fecha_espera'] ]}
+            ${doc.bindData[ ['fecha_espera'] ]}
           </td>
         </tr>
       </table>

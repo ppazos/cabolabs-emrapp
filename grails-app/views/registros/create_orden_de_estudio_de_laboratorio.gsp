@@ -147,7 +147,7 @@
         <input type="hidden" name="archetypeId" value="${archetype.archetypeId.value}"/>
         
         <table>
-          <g:set var="node" value="${archetype.node( bindings['create_orden_de_estudio_de_laboratorio']['categoria_estudio'])}" />
+          <g:set var="node" value="${archetype.node( bindings['categoria_estudio'])}" />
           <tr>
             <td>Categoria:</td>
             <td>

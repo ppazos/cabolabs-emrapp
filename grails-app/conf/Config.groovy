@@ -77,7 +77,8 @@ log4j = {
     //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
     //}
    
-    info   'binder' // binder.DataBinder config del log para el binder
+    info   'binder',  // binder.DataBinder config del log para el binder
+           'grails.app.services.ehr.EhrService'
 
     error  'org.codehaus.groovy.grails.web.servlet',        // controllers
            'org.codehaus.groovy.grails.web.pages',          // GSP

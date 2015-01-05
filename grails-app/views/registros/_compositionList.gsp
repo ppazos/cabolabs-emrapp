@@ -22,7 +22,7 @@
 	     <td>${c.subjectId}</td>
 	     <td>
 	       <g:link action="showComposition" params="[uid: c.uid]" class="showCompo"><g:message code="registros.compositionList.action.showRecord" /></g:link>
-	       <g:link action="checkoutComposition" params="[uid: c.uid, patientUid: params.patientUid]" class="showCompo"><g:message code="registros.compositionList.action.checkout" /></g:link>
+	       <g:link action="checkoutComposition" params="[uid: c.uid, patientUid: params.patientUid]"><g:message code="registros.compositionList.action.checkout" /></g:link>
 	     </td>
 	   </tr>
   </g:each>
@@ -43,10 +43,12 @@
       var iframe = modal.children()[0];
       iframe.src = this.href;
       
-      // Pretty print the version XML just for testing
+      
       $(iframe).load(function() {
         console.log('carga modal');
         
+        // Pretty print the version XML just for testing
+        /*
         var content = (this.contentWindow || this.contentDocument);
         if (content.document) content = content.document;
         
@@ -57,7 +59,7 @@
         xml = document.createTextNode( xmlToString(versionXML) );
         pre.appendChild( xml );
         content.body.appendChild( pre );
-        
+        */
       });
       
       $.blockUI({

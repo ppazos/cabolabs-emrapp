@@ -20,13 +20,13 @@ TODO: busqueda de pacientes por nombre
   </tr>
   <g:each in="${patientList}" var="pat">
    <tr>
-     <td>${pat.uid}<input type="hidden" name="datosPaciente.uid" value="${pat.uid}" /></td>
-     <td>${pat.firstName}<input type="hidden" name="datosPaciente.firstName" value="${pat.firstName}" /></td>
-     <td>${pat.lastName}<input type="hidden" name="datosPaciente.lastName" value="${pat.lastName}" /></td>
-     <td>${pat.dob}<input type="hidden" name="datosPaciente.dob" value="${pat.dob}" /></td>
-     <td>${pat.sex}<input type="hidden" name="datosPaciente.sex" value="${pat.sex}" /></td>
-     <td>${pat.idCode}<input type="hidden" name="datosPaciente.idCode" value="${pat.idCode}" /></td>
-     <td>${pat.idType}<input type="hidden" name="datosPaciente.idType" value="${pat.idType}" /></td>
+     <td>${pat.uid}</td>
+     <td>${pat.firstName}</td>
+     <td>${pat.lastName}</td>
+     <td>${pat.dob}</td>
+     <td>${pat.sex}</td>
+     <td>${pat.idCode}</td>
+     <td>${pat.idType}</td>
      <td>
        <g:set var="cses" value="${ClinicalSession.findByPatientUidAndOpen(pat.uid, true)}" />
        <g:if test="${cses}">
@@ -35,13 +35,6 @@ TODO: busqueda de pacientes por nombre
        <g:else>
          <g:form method="post" controller="registros" action="openSession">
            <input type="hidden" name="patientUid" value="${pat.uid}" />
-           <input type="hidden" name="datosPaciente.uid" value="${pat.uid}" />
-            <input type="hidden" name="datosPaciente.firstName" value="${pat.firstName}" />
-            <input type="hidden" name="datosPaciente.lastName" value="${pat.lastName}" />
-            <input type="hidden" name="datosPaciente.dob" value="${pat.dob}" />
-            <input type="hidden" name="datosPaciente.sex" value="${pat.sex}" />
-            <input type="hidden" name="datosPaciente.idCode" value="${pat.idCode}" />
-            <input type="hidden" name="datosPaciente.idType" value="${pat.idType}" />
            <g:submitButton name="doit" value="${g.message(code:'patient.list_table.action.newSession')}" />
          </g:form>
        </g:else>
@@ -49,13 +42,6 @@ TODO: busqueda de pacientes por nombre
        <!-- necesito el submit por los datos del paciente -->
        <g:form method="post" controller="registros" action="list">
          <input type="hidden" name="patientUid" value="${pat.uid}" />
-         <input type="hidden" name="datosPaciente.uid" value="${pat.uid}" />
-         <input type="hidden" name="datosPaciente.firstName" value="${pat.firstName}" />
-         <input type="hidden" name="datosPaciente.lastName" value="${pat.lastName}" />
-         <input type="hidden" name="datosPaciente.dob" value="${pat.dob}" />
-         <input type="hidden" name="datosPaciente.sex" value="${pat.sex}" />
-         <input type="hidden" name="datosPaciente.idCode" value="${pat.idCode}" />
-         <input type="hidden" name="datosPaciente.idType" value="${pat.idType}" />
          <g:submitButton name="doit" value="${g.message(code:'patient.list_table.action.history')}" controller="registros" action="list" />
        </g:form>
      </td>

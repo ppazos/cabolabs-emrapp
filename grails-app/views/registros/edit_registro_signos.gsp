@@ -108,7 +108,7 @@
               </g:else>
             </td>
             <td>
-              <input type="text" name="presion_sistolica_mag" id="presion_sistolica_mag" />
+              <input type="text" name="presion_sistolica_mag" id="presion_sistolica_mag" value="${doc.bindData[ bindings['presion_sistolica_mag'] ]}" />
             </td>
             <td>
               <%--
@@ -122,7 +122,7 @@
               TODO: taglib
               --%>
               <g:if test="${node?.xmlNode.list.size() == 1}">
-                <input type="text" value="${node?.xmlNode.list[0].units}" readonly="readonly" name="presion_sistolica_units" />
+                <input type="text" value="${node?.xmlNode.list[0].units.text()}" readonly="readonly" name="presion_sistolica_units" />
               </g:if>
               <g:else>
                 <g:each in="${node?.xmlNode.list}" var="item">
@@ -147,7 +147,7 @@
                   */
                   --%>
                   
-                  <label><input type="radio" value="${item.units}" name="presion_sistolica_units" />${item.units}</label>
+                  <label><input type="radio" value="${item.units.text()}" name="presion_sistolica_units" ${((doc.bindData[ bindings['presion_sistolica_units'] ] == item.units.text() ) ? 'checked="checked"':'')}" />${item.units.text()}</label>
                 </g:each>
               </g:else>
             </td>
@@ -175,7 +175,7 @@
               </g:if>
               <g:else>
                 <g:each in="${node?.xmlNode.list}" var="item">
-                  <label><input type="radio" value="${item.units}" name="presion_diastolica_units" />${item.units}</label>
+                  <label><input type="radio" value="${item.units.text()}" name="presion_diastolica_units" ${((doc.bindData[ bindings['presion_diastolica_units'] ] == item.units.text() ) ? 'checked="checked"':'')} />${item.units.text()}</label>
                 </g:each>
               </g:else>
             </td>
@@ -207,11 +207,12 @@
             </td>
             <td>
               <g:if test="${node?.xmlNode.list.size() == 1}">
-                <input type="text" value="${node?.xmlNode.list[0].units}" readonly="readonly" name="temperatura_units" />
+                <input type="text" value="${node?.xmlNode.list[0].units.text()}" readonly="readonly" name="temperatura_units" />
               </g:if>
               <g:else>
+                ${doc.bindData[ bindings['temperatura_units'] ]}
                 <g:each in="${node?.xmlNode.list}" var="item">
-                  <label><input type="radio" value="${item.units}" name="temperatura_units" />${item.units}</label>
+                  <label><input type="radio" value="${item.units.text()}" name="temperatura_units" ${((doc.bindData[ bindings['temperatura_units'] ] == item.units.text() ) ? 'checked="checked"':'')} />${item.units.text()}</label>
                 </g:each>
               </g:else>
             </td>
@@ -235,11 +236,11 @@
             </td>
             <td>
               <g:if test="${node?.xmlNode.list.size() == 1}">
-                <input type="text" value="${node?.xmlNode.list[0].units}" readonly="readonly" name="frecuencia_cardiaca_units" />
+                <input type="text" value="${node?.xmlNode.list[0].units.text()}" readonly="readonly" name="frecuencia_cardiaca_units" />
               </g:if>
               <g:else>
                 <g:each in="${node?.xmlNode.list}" var="item">
-                  <label><input type="radio" value="${item.units}" name="frecuencia_cardiaca_units" />${item.units}</label>
+                  <label><input type="radio" value="${item.units.text()}" name="frecuencia_cardiaca_units" />${item.units.text()}</label>
                 </g:each>
               </g:else>
             </td>
@@ -263,11 +264,11 @@
             </td>
             <td>
               <g:if test="${node?.xmlNode.list.size() == 1}">
-                <input type="text" value="${node?.xmlNode.list[0].units}" readonly="readonly" name="frecuencia_respiratoria_units" />
+                <input type="text" value="${node?.xmlNode.list[0].units.text()}" readonly="readonly" name="frecuencia_respiratoria_units" />
               </g:if>
               <g:else>
                 <g:each in="${node?.xmlNode.list}" var="item">
-                  <label><input type="radio" value="${item.units}" name="frecuencia_respiratoria_units" />${item.units}</label>
+                  <label><input type="radio" value="${item.units.text()}" name="frecuencia_respiratoria_units" />${item.units.text()}</label>
                 </g:each>
               </g:else>
             </td>
@@ -300,11 +301,11 @@
             </td>
             <td>
               <g:if test="${node?.xmlNode.list.size() == 1}">
-                <input type="text" value="${node?.xmlNode.list[0].units}" readonly="readonly" name="peso_units" />
+                <input type="text" value="${node?.xmlNode.list[0].units.text()}" readonly="readonly" name="peso_units" />
               </g:if>
               <g:else>
                 <g:each in="${node?.xmlNode.list}" var="item">
-                  <label><input type="radio" value="${item.units}" name="peso_units" />${item.units}</label>
+                  <label><input type="radio" value="${item.units.text()}" name="peso_units" ${((doc.bindData[ bindings['peso_units'] ] == item.units.text() ) ? 'checked="checked"':'')} />${item.units.text()}</label>
                 </g:each>
               </g:else>
             </td>
@@ -337,11 +338,11 @@
             </td>
             <td>
               <g:if test="${node?.xmlNode.list.size() == 1}">
-                <input type="text" value="${node?.list[0].units}" readonly="readonly" name="estatura_units" />
+                <input type="text" value="${node?.list[0].units.text()}" readonly="readonly" name="estatura_units" />
               </g:if>
               <g:else>
                 <g:each in="${node?.xmlNode.list}" var="item">
-                  <label><input type="radio" value="${item.units}" name="estatura_units" />${item.units}</label>
+                  <label><input type="radio" value="${item.units.text()}" name="estatura_units" ${((doc.bindData[ bindings['estatura_units'] ] == item.units.text() ) ? 'checked="checked"':'')} />${item.units.text()}</label>
                 </g:each>
               </g:else>
             </td>
