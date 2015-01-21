@@ -52,12 +52,13 @@ class OperationalTemplate {
       
       if (!root)
       {
-         println "root not found for "+ archetypeId +" "+ code
+         //println "root not found for "+ archetypeId +" "+ code
          return
       }
       else
-         println "root found "+ root.toString()
-         
+      {
+         //println "root found "+ root.toString()
+      }
       //println root.termDefinitions
       //root.termDefinitions.each{ println it.code }
          
@@ -66,12 +67,11 @@ class OperationalTemplate {
       
       if (!codedTerm)
       {
-         println "codedTerm not found "+ archetypeId +" "+ code
+         //println "codedTerm not found "+ archetypeId +" "+ code
          return
       }
-      else
-         println "codedTerm found "+ codedTerm.code +" "+ codedTerm.term.text
       
+      //println "codedTerm found "+ codedTerm.code +" "+ codedTerm.term.text
       return codedTerm.term."${part}"
    }
    

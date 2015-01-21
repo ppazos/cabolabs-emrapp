@@ -91,6 +91,7 @@
     <div class="content">
       <g:form action="save">
         <input type="hidden" name="templateId" value="${template.templateId}"/>
+        <input type="hidden" name="operation" value="create"/>
         
         <table>
           <g:set var="node" value="${template.getNode( bindings['presion_sistolica'] )}" />

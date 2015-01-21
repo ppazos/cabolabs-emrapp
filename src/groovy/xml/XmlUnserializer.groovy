@@ -27,6 +27,9 @@ class XmlUnserializer {
    
    private processVersion(parsedVersion)
    {
+      // Saving this allows to commit a new version of an existing document on the servers
+      doc.versionUid = parsedVersion.uid.value.text()
+      
       processComposition(parsedVersion.data)
    }
    
