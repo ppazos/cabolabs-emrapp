@@ -9,11 +9,11 @@ import java.text.SimpleDateFormat
 import sesion.ClinicalSession
 import xml.XmlSerializer
 
-import org.codehaus.groovy.grails.commons.ApplicationHolder
+import grails.util.Holders
 
 class CommitJob {
    
-   def config = ApplicationHolder.application.config.app
+   def config = Holders.config.app
    
    static triggers = {
       simple repeatInterval: 10000l // execute job once in 100 seconds

@@ -30,7 +30,7 @@ import ehr.EhrService
 import groovyx.net.http.*
 import static groovyx.net.http.ContentType.TEXT
 
-import org.codehaus.groovy.grails.commons.ApplicationHolder
+import grails.util.Holders
 
 class RegistrosController {
 
@@ -39,7 +39,7 @@ class RegistrosController {
    EhrService ehrService
    
    static def manager = opt_repository.OperationalTemplateManager.getInstance()
-   def config = ApplicationHolder.application.config.app
+   def config = Holders.config.app
    
    /*
     * FIXME: la aplicaci�n deber�a incluir un creador de vistas y bindings en
@@ -238,6 +238,8 @@ class RegistrosController {
    
    def create(String templateId)
    {
+      println "=="+ session.clinicalSession.datosPaciente
+      
       // Verifica que exista la vista (avisa nomas para que no se olvide de crear la vista)
       def uri = "registros/"+ views[templateId][actionName] +".gsp"
       def resource = grailsAttributes.pagesTemplateEngine.getResourceForUri(uri)
@@ -649,6 +651,7 @@ class RegistrosController {
     */
    def currentSession()
    {
+      println "=="+ session.clinicalSession.datosPaciente
       if (!session.clinicalSession)
       {
          redirect(controller:'person', action:'list')

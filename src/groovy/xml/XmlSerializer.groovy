@@ -14,7 +14,7 @@ import registros.valores.DvQuantity
 import registros.valores.DvText
 import sesion.ClinicalSession
 
-import org.codehaus.groovy.grails.commons.ApplicationHolder
+import grails.util.Holders
 
 /**
  * Serializador del modelo de datos a XML openEHR valido.
@@ -24,7 +24,7 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
  */
 class XmlSerializer {
 
-   def formatter = new SimpleDateFormat( ApplicationHolder.application.config.app.l10n.datetime_format )
+   def formatter = new SimpleDateFormat( Holders.config.app.l10n.datetime_format )
    static def manager = opt_repository.OperationalTemplateManager.getInstance()
    
    
