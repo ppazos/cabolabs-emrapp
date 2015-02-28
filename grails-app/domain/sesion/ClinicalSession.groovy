@@ -29,7 +29,7 @@ class ClinicalSession {
       dateClosed(nullable:true)
    }
    
-   static transients = ['documentForArchetype']
+   static transients = ['getDocumentForTemplate']
    
    def getDocumentForTemplate(String templateId)
    {

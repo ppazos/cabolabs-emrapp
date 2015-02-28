@@ -629,6 +629,8 @@ class RegistrosController {
       // 2. creo sesion con el ehrId
       
       def cses = new ClinicalSession(patientUid: patientUid)
+      
+      // uid:'1235-5756', firstName:'Carlos', lastName:'Nuñez',  dob:'19260225', sex:'M', idCode:'123456', idType:'CI']
       cses.datosPaciente = ehrService.getPatient(patientUid)
       
       if (!cses.save())
