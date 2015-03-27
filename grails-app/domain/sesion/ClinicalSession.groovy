@@ -29,8 +29,6 @@ class ClinicalSession {
       dateClosed(nullable:true)
    }
    
-   static transients = ['getDocumentForTemplate']
-   
    def getDocumentForTemplate(String templateId)
    {
       return this.documents.find{ it.templateId == templateId }

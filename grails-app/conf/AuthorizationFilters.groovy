@@ -19,6 +19,7 @@ class AuthorizationFilters {
             }
         }
         
+        
         /*
         // Hay acciones que necesitan un dominio seleccionado para poder ejecutarse
         // es mas sencillo poner un chequeo aqui que en cada accion.

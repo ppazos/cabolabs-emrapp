@@ -144,7 +144,7 @@ class CommitJob {
          // Y SI ESTA TODO BIEN:
          
          cses.committed = true
-         if (!cses.save())
+         if (!cses.save(flush:true))
          {
             println cses.errors
          }

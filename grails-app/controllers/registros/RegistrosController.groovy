@@ -238,7 +238,7 @@ class RegistrosController {
    
    def create(String templateId)
    {
-      println "=="+ session.clinicalSession.datosPaciente
+      println "create=="+ session.clinicalSession.datosPaciente + ", "+ session.datosPaciente
       
       // Verifica que exista la vista (avisa nomas para que no se olvide de crear la vista)
       def uri = "registros/"+ views[templateId][actionName] +".gsp"
@@ -633,7 +633,7 @@ class RegistrosController {
       // uid:'1235-5756', firstName:'Carlos', lastName:'Nuñez',  dob:'19260225', sex:'M', idCode:'123456', idType:'CI']
       cses.datosPaciente = ehrService.getPatient(patientUid)
       
-      if (!cses.save())
+      if (!cses.save(flush:true))
       {
          println cses.errors
       }
@@ -653,7 +653,7 @@ class RegistrosController {
     */
    def currentSession()
    {
-      println "=="+ session.clinicalSession.datosPaciente
+      println "cs=="+ session.clinicalSession.datosPaciente +", "+ session.datosPaciente
       if (!session.clinicalSession)
       {
          redirect(controller:'person', action:'list')
@@ -714,7 +714,7 @@ class RegistrosController {
          cses.composer = u // TODO> si el usuario en sesion es distinto al que firma, habria que dejar constancia del que esta en sesion para audit.
          cses.dateClosed = new Date()
          
-         if (!cses.save())
+         if (!cses.save(flush:true))
          {
             println cses.errors
          }
@@ -904,7 +904,7 @@ class RegistrosController {
       def cses = new ClinicalSession(patientUid: patientUid)
       cses.datosPaciente = ehrService.getPatient(patientUid)
       
-      if (!cses.save())
+      if (!cses.save(flush:true))
       {
          println cses.errors
       }

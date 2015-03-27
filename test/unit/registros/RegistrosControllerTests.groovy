@@ -61,7 +61,7 @@ class RegistrosControllerTests {
            <input type="hidden" name="datosPaciente.idType" value="${params.datosPaciente.idType}" />
            
         */
-       if (!cses.save())
+       if (!cses.save(flush:true))
        {
           println cses.errors
        }
