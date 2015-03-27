@@ -22,7 +22,7 @@ class CommitJob {
    def execute() {
       
       // execute job
-      //println "JOB!"
+      println "JOB!"
     
       def csess = ClinicalSession.findAllByOpenAndCommitted(false, false)
       
