@@ -289,7 +289,7 @@ class RegistrosController {
        *  urgente:on]
        */
       
-      def view = views[templateId][operation] // ['creation']
+      def view = views[templateId][operation] // ['create']
       def bind_data = [:]
       params.each { key, value ->
          
@@ -325,8 +325,8 @@ class RegistrosController {
       // When editing a checked out document, it is already saved with the versionUid on the EMR database.
       // Also it is associated with the current clinical session.
       // Here, instead of creating a new doc, we need to grab that doc and updated it.
-
-
+      
+      
       def template = manager.getTemplate(templateId)
       def binder = new DataBinder(template)
       def newdoc = binder.bind(bind_data)
@@ -732,6 +732,7 @@ class RegistrosController {
             flash.message = g.message(code:'registros.sign.error.auth')
             return
          }
+         
          
          def cses = session.clinicalSession
          

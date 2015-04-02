@@ -158,7 +158,7 @@ class XmlSerializer {
              * version.uid is mandatory by the schema.
              */
             uid {
-            
+               
                // Versioning support: the doc will have the versionUid if it was checked out
                // from the EHRServer to be updated. Here we use the same UID as the checked
                // out version, because the EHRServer uses this to match an existing version

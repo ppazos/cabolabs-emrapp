@@ -59,4 +59,8 @@ class Document {
       
       return "creation"
    }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/master
