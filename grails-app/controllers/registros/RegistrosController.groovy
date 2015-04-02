@@ -289,7 +289,7 @@ class RegistrosController {
        *  urgente:on]
        */
       
-      def view = views[templateId][operation]
+      def view = views[templateId][operation] // ['creation']
       def bind_data = [:]
       params.each { key, value ->
          
