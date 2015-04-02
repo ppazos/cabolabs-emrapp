@@ -5,7 +5,7 @@ grails.project.test.reports.dir = "target/test-reports"
 grails.project.target.level = 1.6
 grails.project.source.level = 1.6
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
-
+grails.project.dependency.resolver = "maven"
 grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
     inherits("global") {
@@ -81,22 +81,31 @@ grails.project.dependency.resolution = {
        
        runtime('com.thoughtworks.xstream:xstream:1.4.3') {
        }
+       
+       dependencies {
+        test "org.grails:grails-datastore-test-support:1.0-grails-2.4"
+       }
     }
 
     plugins {
-        runtime ":hibernate:$grailsVersion"
-        runtime ":jquery:1.7.2"
-        runtime ":resources:1.1.6"
-
         // Uncomment these (or add new ones) to enable additional resources capabilities
         //runtime ":zipped-resources:1.0"
         //runtime ":cached-resources:1.0"
         //runtime ":yui-minify-resources:0.1.4"
 
-        build ":tomcat:$grailsVersion"
+        
+        build ":tomcat:7.0.52.1"
 
-        runtime ":database-migration:1.1"
+        // plugins for the compile step
+        compile ':scaffolding:2.1.0'
+        compile ':cache:1.1.3'
+        compile ':asset-pipeline:1.8.3'
 
-        compile ':cache:1.0.0'
+        // plugins needed at runtime but not for compilation
+        runtime ':hibernate4:4.3.5.4' // or ':hibernate:3.6.10.14'
+        runtime ':database-migration:1.4.0'
+        runtime ':jquery:1.11.0.2'
+        
+        compile ':quartz:1.0.2'
     }
 }

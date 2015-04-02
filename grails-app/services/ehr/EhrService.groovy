@@ -1,15 +1,14 @@
 package ehr
 
 import groovyx.net.http.*
-
-import org.codehaus.groovy.grails.commons.ApplicationHolder
+import grails.util.Holders
 
 class EhrService {
 
    // TODO: operation here and job to free the cache
    def cache = [:]
 
-   def config = ApplicationHolder.application.config.app
+   def config = Holders.config.app
    
    
    /**

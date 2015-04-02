@@ -2919,7 +2919,7 @@
       <value>Signos</value>
     </template_id>
     <term_definitions code="at0000">
-      <items id="description">unknown</items>
+      <items id="description">Registro de signos vitales</items>
       <items id="text">Signos vitales</items>
     </term_definitions>
     <term_definitions code="at0001">

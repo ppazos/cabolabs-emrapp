@@ -9,11 +9,11 @@ import java.text.SimpleDateFormat
 import sesion.ClinicalSession
 import xml.XmlSerializer
 
-import org.codehaus.groovy.grails.commons.ApplicationHolder
+import grails.util.Holders
 
 class CommitJob {
    
-   def config = ApplicationHolder.application.config.app
+   def config = Holders.config.app
    
    static triggers = {
       simple repeatInterval: 10000l // execute job once in 100 seconds
@@ -22,7 +22,7 @@ class CommitJob {
    def execute() {
       
       // execute job
-      //println "JOB!"
+      println "JOB!"
     
       def csess = ClinicalSession.findAllByOpenAndCommitted(false, false)
       
@@ -144,7 +144,7 @@ class CommitJob {
          // Y SI ESTA TODO BIEN:
          
          cses.committed = true
-         if (!cses.save())
+         if (!cses.save(flush:true))
          {
             println cses.errors
          }

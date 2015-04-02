@@ -45,6 +45,7 @@ class Document {
       }
    }
    
+   
    static transients = ['changeType']
    
    /**
@@ -58,4 +59,8 @@ class Document {
       
       return "creation"
    }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/master

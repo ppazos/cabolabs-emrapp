@@ -3,12 +3,12 @@ package demographic
 //@Grab(group='org.codehaus.groovy.modules.http-builder', module='http-builder', version='0.5.2')
 import groovyx.net.http.*
 import sesion.ClinicalSession
-import org.codehaus.groovy.grails.commons.ApplicationHolder
+import grails.util.Holders
 import ehr.EhrService
 
 class PatientController {
 
-   def config = ApplicationHolder.application.config.app
+   def config = Holders.config.app
    
    EhrService ehrService
    

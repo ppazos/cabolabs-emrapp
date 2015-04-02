@@ -29,8 +29,6 @@ class ClinicalSession {
       dateClosed(nullable:true)
    }
    
-   static transients = ['documentForArchetype']
-   
    def getDocumentForTemplate(String templateId)
    {
       return this.documents.find{ it.templateId == templateId }

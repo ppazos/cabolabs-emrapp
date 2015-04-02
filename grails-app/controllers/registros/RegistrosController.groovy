@@ -30,7 +30,7 @@ import ehr.EhrService
 import groovyx.net.http.*
 import static groovyx.net.http.ContentType.TEXT
 
-import org.codehaus.groovy.grails.commons.ApplicationHolder
+import grails.util.Holders
 
 class RegistrosController {
 
@@ -39,7 +39,7 @@ class RegistrosController {
    EhrService ehrService
    
    static def manager = opt_repository.OperationalTemplateManager.getInstance()
-   def config = ApplicationHolder.application.config.app
+   def config = Holders.config.app
    
    /*
     * FIXME: la aplicaci�n deber�a incluir un creador de vistas y bindings en
@@ -666,7 +666,7 @@ class RegistrosController {
       def cses = new ClinicalSession(patientUid: patientUid)
       cses.datosPaciente = ehrService.getPatient(patientUid)
       
-      if (!cses.save())
+      if (!cses.save(flush:true))
       {
          println cses.errors
       }
@@ -686,6 +686,7 @@ class RegistrosController {
     */
    def currentSession()
    {
+      println "cs=="+ session.clinicalSession.datosPaciente +", "+ session.datosPaciente
       if (!session.clinicalSession)
       {
          redirect(controller:'person', action:'list')
@@ -747,7 +748,7 @@ class RegistrosController {
          cses.composer = u // TODO> si el usuario en sesion es distinto al que firma, habria que dejar constancia del que esta en sesion para audit.
          cses.dateClosed = new Date()
          
-         if (!cses.save())
+         if (!cses.save(flush:true))
          {
             println cses.errors
          }
