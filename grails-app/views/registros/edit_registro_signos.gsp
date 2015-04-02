@@ -88,9 +88,13 @@
   
     <h1>Registro de signos</h1>
 
+    <p>Está editando el documento ${doc.versionUid}</p>
+
     <div class="content">
       <g:form action="save">
         <input type="hidden" name="templateId" value="${template.templateId}"/>
+        <input type="hidden" name="operation" value="edit"/>
+        <input type="hidden" name="id" value="${doc.id}"/>
         
         <table>
           <g:set var="node" value="${template.getNode( bindings['presion_sistolica'] )}" />
@@ -167,7 +171,7 @@
               </g:else>
             </td>
             <td>
-              <input type="text" name="presion_diastolica_mag" id="presion_diastolica_mag" />
+              <input type="text" name="presion_diastolica_mag" id="presion_diastolica_mag" value="${doc.bindData[ bindings['presion_diastolica_mag'] ]}" />
             </td>
             <td>
               <g:if test="${node?.xmlNode.list.size() == 1}">
@@ -203,7 +207,7 @@
               </span>
             </td>
             <td>
-              <input type="text" name="temperatura_mag" id="temperatura_mag" />
+              <input type="text" name="temperatura_mag" id="temperatura_mag" value="${doc.bindData[ bindings['temperatura_mag'] ]}" />
             </td>
             <td>
               <g:if test="${node?.xmlNode.list.size() == 1}">
@@ -232,7 +236,7 @@
               </g:else>
             </td>
             <td>
-              <input type="text" name="frecuencia_cardiaca_mag" id="frecuencia_cardiaca_mag" />
+              <input type="text" name="frecuencia_cardiaca_mag" id="frecuencia_cardiaca_mag" value="${doc.bindData[ bindings['frecuencia_cardiaca_mag'] ]}" />
             </td>
             <td>
               <g:if test="${node?.xmlNode.list.size() == 1}">
@@ -240,7 +244,7 @@
               </g:if>
               <g:else>
                 <g:each in="${node?.xmlNode.list}" var="item">
-                  <label><input type="radio" value="${item.units.text()}" name="frecuencia_cardiaca_units" />${item.units.text()}</label>
+                  <label><input type="radio" value="${item.units.text()}" name="frecuencia_cardiaca_units" ${((doc.bindData[ bindings['frecuencia_cardiaca_units'] ] == item.units.text() ) ? 'checked="checked"':'')} />${item.units.text()}</label>
                 </g:each>
               </g:else>
             </td>
@@ -260,7 +264,7 @@
               </g:else>
             </td>
             <td>
-              <input type="text" name="frecuencia_respiratoria_mag" id="frecuencia_respiratoria_mag" />
+              <input type="text" name="frecuencia_respiratoria_mag" id="frecuencia_respiratoria_mag" value="${doc.bindData[ bindings['frecuencia_respiratoria_mag'] ]}" />
             </td>
             <td>
               <g:if test="${node?.xmlNode.list.size() == 1}">
@@ -268,7 +272,7 @@
               </g:if>
               <g:else>
                 <g:each in="${node?.xmlNode.list}" var="item">
-                  <label><input type="radio" value="${item.units.text()}" name="frecuencia_respiratoria_units" />${item.units.text()}</label>
+                  <label><input type="radio" value="${item.units.text()}" name="frecuencia_respiratoria_units" ${((doc.bindData[ bindings['frecuencia_respiratoria_units'] ] == item.units.text() ) ? 'checked="checked"':'')} />${item.units.text()}</label>
                 </g:each>
               </g:else>
             </td>
@@ -297,7 +301,7 @@
               </span>
             </td>
             <td>
-              <input type="text" name="peso_mag" id="peso_mag" />
+              <input type="text" name="peso_mag" id="peso_mag" value="${doc.bindData[ bindings['peso_mag'] ]}" />
             </td>
             <td>
               <g:if test="${node?.xmlNode.list.size() == 1}">
@@ -334,7 +338,7 @@
               </span>
             </td>
             <td>
-              <input type="text" name="estatura_mag" id="estatura_mag" />
+              <input type="text" name="estatura_mag" id="estatura_mag" value="${doc.bindData[ bindings['estatura_mag'] ]}" />
             </td>
             <td>
               <g:if test="${node?.xmlNode.list.size() == 1}">
@@ -350,7 +354,7 @@
           <tr>
             <td></td>
             <td></td>
-            <td><input type="submit" value="Guardar" /></td>
+            <td><input type="submit" value="Actualizar" /></td>
           </tr>
         </table>
       </g:form>

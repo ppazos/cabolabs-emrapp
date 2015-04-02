@@ -238,8 +238,6 @@ class RegistrosController {
    
    def create(String templateId)
    {
-      println "create=="+ session.clinicalSession.datosPaciente + ", "+ session.datosPaciente
-      
       // Verifica que exista la vista (avisa nomas para que no se olvide de crear la vista)
       def uri = "registros/"+ views[templateId][actionName] +".gsp"
       def resource = grailsAttributes.pagesTemplateEngine.getResourceForUri(uri)
@@ -261,9 +259,11 @@ class RegistrosController {
     * @param archetypeId
     * @return
     */
-   def save(String templateId)
+   def save(String templateId, String operation)
    {
       //println params
+      
+      if (!['create', 'edit'].contains(operation)) throw new Exception('operation is not valid '+ operation)
       
       /*
        * params:
@@ -289,7 +289,7 @@ class RegistrosController {
        *  urgente:on]
        */
       
-      def view = views[templateId]['create']
+      def view = views[templateId][operation]
       def bind_data = [:]
       params.each { key, value ->
          
@@ -322,15 +322,19 @@ class RegistrosController {
       println bind_data
       
       
+      // When editing a checked out document, it is already saved with the versionUid on the EMR database.
+      // Also it is associated with the current clinical session.
+      // Here, instead of creating a new doc, we need to grab that doc and updated it.
+
+
       def template = manager.getTemplate(templateId)
       def binder = new DataBinder(template)
-      def doc = binder.bind(bind_data)
+      def newdoc = binder.bind(bind_data)
       
       // TODO: setearlo adentro
-      doc.templateId = templateId
+      newdoc.templateId = templateId
       
-      
-      /*
+      /**
       // DEBUG
       def xstream = new XStream()
       xstream.omitField(Document.class, "errors")
@@ -348,44 +352,75 @@ class RegistrosController {
       // DEBUG
       */
       
-      
-      if (!doc.save(flush:true))
-      {
-         println doc.errors
-         println "doc.save errors!"
-         doc.errors.allErrors.each { pritnln it }
-      }
-      else
-      {
-         println "doc saved ok"
-      }
-      
-      
-      // =======================================================
-      // Asocia el registro a la sesion clinica actual
-      // FIXME: verificar que hay una sesion clinica
       def cses = session.clinicalSession
+      def doc
       
-      cses.refresh() // carga estado desde la base
-      cses.addToDocuments(doc)
       
-      if (!cses.save(flush:true))
+      // Si estoy editando un documento que existe
+      if (operation == "edit" && params.id)
       {
-         println g.message(code:'registros.save.error.errorSavingSession') + cses.errors
+         doc = Document.get(params.id) // This doc is already associated with the clinical session
+         
+         // TODO: copy stuff from newdoc to doc and save it, discard newdoc
+         // =====================================================================
+         // =====================================================================
+         // =====================================================================
+         // =====================================================================
+         
+         doc.bindData = newdoc.bindData
+         doc.content = newdoc.content
+         
+         if (!doc.save(flush:true))
+         {
+            println doc.errors
+            println "doc.save errors!"
+            doc.errors.allErrors.each { pritnln it }
+         }
+         else
+         {
+            println "newdoc saved ok"
+         }
+         
+         cses.refresh() // carga estado desde la base
       }
-      else
+      else // Si es un nuevo documento
       {
-         println g.message(code:'registros.save.feedback.sessionSaved')
+         if (!newdoc.save(flush:true))
+         {
+            println newdoc.errors
+            println "newdoc.save errors!"
+            newdoc.errors.allErrors.each { pritnln it }
+         }
+         else
+         {
+            println "newdoc saved ok"
+         }
+         
+         
+         // Si el doc existe no se tiene que agregar a la sesion clinica.
+         
+         // =======================================================
+         // Asocia el registro a la sesion clinica actual
+         // FIXME: verificar que hay una sesion clinica
+         cses.refresh() // carga estado desde la base
+         
+         cses.addToDocuments(newdoc)
+         
+         if (!cses.save(flush:true))
+         {
+            println g.message(code:'registros.save.error.errorSavingSession') + cses.errors
+         }
+         else
+         {
+            println g.message(code:'registros.save.feedback.sessionSaved')
+         }
+         
+         doc = newdoc // variable reuse just to send the doc to the ui
       }
       
       // actualiza cses en session
       session.clinicalSession = cses
       // ========================================================
-      
-      //render (text:xml, contentType:"text/xml", encoding:"UTF-8")
-      
-      // TODO: hacer vista show del documento creado
-      // TODO: tambien hacer el edit, pero para mas adelante...
       
       
       // ESTO ES LO QUE TIENE QUE ENVIAR EL COMMITTER!!!!!!!!!!!
@@ -629,8 +664,6 @@ class RegistrosController {
       // 2. creo sesion con el ehrId
       
       def cses = new ClinicalSession(patientUid: patientUid)
-      
-      // uid:'1235-5756', firstName:'Carlos', lastName:'Nuñez',  dob:'19260225', sex:'M', idCode:'123456', idType:'CI']
       cses.datosPaciente = ehrService.getPatient(patientUid)
       
       if (!cses.save(flush:true))
@@ -700,9 +733,9 @@ class RegistrosController {
             return
          }
          
-         // FIXME: verificar que hay una sesion clinica activa en sesion
          def cses = session.clinicalSession
          
+         // Verifica que hay una sesion clinica activa en sesion 
          if (!cses)
          {
             flash.message = "No active clinical session" // TODO: I18N
@@ -718,6 +751,7 @@ class RegistrosController {
          {
             println cses.errors
          }
+         
          
          // lo hace el patient list
          //session.clinicalSession = null
@@ -904,10 +938,7 @@ class RegistrosController {
       def cses = new ClinicalSession(patientUid: patientUid)
       cses.datosPaciente = ehrService.getPatient(patientUid)
       
-      if (!cses.save(flush:true))
-      {
-         println cses.errors
-      }
+      
       
       // Solo una clinical session puede estar seleccionada para crear registros,
       // aunque varias clinical sessions pueden estar abiertas y el medico puede
@@ -927,12 +958,20 @@ class RegistrosController {
       def xmlu = new xml.XmlUnserializer()
       def doc = xmlu.toDocument(versionXML)
       
-      //println doc.bindData
+      
+      cses.addToDocuments(doc)
+      
+      
+      // Saves the clinical session and the docs
+      if (!cses.save())
+      {
+         println cses.errors
+      }
       
       // Similar code to RegistrosController.create
 
       render( view: view,
-              model: [doc: doc, template: template, bindings: bindings[view]] )
+              model: [doc: doc, version: version, template: template, bindings: bindings[view]] )
       // =========================================================================
       
       

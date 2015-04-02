@@ -144,7 +144,7 @@ class XmlSerializer {
                }
                
                change_type() {
-                  value('creation') // por ahora solo soporta creation
+                  value( doc.getChangeType() ) // The doc knows if the change type is creation or modification
                   defining_code() {
                      terminology_id() {
                         value('openehr')
@@ -158,9 +158,21 @@ class XmlSerializer {
              * version.uid is mandatory by the schema.
              */
             uid {
-               // versioned_object_id + creating_system_id + version_tree_id
-               // FIXME: not 100% if the version tree id should be set by the client or by the server
-               value( (java.util.UUID.randomUUID() as String) +'::EMR_APP::1' )
+            
+               // Versioning support: the doc will have the versionUid if it was checked out
+               // from the EHRServer to be updated. Here we use the same UID as the checked
+               // out version, because the EHRServer uses this to match an existing version
+               // and does the update of the new version UID internally.
+               if (doc.versionUid)
+               {
+                  value( doc.versionUid )
+               }
+               else
+               {
+                  // versioned_object_id + creating_system_id + version_tree_id
+                  // FIXME: not 100% if the version tree id should be set by the client or by the server
+                  value( (java.util.UUID.randomUUID() as String) +'::EMR_APP::1' )
+               }
             }
            
             
