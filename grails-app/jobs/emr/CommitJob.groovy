@@ -16,13 +16,13 @@ class CommitJob {
    def config = Holders.config.app
    
    static triggers = {
-      simple repeatInterval: 10000l // execute job once in 100 seconds
+      simple repeatInterval: 180000l // execute job once in 100 seconds
    }
 
    def execute() {
       
       // execute job
-      println "JOB!"
+      println "JOB! "+ new Date().toString()
     
       def csess = ClinicalSession.findAllByOpenAndCommitted(false, false)
       

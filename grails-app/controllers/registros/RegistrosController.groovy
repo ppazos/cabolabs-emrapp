@@ -289,7 +289,7 @@ class RegistrosController {
        *  urgente:on]
        */
       
-      def view = views[templateId][operation] // ['create']
+      def view = views[templateId][operation]
       def bind_data = [:]
       params.each { key, value ->
          
@@ -367,6 +367,7 @@ class RegistrosController {
          // =====================================================================
          // =====================================================================
          
+         // Overwrites the data in the checked out document
          doc.bindData = newdoc.bindData
          doc.content = newdoc.content
          
@@ -381,7 +382,8 @@ class RegistrosController {
             println "newdoc saved ok"
          }
          
-         cses.refresh() // carga estado desde la base
+         // the doc reference is on the current session,
+         // no need of updating the session.
       }
       else // Si es un nuevo documento
       {
@@ -396,14 +398,10 @@ class RegistrosController {
             println "newdoc saved ok"
          }
          
-         
-         // Si el doc existe no se tiene que agregar a la sesion clinica.
-         
          // =======================================================
          // Asocia el registro a la sesion clinica actual
-         // FIXME: verificar que hay una sesion clinica
-         cses.refresh() // carga estado desde la base
          
+         cses.refresh() // carga estado desde la base
          cses.addToDocuments(newdoc)
          
          if (!cses.save(flush:true))
@@ -913,6 +911,8 @@ class RegistrosController {
          return
       }
       
+      println "res: " + res
+      
       def versionXML = res.data.text
       def version = new XmlSlurper(true, false).parseText(versionXML)
       // version.uid.value = version uid
@@ -963,8 +963,8 @@ class RegistrosController {
       cses.addToDocuments(doc)
       
       
-      // Saves the clinical session and the docs
-      if (!cses.save())
+      // Saves the clinical session and the doc
+      if (!cses.save(flush:true))
       {
          println cses.errors
       }

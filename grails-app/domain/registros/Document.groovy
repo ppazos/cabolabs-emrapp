@@ -60,4 +60,3 @@ class Document {
       return "creation"
    }
 }
-
