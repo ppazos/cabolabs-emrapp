@@ -62,10 +62,26 @@ grails.hibernate.cache.queries = false
 environments {
     development {
         grails.logging.jul.usebridge = true
+        
+        // server connection configuration for dev
+        server {
+           protocol = "http://" // https://
+           ip = "localhost"
+           port = "8090"
+           path = "/ehr/"
+        }
     }
     production {
         grails.logging.jul.usebridge = false
         // TODO: grails.serverURL = "http://www.changeme.com"
+        
+        // server connection configuration for prod
+        server {
+           protocol = "http://" // https://
+           ip = "localhost"
+           port = "8080"
+           path = "/ehr-0.1/"
+        }
     }
 }
 

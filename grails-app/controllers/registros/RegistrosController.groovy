@@ -39,7 +39,7 @@ class RegistrosController {
    EhrService ehrService
    
    static def manager = opt_repository.OperationalTemplateManager.getInstance()
-   def config = Holders.config.app
+   def config = Holders.config
    
    /*
     * FIXME: la aplicaci�n deber�a incluir un creador de vistas y bindings en
@@ -779,7 +779,6 @@ class RegistrosController {
       /* ****
 
       // Pide datos al EHR Server
-      //def ehr = new RESTClient('http://192.168.1.101:8090/ehr/')
       def ehr = new RESTClient('http://'+ config.ehr_ip +':8090/ehr/')
       
       
@@ -832,7 +831,7 @@ class RegistrosController {
       
       try
       {
-         def ehr = new RESTClient('http://'+ config.ehr_ip +':8090/ehr/')
+         def ehr = new RESTClient(config.server.protocol + config.server.ip +':'+ config.server.port + config.server.path)
          res = ehr.get( path:'test/findCompositions', query:[ehrId:ehrId] ) // Por ahora no hay format, findCompositions tira siempre XML
          
          //println res.data // TEST NodeChild (XML parseado)
@@ -862,8 +861,7 @@ class RegistrosController {
    def showComposition(String uid)
    {
       // Pide datos al EHR Server
-      //def ehr = new RESTClient('http://192.168.1.101:8090/ehr/')
-      def ehr = new RESTClient('http://'+ config.ehr_ip +':8090/ehr/')
+      def ehr = new RESTClient(config.server.protocol + config.server.ip +':'+ config.server.port + config.server.path)
       def res
       
       // Lookup de ehrId por subjectId
@@ -897,7 +895,7 @@ class RegistrosController {
    {
       def ehrId = ehrService.getEhrIdByPatientId(patientUid)
       
-      def ehr = new RESTClient('http://'+ config.ehr_ip +':8090/ehr/')
+      def ehr = new RESTClient(config.server.protocol + config.server.ip +':'+ config.server.port + config.server.path)
       
       def res
       try

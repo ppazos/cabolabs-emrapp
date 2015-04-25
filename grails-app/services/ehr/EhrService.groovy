@@ -8,7 +8,7 @@ class EhrService {
    // TODO: operation here and job to free the cache
    def cache = [:]
 
-   def config = Holders.config.app
+   def config = Holders.config
    
    
    /**
@@ -48,9 +48,9 @@ class EhrService {
       
       def patientList = []
       
-      log.info( "Consulta al EHR: "+ config.ehr_ip + ':8090' )
+      log.info( "Consulta al EHR: "+ config.server.protocol + config.server.ip +':'+ config.server.port + config.server.path +'rest/patientList')
       
-      def http = new HTTPBuilder('http://'+ config.ehr_ip +':8090/ehr/rest/patientList')
+      def http = new HTTPBuilder(config.server.protocol + config.server.ip +':'+ config.server.port + config.server.path +'rest/patientList')
       
       // Si no hay conexion con el servidor tira excepcion
       try
@@ -145,7 +145,7 @@ class EhrService {
       
       log.info("Cache miss for patient $uid, querying the server")
       
-      def http = new HTTPBuilder('http://'+ config.ehr_ip +':8090/ehr/rest/getPatient')
+      def http = new HTTPBuilder(config.server.protocol + config.server.ip +':'+ config.server.port + config.server.path +'rest/getPatient')
       
       // Si no hay conexion con el servidor tira excepcion
       try
@@ -214,12 +214,8 @@ class EhrService {
       def res
       def ehrId
       
-      /*
-       * FIXME: que IP y puerto sean configurables.
-       */
       // Pide datos al EHR Server
-      //def ehr = new RESTClient('http://192.168.1.101:8090/ehr/')
-      def ehr = new RESTClient('http://'+ config.ehr_ip +':8090/ehr/')
+      def ehr = new RESTClient(config.server.protocol + config.server.ip +':'+ config.server.port + config.server.path)
       
       
       // Lookup de ehrId por subjectId

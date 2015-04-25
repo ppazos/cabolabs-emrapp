@@ -13,10 +13,10 @@ import grails.util.Holders
 
 class CommitJob {
    
-   def config = Holders.config.app
+   def config = Holders.config
    
    static triggers = {
-      simple repeatInterval: 180000l // execute job once in 100 seconds
+      simple repeatInterval: 30000l // execute job once in 100 seconds
    }
 
    def execute() {
@@ -31,9 +31,8 @@ class CommitJob {
       def params
       
       // http://groovy.codehaus.org/modules/http-builder/doc/rest.html
-      //def http = new HTTPBuilder('http://192.168.1.104:8080/ehr/')
-      //def ehr = new RESTClient('http://192.168.1.101:8090/ehr/')
-      def ehr = new RESTClient('http://'+ config.ehr_ip +':8090/ehr/')
+      def ehr = new RESTClient(config.server.protocol + config.server.ip +':'+ config.server.port + config.server.path)
+      
       def res // response de requests
       def ehrId // para lookup
       
