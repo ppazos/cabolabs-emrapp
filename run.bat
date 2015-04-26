@@ -1,1 +1,1 @@
-grails run-app
+grails -reloading run-app

@@ -68,7 +68,7 @@ environments {
            protocol = "http://" // https://
            ip = "localhost"
            port = "8090"
-           path = "/ehr/"
+           path = "/ehr/" // should start and end with /
         }
     }
     production {
@@ -76,12 +76,20 @@ environments {
         // TODO: grails.serverURL = "http://www.changeme.com"
         
         // server connection configuration for prod
+        
         server {
            protocol = "http://" // https://
            ip = "localhost"
            port = "8080"
-           path = "/ehr-0.1/"
+           path = "/ehr-0.1/" // should start and end with /
         }
+        
+//        server {
+//           protocol = "http://" // https://
+//           ip = "localhost"
+//           port = "8090"
+//           path = "/ehr/" // should start and end with /
+//        }
     }
 }
 
@@ -105,8 +113,9 @@ log4j = {
            'org.codehaus.groovy.grails.plugins',            // plugins
            'org.codehaus.groovy.grails.orm.hibernate',      // hibernate integration
            'org.springframework',
-           'org.hibernate',
-           'net.sf.ehcache.hibernate'
+           'org.hibernate'
+           //,
+           //'net.sf.ehcache.hibernate'
 }
 
 

@@ -117,7 +117,14 @@ class CommitJob {
                   code('ISIS_EHR_SERVER::COMMIT::ERRORS::401') // sys::service::concept::code
                }
              */
-            println "res: " + res //.data.result.message
+            println "res: " + res.responseData.message
+            //println "res2: " + res.responseData.getClass() // nodeChild
+            //println "res3: " + res.responseData.name() // result
+            
+            if (res.responseData.type.code.text() != "AA")
+            {
+               throw new Exception("Server rejected the commit")
+            }
          }
          catch (Exception e)
          {
