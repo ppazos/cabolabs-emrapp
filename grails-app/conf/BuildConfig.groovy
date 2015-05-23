@@ -82,9 +82,8 @@ grails.project.dependency.resolution = {
        runtime('com.thoughtworks.xstream:xstream:1.4.3') {
        }
        
-       dependencies {
-        test "org.grails:grails-datastore-test-support:1.0-grails-2.4"
-       }
+
+       test "org.grails:grails-datastore-test-support:1.0-grails-2.4"
     }
 
     plugins {
