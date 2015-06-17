@@ -123,11 +123,15 @@ class XmlSerializer {
                 management service, of user who committed the item.
                 */
                committer('xsi:type':"PARTY_IDENTIFIED") {
-                  // T0003
-                  // FIXME: Si este no es el id del sistema que comitea, donde va ese id?
-                  //name('ISIS_EMR_APP') // id de esta aplicaicon TODO: sacarlo de config
+                  external_ref {
+                     id('xsi:type': 'HIER_OBJECT_ID') {
+                        value(cses.composer.uid)
+                     }
+                     namespace('DEMOGRAPHIC')
+                     type('PERSON')
+                  }
                   name(cses.composer.name)
-                  // TODO: poner id para PartyProxy en el server
+                  // identifiers DV_IDENTIFIER
                }
                
                /*
@@ -253,16 +257,15 @@ class XmlSerializer {
       //        tengo que implementar un login para saber quien es el composer
       builder.composer('xsi:type':'PARTY_IDENTIFIED') {
          
-         // Sino le paso una ClinicalSession (ej. testing)
-         if (!cses)
-         {
-            name('Dr. Pablo Pazos')
+         external_ref {
+            id('xsi:type': 'HIER_OBJECT_ID') {
+               value(cses.composer.uid)
+            }
+            namespace('DEMOGRAPHIC')
+            type('PERSON')
          }
-         else
-         {
-            // FIXME: add id
-            name(cses.composer.name)
-         }
+         name(cses.composer.name)
+         // identifiers DV_IDENTIFIER
       }
       
       
@@ -414,6 +417,7 @@ class XmlSerializer {
          }
          code_string('UTF-8')
       }
+      /*
       builder.subject('xsi:type': 'PARTY_IDENTIFIED') {
          external_ref {
             id('xsi:type': 'HIER_OBJECT_ID') {
@@ -423,6 +427,8 @@ class XmlSerializer {
             type('PERSON')
          }
       }
+      */
+      builder.subject('xsi:type': 'PARTY_SELF') {}
       
       // Serialize the rest of the structure for each entry
       String entryBuildMethod = 'build'+ struct.type

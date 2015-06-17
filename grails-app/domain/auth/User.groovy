@@ -6,4 +6,6 @@ class User {
    
    String user
    String pass
+   
+   String uid = java.util.UUID.randomUUID() as String
 }
