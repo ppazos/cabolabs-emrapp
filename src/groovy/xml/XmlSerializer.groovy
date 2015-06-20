@@ -596,8 +596,15 @@ class XmlSerializer {
    {
       builder."$tag"('xsi:type':element.type, archetype_node_id:element.nodeId) {
          
-         name() {
-            value( getName(this.templateId, element.archetypeId, element.nodeId))
+         if (element.name)
+         {
+            serializeDv( element.name, builder, 'name' )
+         }
+         else
+         {
+            name() {
+               value( getName(this.templateId, element.archetypeId, element.nodeId))
+            }
          }
          
          serializeDv( element.value, builder, 'value' )
