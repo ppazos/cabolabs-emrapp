@@ -131,17 +131,22 @@
         </tr>
         
         <g:set var="node" value="${template.getNode( bindings['frecuencia_cardiaca'])}" />
+        <g:set var="name" value="${node.xmlNode.attributes.find{ it.rm_attribute_name.text() == "name" }.children[0]}" />
+          <g:set var="value" value="${node.xmlNode.attributes.find{ it.rm_attribute_name.text() == "value" }.children[0]}" />
         <tr>
           <td>
             Frecuencia cardíaca:
             
             <%-- restriccion para las unidades ingresadas, quiero mostrar el rango para esa restriccion --%>
-            <g:set var="cdvq_item" value="${node.xmlNode.list.find{ it.units == doc.bindData[ bindings['frecuencia_cardiaca_units'] ] }}" />
+            <g:set var="cdvq_item" value="${value.list.find{ it.units == doc.bindData[ bindings['frecuencia_cardiaca_units'] ] }}" />
+            
             <g:if test="${cdvq_item?.magnitude}">
             (${cdvq_item.magnitude.lower}..${cdvq_item.magnitude.upper})
             </g:if>
           </td>
           <td>
+            ${template.getTerm('openEHR-EHR-OBSERVATION.pulse.v1', doc.bindData[ bindings['frecuencia_cardiaca_name'] ])}
+            <br/>
             ${doc.bindData[ bindings['frecuencia_cardiaca_mag'] ]}
           </td>
           <td>

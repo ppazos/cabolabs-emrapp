@@ -63,6 +63,7 @@ environments {
     development {
         grails.logging.jul.usebridge = true
         
+        
         // server connection configuration for dev
         server {
            protocol = "http://" // https://
@@ -70,6 +71,14 @@ environments {
            port = "8090"
            path = "/ehr/" // should start and end with /
         }
+        
+        // openshift
+//        server {
+//           protocol = "http://" // https://
+//           ip = "cabolabs-ehrserver.rhcloud.com"
+//           port = "80"
+//           path = "/ehr-0.1/" // should start and end with /
+//        }
     }
     production {
         grails.logging.jul.usebridge = false

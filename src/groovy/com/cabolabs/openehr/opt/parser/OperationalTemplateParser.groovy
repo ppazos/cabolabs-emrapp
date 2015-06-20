@@ -37,7 +37,7 @@ class OperationalTemplateParser {
          // TODO: add use, misuse, keywords, etc. from RESOURCE_DESCRIPTION_ITEM: https://github.com/openEHR/java-libs/blob/f6ee434226bf926d261c2690016c1d6022b877be/oet-parser/src/main/xsd/Resource.xsd
       )
       
-      this.template.definition = parseObjectNode(tpXML.definition, '/')
+      this.template.definition = parseObjectNode(tpXML.definition, '/', tpXML.definition.archetype_id.value.text())
       
       
       // DEBUG
@@ -58,7 +58,7 @@ class OperationalTemplateParser {
       return node.terminology_id.value.text() +"::"+ node.code_string.text()
    }
    
-   private parseObjectNode(GPathResult node, String parentPath)
+   private parseObjectNode(GPathResult node, String parentPath, String archetypeId)
    {
       // Path calculation
       def path = parentPath
@@ -70,7 +70,10 @@ class OperationalTemplateParser {
             //println ""
             //println "archid: "+ node.archetype_id.value
             //parentPath = '/'
-            path += '[archetype_id='+ node.archetype_id.value +']' // slot in the path instead of node_id
+            
+            archetypeId = node.archetype_id.value.text()
+            
+            path += '[archetype_id='+ archetypeId +']' // slot in the path instead of node_id
          }
          // para tag vacia empty da false pero text es vacio ej. <node_id/>
          else if (!node.node_id.isEmpty() && node.node_id.text() != '')
@@ -85,7 +88,7 @@ class OperationalTemplateParser {
          rmTypeName: node.rm_type_name.text(),
          nodeId: node.node_id.text(),
          type: node.'@xsi:type'.text(),
-         archetypeId: node.archetype_id.value.text(), // This is optional, just resolved slots have archId
+         archetypeId: archetypeId,
          path: path,
          xmlNode: node // Quick fix until having each constraint type modeled
          // TODO: default_values
@@ -95,7 +98,7 @@ class OperationalTemplateParser {
       
       node.attributes.each { xatn ->
       
-         obn.attributes << parseAttributeNode(xatn, path)
+         obn.attributes << parseAttributeNode(xatn, path, archetypeId)
       }
       
       node.term_definitions.each { tdef ->
@@ -109,7 +112,7 @@ class OperationalTemplateParser {
       return obn
    }
    
-   private parseAttributeNode(GPathResult node, String parentPath)
+   private parseAttributeNode(GPathResult node, String parentPath, String archetypeId)
    {
       // Path calculation
       def path = parentPath
@@ -126,7 +129,7 @@ class OperationalTemplateParser {
       
       node.children.each { xobn ->
       
-         atn.children << parseObjectNode(xobn, path)
+         atn.children << parseObjectNode(xobn, path, archetypeId)
       }
       
       return atn

@@ -218,13 +218,15 @@
             </td>
           </tr>
           
-          <g:set var="node" value="${template.getNode( bindings['frecuencia_cardiaca'])}" />
+          <g:set var="node" value="${template.getNode( bindings['frecuencia_cardiaca'])}" /><%-- ELEMENT --%>
+          <g:set var="name" value="${node.xmlNode.attributes.find{ it.rm_attribute_name.text() == "name" }.children[0]}" />
+          <g:set var="value" value="${node.xmlNode.attributes.find{ it.rm_attribute_name.text() == "value" }.children[0]}" />
           <tr>
             <td>
               Frecuencia cardíaca:
-              <g:if test="${node?.xmlNode.list.size() == 1}">
-                <g:if test="${node?.xmlNode.list[0].magnitude}">
-                (${node?.xmlNode.list[0].magnitude.lower}..${node?.xmlNode.list[0].magnitude.upper})
+              <g:if test="${value?.list.size() == 1}">
+                <g:if test="${value?.list[0].magnitude}">
+                (${value?.list[0].magnitude.lower}..${value?.list[0].magnitude.upper})
                 </g:if>
               </g:if>
               <g:else>
@@ -232,14 +234,30 @@
               </g:else>
             </td>
             <td>
+              <!-- name si coded text with constraint list -->
+              <%--
+              1 ${node.xmlNode.getClass()}
+              2 ${node.xmlNode.attributes}
+              3 ${node.xmlNode.attributes[0].rm_attribute_name.text()}
+              8 ${node.xmlNode.attributes.find{ it.rm_attribute_name.text() == "name" }.getClass()} 
+              4 ${groovy.xml.XmlUtil.serialize( node.xmlNode.attributes.find{ it.rm_attribute_name.text() == "name" } )}
+              --%>
+              
+              <!-- name is coded text, .attributes[0] is defining_code, .children is the code_phrase constraint -->
+              <g:each in="${name?.attributes.children.code_list}" var="code">
+                <label><input type="radio" value="${code.text()}" name="frecuencia_cardiaca_name" />${template.getTerm('openEHR-EHR-OBSERVATION.pulse.v1', code.text())}</label>
+              </g:each>
+              </br>
+              
               <input type="text" name="frecuencia_cardiaca_mag" id="frecuencia_cardiaca_mag" />
             </td>
             <td>
-              <g:if test="${node?.xmlNode.list.size() == 1}">
-                <input type="text" value="${node?.xmlNode.list[0].units}" readonly="readonly" name="frecuencia_cardiaca_units" />
+              <!-- list constraint is a list of CDvQuantity -->
+              <g:if test="${value?.list.size() == 1}">
+                <input type="text" value="${value?.list[0].units}" readonly="readonly" name="frecuencia_cardiaca_units" />
               </g:if>
               <g:else>
-                <g:each in="${node?.xmlNode.list}" var="item">
+                <g:each in="${value?.list}" var="item">
                   <label><input type="radio" value="${item.units}" name="frecuencia_cardiaca_units" />${item.units}</label>
                 </g:each>
               </g:else>

@@ -1,11 +1,13 @@
 package registros
 
 import registros.valores.DataValue
+import registros.valores.DvText
 
 class Element extends Item {
 
    // this.type = "ELEMENT"
    DataValue value
+   DvText name // Can be DvCodedText
    
    static belongsTo = [Structure]
    
@@ -15,5 +17,6 @@ class Element extends Item {
    
    static constraints = {
       value(nullable: true)
+      name(nullable: true)
    }
 }

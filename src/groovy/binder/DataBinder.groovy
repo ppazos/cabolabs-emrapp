@@ -664,7 +664,7 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       
       String method
       def filtered_data = [:]
-      List items
+      Map items = [:]
       
       // FIXME: ir a la restriccion de value directamente
       // TODO: soportar nullFlavour (en el arquetipo deberia venir especificado que se va a usar, sino no se le da bola)
@@ -677,50 +677,51 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
          // bind_CSingleName
          method = 'bind_'+ attr.type
          
-         //println "ELEMENT.value: " + method
-         
-         items = this."$method"(attr, filtered_data)
+//         println "______________________"
+//         println "ELEMENT.value: " + method
+//         println "______________________"
+//         
+         items[attr.rmAttributeName] = this."$method"(attr, filtered_data)
          
          filtered_data = [:]
       }
       
-      //println "ELEMENT value binded: "+ items
+      println ""
+      println "ELEMENT value binded: "+ items
+      println ""
+      
       
       def element = null
+      def value = items['value']
+      def name = items['name']
       
       // Prueba para cuando no se envian todos los datos necesarios para 
       // crear los datavalues.
-      if (!items[0].validate())
-      {
-         println " ELEMENT.value no valida: "+ items[0].errors
-         items[0].errors.allErrors.each { println it }
+      
+      
+      element = new Element(
+         value:   value,
+         name:    name,
+         archetypeId: archetypeId,
+         path:    cobject.path,
+         nodeId:  cobject.nodeId,
+         type:    cobject.rmTypeName,
+         aomType: 'C_COMPLEX_OBJECT',
+         attr:    attrName)
+      
+      // elem.value no siempre tiene .value, depende del tipo de DataValue,
+      // esto era para ver si el valor del DvCodedText es null o vacio
+      //
+      //if (element.value && element.value.value)
+      //   println "       tipo del valor de ELEMENT: " + element.value.class + " " + element.value.value.class
+      //else
          
-         // Sino tiene valores para bindear ELEMENT.value, retorna null.
-         // TODO: hacer tambien validacion de valores contra restricciones del arquetipo. 
-      }
-      else
-      {
-         element = new Element(
-            value:   items[0],
-            archetypeId: archetypeId,
-            path:    cobject.path,
-            nodeId:  cobject.nodeId,
-            type:    cobject.rmTypeName,
-            aomType: 'C_COMPLEX_OBJECT',
-            attr:    attrName)
-         
-         // elem.value no siempre tiene .value, depende del tipo de DataValue,
-         // esto era para ver si el valor del DvCodedText es null o vacio
-         //
-         //if (element.value && element.value.value)
-         //   println "       tipo del valor de ELEMENT: " + element.value.class + " " + element.value.value.class
-         //else
-         if (element.value)
-            println "       tipo del valor de ELEMENT: " + element.value.class + " valor="+ element.value
-         else
-            println "       dice que ELEMENT.value es null para "+ cobject.path
+//         if (element.value)
+//            println "       tipo del valor de ELEMENT: " + element.value.class + " valor="+ element.value
+//         else
+//            println "       dice que ELEMENT.value es null para "+ cobject.path
             
-      }
+      
       return element
    }
    
@@ -762,24 +763,16 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       return new DvText(value:"todo", aomType: 'C_COMPLEX_OBJECT')
    }
    
+   
    DataValue bind_C_COMPLEX_OBJECT_DV_CODED_TEXT(ObjectNode cobject, Map bind_data, String attrName)
    {
+      println ""
       log.info('bind_C_COMPLEX_OBJECT_DV_CODED_TEXT()'+ cobject.path)
-      
-      /*
-       * .bind_C_COMPLEX_OBJECT_DV_CODED_TEXT
-       * /content[at0002]/activities[at0003]/description[at0004]/items[at0006]/value
-       * [/content[at0002]/activities[at0003]/description[at0004]/items[at0006]/value:tipo estudio]  este llama a bind_ConstraintRef_CodePhrase()
-       * 
-       * .bind_C_COMPLEX_OBJECT_DV_CODED_TEXT
-       * /content[at0002]/activities[at0003]/description[at0004]/items[at0005]/value
-       * [/content[at0002]/activities[at0003]/description[at0004]/items[at0005]/value:at0010]  este llama a bind_CCodePhrase_CodePhrase()
-       */
-      //println "     .bind_C_COMPLEX_OBJECT_DV_CODED_TEXT "+ cobject.path.text() +" "+ bind_data +" "+ attrName
+      println " >>>> bind_data: "+ bind_data
       
       if (!cobject.attributes || cobject.attributes.size() == 0)
       {
-         //println "-- bind_C_COMPLEX_OBJECT_DV_CODED_TEXT sin restricciones: " + cobject.rm_type_name.text() + " "+ bind_data
+         println " >>>> -- bind_C_COMPLEX_OBJECT_DV_CODED_TEXT sin restricciones: " + cobject.rm_type_name.text() + " "+ bind_data
       }
       
       String method
@@ -794,18 +787,19 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
          // bind_CSingleName
          method = 'bind_'+ attr.type
          
-         /**
-          * [[code_string:todo, terminology_id_name:todo, terminology_id_version:todo]] viene de bind_xxxx_CodePhrase
-          */
-         items = this."$method"(attr, filtered_data)
+         println " >>>> "+ attr +" "+ method
          
+         // [[code_string:todo, terminology_id_name:todo, terminology_id_version:todo]] viene de bind_xxxx_CodePhrase
+         items = this."$method"(attr, filtered_data)
          
          //println " dv_coded_text items: " + items
          // dv_coded_text items: [[codeString:at0014, terminologyIdName:local, terminologyIdVersion:null]]
          // dv_coded_text items: [[codeString:todo, terminologyIdName:todo, terminologyIdVersion:todo]]
-         
          filtered_data = [:]
       }
+      
+      println " >>>> -+++++ DV_CODED_TEXT +++ "
+      println " >>>> items: "+ items // items: [[codeString:null, terminologyIdName:, terminologyIdVersion:]]
       
       // FIXME: para bind_ConstraintRef_CodePhrase esto es el texto: OK
       //        para bind_CCodePhrase_CodePhrase esto es el codeString: CORREGIR
@@ -815,13 +809,13 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
       //
       //items[0]["value"] = bind_data[cobject.path.text()] // Si la terminologia es local, el value lo saco del arquetipo, de la ontologia.
       
-      //println "PIDO TERMINO: "+ items[0]["codeString"]
-      
       // FIXME: hardcoded locale
       // Sino pregunto esto, el codeString es TODO y devuelve un termino null
       if (items[0]["terminologyIdName"] == "local")
       {
-         items[0]["value"] = archetype.ontology.termDefinition("es", items[0]["codeString"]).getText()
+         //items[0]["value"] = archetype.ontology.termDefinition("es", items[0]["codeString"]).getText()
+         println " >>>> archetype: "+ cobject.archetypeId +" term: "+ items[0]["codeString"]
+         items[0]["value"] = template.getTerm(cobject.archetypeId, items[0]["codeString"])
       }
       else // se deberia sacar el codigo del ST
       {
@@ -837,8 +831,7 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
                 <terminologyIdName>LOINC</terminologyIdName>
                 <terminologyIdVersion>todo</terminologyIdVersion>
               </value>
-            </registros.Element>
-         */
+            </registros.Element> */
          
          // [/content[at0002]/activities[at0003]/description[at0004]/items[at0006]/value/defining_code:13535-0,
          //  /content[at0002]/activities[at0003]/description[at0004]/items[at0006]/value/value:hem├│lisis en sacarosa] <<< este es el value
@@ -846,13 +839,34 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
          items[0]["value"] = bind_data[cobject.path + "/value"] // Debe venir el value de la ui como path()/value (.../value/value)
       }
       
-      //println "DV_CODED_TEXT items: "+ items
       // DV_CODED_TEXT items: [[codeString:at0014, terminologyIdName:local, terminologyIdVersion:null, value:microbiologia]]
       // DV_CODED_TEXT items: [[codeString:todo, terminologyIdName:todo, terminologyIdVersion:todo]]
-      
       items[0]["aomType"] = 'C_COMPLEX_OBJECT'
       
+      
       // [[value: ..., codeString: ..., terminologyIdName:..., terminologyIdVersion: ...]]
+      // bind_data:
+      /*
+       * [/content[archetype_id=openEHR-EHR-OBSERVATION.pulse.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value/units:/min,
+       * /content[archetype_id=openEHR-EHR-OBSERVATION.pulse.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/value/magnitude:45,
+       * /content[archetype_id=openEHR-EHR-OBSERVATION.pulse.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/name/defining_code/code_string:at1026]
+       */
+      // FIXME: data is null
+      // 
+      println " >>>> ++++++ DV_CODED_TEXT: "+ items[0]
+      println "  "+ new DvCodedText(items[0]).validate() // false
+      
+      def d = new DvCodedText(items[0])
+      if (!d.validate())
+      {
+         d.errors.each {
+            println it
+         }
+      }
+      
+      println " >>>> /+++++ DV_CODED_TEXT +++ "
+      println ""
+      
       return new DvCodedText(items[0])
    }
    
@@ -1052,30 +1066,22 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
     */
    Map bind_C_CODE_PHRASE_CODE_PHRASE(ObjectNode cobject, Map bind_data, String attrName)
    {
-      log.info('bind_C_CODE_PHRASE_CODE_PHRASE()'+ cobject.path)
+      // /content[archetype_id=openEHR-EHR-OBSERVATION.pulse.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/name/defining_code
+      log.info('bind_C_CODE_PHRASE_CODE_PHRASE()'+ cobject.path +" "+ attrName)
       
-      //println "      bind_CCodePhrase_CodePhrase "+ cobject.path.text() +" " + bind_data +" "+ attrName
-      //println ""
-      
-      /*
-      println cobject
-      org.openehr.am.openehrprofile.datatypes.text.CCodePhrase@22ea5c[
-        terminologyId=local
-        codeList=[at0010, at0011, at0012, at0013, at0014]
-        defaultValue=<null>
-        assumedValue=<null>
-        rm_type_name.text()=CodePhrase
-        occurrences=org.openehr.rm.support.basic.Interval@4858c1[lower=1,lowerIncluded=true,upper=1,upperIncluded=true]
-        node_id=<null>
-        parent=<null>
-        anyAllowed=false
-        path=/content[at0002]/activities[at0003]/description[at0004]/items[at0005]/value/defining_code
-      ]
-      */
+      // bind_CCodePhrase_CodePhrase /content[archetype_id=openEHR-EHR-OBSERVATION.pulse.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/name/defining_code
+      // [/content[archetype_id=openEHR-EHR-OBSERVATION.pulse.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]/name/defining_code/code_string:at1026]
+      // defining_code
+      //println "      bind_CCodePhrase_CodePhrase "+ cobject.path +" " + bind_data +" "+ attrName
+      //
+      // cobject.xmlNode = <children xsi:type="C_CODE_PHRASE">
       
       // Crea el equivalente al CodePhrase
       // FIXME: ver de donde sacar la version (si es local, no hay version)
-      return [codeString: bind_data[cobject.path], terminologyIdName: cobject.xmlNode.terminologyId.name.text(), terminologyIdVersion: cobject.xmlNode.terminologyId.version.text()]
+      return [ codeString: bind_data[cobject.path + "/code_string"], 
+               terminologyIdName: cobject.xmlNode.terminology_id.value.text()
+               //, terminologyIdVersion: cobject.xmlNode.terminology_id.version.text()
+               ]
    }
    
    
@@ -1087,7 +1093,7 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
     */
    List bind_C_SINGLE_ATTRIBUTE(AttributeNode cattr, Map bind_data)
    {
-      log.info('bind_C_SINGLE_ATTRIBUTE()'+ cattr.rmAttributeName)
+      //log.info('bind_C_SINGLE_ATTRIBUTE()'+ cattr.rmAttributeName)
       
       String method
       def attrs = []
@@ -1124,7 +1130,7 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
     */
    List bind_C_MULTIPLE_ATTRIBUTE(AttributeNode cattr, Map bind_data)
    {
-      log.info('bind_C_MULTIPLE_ATTRIBUTE()'+ cattr.rmAttributeName)
+      //log.info('bind_C_MULTIPLE_ATTRIBUTE()'+ cattr.rmAttributeName)
       
       String method
       def attrs = []
