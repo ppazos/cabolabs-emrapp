@@ -90,7 +90,7 @@ environments {
            protocol = "http://" // https://
            ip = "localhost"
            port = "8080"
-           path = "/ehr-0.1/" // should start and end with /
+           path = "/ehr-0.3/" // should start and end with /
         }
         
 //        server {

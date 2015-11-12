@@ -4,7 +4,7 @@ package emr
 
 import groovyx.net.http.*
 //import groovyx.net.http.HTTPBuilder
-import static groovyx.net.http.ContentType.URLENC
+import static groovyx.net.http.ContentType.XML
 import java.text.SimpleDateFormat
 import sesion.ClinicalSession
 import xml.XmlSerializer
@@ -28,7 +28,7 @@ class CommitJob {
       
       def serializer
       def serializedDocs // List<String>
-      def params
+      def versions = "" // <versions><version>..</version>...</versions>
       
       // http://groovy.codehaus.org/modules/http-builder/doc/rest.html
       def ehr = new RESTClient(config.server.protocol + config.server.ip +':'+ config.server.port + config.server.path)
@@ -46,8 +46,6 @@ class CommitJob {
       csess.each { cses ->
          
          println "Commit de sesion: "+ cses.id + " para patUid: "+ cses.patientUid
-       
-         params = [ versions:[] ]
          
          // Serializa a XML los documentos que estan en la sesion clinica
          serializer = new XmlSerializer(cses)
@@ -61,7 +59,11 @@ class CommitJob {
             compoFile << serDoc
             // /logging
          
-            params['versions'] << serDoc
+            // Remove namespace declarations for version, will be added to versions
+            serDoc = serDoc.replace(' xmlns="http://schemas.openehr.org/v1"', '')
+            serDoc = serDoc.replace(' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"', '')
+            
+            versions += serDoc
          }
          
          // lookup de ehrId
@@ -98,14 +100,22 @@ class CommitJob {
          // post de commit de versions
          try
          {
-            params['ehrId'] = ehrId
-            
-            params['auditSystemId'] = 'CABOLABS_EHR' // TODO: should be configurable
-            params['auditCommitter'] = cses.composer.name
+            //params['ehrId'] = ehrId
+            //params['auditSystemId'] = 'CABOLABS_EHR' // TODO: should be configurable
+            //params['auditCommitter'] = cses.composer.name
             // TODO: auditCommitterId
             
             // Sin URLENC da error null pointer exception sin mas datos... no se porque es. PREGUNTAR!
-            res = ehr.post( path:'rest/commit', body:params, requestContentType: URLENC ) // query:[ehrId:ehrId] si es post creo que no acepta query
+            res = ehr.post(
+               path:'rest/commit',
+               requestContentType: XML,
+               query:  [
+                  ehrId: ehrId,
+                  auditSystemId: 'CABOLABS_EHR',
+                  auditCommitter: cses.composer.name
+               ],
+               body: '<versions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">'+ versions +'</versions>'
+            )
                
             /*
              * result {
