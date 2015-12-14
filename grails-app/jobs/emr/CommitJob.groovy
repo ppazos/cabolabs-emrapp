@@ -34,13 +34,13 @@ class CommitJob {
       def ehr = new RESTClient(config.server.protocol + config.server.ip +':'+ config.server.port + config.server.path)
       
       def res // response de requests
-      def ehrId // para lookup
+      def ehrUid // para lookup
       
-      // path para pedir el ehrId del patientUid
+      // path para pedir el ehrUid del patientUid
       // rest/ehrForSubject ?subjectUid&format
          
       // path para el commit
-      // ehr/commit ?ehrId
+      // ehr/commit ?ehrUid
       
       Random random = new Random()
       csess.each { cses ->
@@ -66,13 +66,13 @@ class CommitJob {
             versions += serDoc
          }
          
-         // lookup de ehrId
+         // lookup de ehrUid
          try
          {
             res = ehr.get( path:'rest/ehrForSubject', query:[subjectUid:cses.patientUid, format:'json'] )
             
             // FIXME: el paciente puede existir y no tener EHR, verificar si devuelve el EHR u otro error, ej. paciente no existe...
-            ehrId = res.data.ehrId
+            ehrUid = res.data.uid
          }
          catch (Exception e)
          {
@@ -92,7 +92,7 @@ class CommitJob {
             return // no debe serguir si falla el lookup
          }
 
-         println "ehrId: $ehrId"
+         println "ehrUid: $ehrUid"
          //println "Commit!"
        
          //println "versions: "+ params
@@ -100,7 +100,7 @@ class CommitJob {
          // post de commit de versions
          try
          {
-            //params['ehrId'] = ehrId
+            //params['ehrUid'] = ehrUid
             //params['auditSystemId'] = 'CABOLABS_EHR' // TODO: should be configurable
             //params['auditCommitter'] = cses.composer.name
             // TODO: auditCommitterId
@@ -110,7 +110,7 @@ class CommitJob {
                path:'rest/commit',
                requestContentType: XML,
                query:  [
-                  ehrId: ehrId,
+                  ehrUid: ehrUid,
                   auditSystemId: 'CABOLABS_EHR',
                   auditCommitter: cses.composer.name
                ],

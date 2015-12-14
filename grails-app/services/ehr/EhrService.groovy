@@ -212,7 +212,7 @@ class EhrService {
    def String getEhrIdByPatientId(String patientUid)
    {
       def res
-      def ehrId
+      def ehrUid
       
       // Pide datos al EHR Server
       def ehr = new RESTClient(config.server.protocol + config.server.ip +':'+ config.server.port + config.server.path)
@@ -228,7 +228,7 @@ class EhrService {
          
          // FIXME: el paciente puede existir y no tener EHR, verificar si devuelve el EHR u otro error, ej. paciente no existe...
          // WONTFIX: siempre tira una excepcion en cada caso de error porque el servidor tira error 500 not found en esos casos.
-         ehrId = res.data.ehrId
+         ehrUid = res.data.uid
       }
       catch (org.apache.http.conn.HttpHostConnectException e) // no hay conectividad
       {
@@ -262,7 +262,7 @@ class EhrService {
          return
       }
       
-      return ehrId
+      return ehrUid
       
    } // getEhrIdByPatientId
 }

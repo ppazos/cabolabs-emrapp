@@ -660,9 +660,9 @@ class RegistrosController {
       //println params
       //println params.datosPaciente
       
-      // el ehrId se podria resolver en el momento del commit usando el uid del paciente...
-      // 1. query del ehrId por el patientUid
-      // 2. creo sesion con el ehrId
+      // el ehrUid se podria resolver en el momento del commit usando el uid del paciente...
+      // 1. query del ehrUid por el patientUid
+      // 2. creo sesion con el ehrUid
       
       def cses = new ClinicalSession(patientUid: patientUid)
       cses.datosPaciente = ehrService.getPatient(patientUid)
@@ -776,7 +776,7 @@ class RegistrosController {
    def compositionList(String patientUid)
    {
       def res
-      def ehrId = ehrService.getEhrIdByPatientId(patientUid)
+      def ehrUid = ehrService.getEhrIdByPatientId(patientUid)
       
       
       /* ****
@@ -795,7 +795,7 @@ class RegistrosController {
          
          // FIXME: el paciente puede existir y no tener EHR, verificar si devuelve el EHR u otro error, ej. paciente no existe...
          // WONTFIX: siempre tira una excepcion en cada caso de error porque el servidor tira error 500 not found en esos casos.
-         ehrId = res.data.ehrId
+         ehrUid = res.data.uid
       }
       catch (org.apache.http.conn.HttpHostConnectException e) // no hay conectividad
       {
@@ -830,12 +830,12 @@ class RegistrosController {
       }
       */
       
-      println "ehrId: $ehrId"
+      println "ehrUid: $ehrUid"
       
       try
       {
          def ehr = new RESTClient(config.server.protocol + config.server.ip +':'+ config.server.port + config.server.path)
-         res = ehr.get( path:'test/findCompositions', query:[ehrId:ehrId] ) // Por ahora no hay format, findCompositions tira siempre XML
+         res = ehr.get( path:'test/findCompositions', query:[ehrUid:ehrUid] ) // Por ahora no hay format, findCompositions tira siempre XML
          
          //println res.data // TEST NodeChild (XML parseado)
       }
@@ -867,7 +867,7 @@ class RegistrosController {
       def ehr = new RESTClient(config.server.protocol + config.server.ip +':'+ config.server.port + config.server.path)
       def res
       
-      // Lookup de ehrId por subjectId
+      // Lookup de ehrUid por subjectId
       // FIXME: esto se puede evitar si viene el dato con el paciente
       try
       {
@@ -896,14 +896,14 @@ class RegistrosController {
     */
    def checkoutComposition(String uid, String patientUid)
    {
-      def ehrId = ehrService.getEhrIdByPatientId(patientUid)
+      def ehrUid = ehrService.getEhrIdByPatientId(patientUid)
       
       def ehr = new RESTClient(config.server.protocol + config.server.ip +':'+ config.server.port + config.server.path)
       
       def res
       try
       {
-         res = ehr.get( path:'rest/checkout', contentType: TEXT, query:[ehrId:ehrId, compositionUid:uid] )
+         res = ehr.get( path:'rest/checkout', contentType: TEXT, query:[ehrUid:ehrUid, compositionUid:uid] )
       }
       catch (Exception e)
       {
