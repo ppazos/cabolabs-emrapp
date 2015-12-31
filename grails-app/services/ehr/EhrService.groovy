@@ -11,6 +11,32 @@ class EhrService {
    def config = Holders.config
    
    
+   def login(String username, String password, String orgnumber)
+   {
+      // service login
+      // set token on session
+      def ehr = new RESTClient(config.server.protocol + config.server.ip +':'+ config.server.port + config.server.path)
+      try
+      {
+         // Sin URLENC da error null pointer exception sin mas datos... no se porque es. PREGUNTAR!
+         def res = ehr.post(
+            path:'rest/login',
+            requestContentType: URLENC,
+            body: [username: username, password: password, organization: orgnumber]
+         )
+         
+         // token
+         return res.responseData.token
+      }
+      catch (Exception e)
+      {
+         // FIXME: log a disco
+         println "except 2:" + e.message
+         e.printStackTrace(System.out)
+      }
+   }
+   
+   
    /**
     * Get a list of patients from the server.
     * @return
@@ -135,7 +161,7 @@ class EhrService {
     * @param uid
     * @return
     */
-   def getPatient(String uid)
+   def getPatient(String uid, String token)
    {
       if (cache[uid])
       {
@@ -158,6 +184,7 @@ class EhrService {
             uri.query = [ format: 'json', uid: uid ]
           
             headers.'User-Agent' = 'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4'
+            headers.'Authorization' = 'Bearer '+ token
             
             // Begin: java code to set HTTP Parameters/Properties
             // Groovy HTTPBuilder doesn't provide convenience methods
@@ -209,7 +236,7 @@ class EhrService {
    } // getPatient
    
    
-   def String getEhrIdByPatientId(String patientUid)
+   def String getEhrIdByPatientId(String patientUid, String token)
    {
       def res
       def ehrUid
@@ -224,7 +251,9 @@ class EhrService {
       {
          // Si ocurre un error (status >399), tira una exception porque el defaultFailureHandler asi lo hace.
          // Para obtener la respuesta del XML que devuelve el servidor, se accede al campo "response" en la exception.
-         res = ehr.get( path:'rest/ehrForSubject', query:[subjectUid:patientUid, format:'json'] )
+         res = ehr.get( path: 'rest/ehrForSubject',
+                        query: [subjectUid:patientUid, format:'json'],
+                        headers: ['Authorization': 'Bearer '+ token] )
          
          // FIXME: el paciente puede existir y no tener EHR, verificar si devuelve el EHR u otro error, ej. paciente no existe...
          // WONTFIX: siempre tira una excepcion en cada caso de error porque el servidor tira error 500 not found en esos casos.

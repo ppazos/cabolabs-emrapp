@@ -4,7 +4,6 @@ import java.awt.image.RescaleOp;
 
 import binder.DataBinder
 import com.thoughtworks.xstream.XStream
-//import com.thoughtworks.xstream.XStream
 import org.openehr.am.archetype.Archetype
 import org.openehr.am.archetype.constraintmodel.CAttribute
 import org.openehr.am.archetype.constraintmodel.CComplexObject
@@ -228,7 +227,7 @@ class RegistrosController {
       // se los pido al servidor.
       if (!params.datosPaciente)
       {
-         params.datosPaciente = ehrService.getPatient(patientUid)
+         params.datosPaciente = ehrService.getPatient(patientUid, session.token)
       }
       
       // Solo renderea la vista
@@ -665,7 +664,7 @@ class RegistrosController {
       // 2. creo sesion con el ehrUid
       
       def cses = new ClinicalSession(patientUid: patientUid)
-      cses.datosPaciente = ehrService.getPatient(patientUid)
+      cses.datosPaciente = ehrService.getPatient(patientUid, session.token)
       
       if (!cses.save(flush:true))
       {
@@ -776,7 +775,7 @@ class RegistrosController {
    def compositionList(String patientUid)
    {
       def res
-      def ehrUid = ehrService.getEhrIdByPatientId(patientUid)
+      def ehrUid = ehrService.getEhrIdByPatientId(patientUid, session.token)
       
       
       /* ****
@@ -835,7 +834,7 @@ class RegistrosController {
       try
       {
          def ehr = new RESTClient(config.server.protocol + config.server.ip +':'+ config.server.port + config.server.path)
-         res = ehr.get( path:'test/findCompositions', query:[ehrUid:ehrUid] ) // Por ahora no hay format, findCompositions tira siempre XML
+         res = ehr.get( path:'rest/compositions', query:[ehrUid:ehrUid] ) // Por ahora no hay format, findCompositions tira siempre XML
          
          //println res.data // TEST NodeChild (XML parseado)
       }
@@ -896,7 +895,7 @@ class RegistrosController {
     */
    def checkoutComposition(String uid, String patientUid)
    {
-      def ehrUid = ehrService.getEhrIdByPatientId(patientUid)
+      def ehrUid = ehrService.getEhrIdByPatientId(patientUid, session.token)
       
       def ehr = new RESTClient(config.server.protocol + config.server.ip +':'+ config.server.port + config.server.path)
       
@@ -938,7 +937,7 @@ class RegistrosController {
 
 
       def cses = new ClinicalSession(patientUid: patientUid)
-      cses.datosPaciente = ehrService.getPatient(patientUid)
+      cses.datosPaciente = ehrService.getPatient(patientUid, session.token)
       
       
       

@@ -141,11 +141,15 @@
             <table>
               <tr>
                 <th>Usuario</th>
-                <td><input type="text" id="user" name="user" size="24" /></td>
+                <td><input type="text" id="user" name="username" size="24" /></td>
               </tr>
               <tr>
                 <th>Clave</th>
-                <td><input type="password" name="pass" size="24" /></td>
+                <td><input type="password" name="password" size="24" /></td>
+              </tr>
+              <tr>
+                <th>Organization</th>
+                <td><input type="text" name="orgnumber" size="24" /></td>
               </tr>
               <tr>
                 <th></th>

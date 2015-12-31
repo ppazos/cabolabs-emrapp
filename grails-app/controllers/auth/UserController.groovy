@@ -2,14 +2,38 @@ package auth
 
 import org.springframework.dao.DataIntegrityViolationException
 
+import ehr.EhrService
+
 class UserController {
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+   static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
-    def login(String user, String pass)
-    {
-       if (params.doit)
-       {
+   EhrService ehrService
+   
+   def login(String username, String password, String orgnumber)
+   {
+      if (params.doit)
+      {
+         if (!username && !password && !orgnumber)
+         {
+            flash.message = 'Especifique todos los campos'
+            return
+         }
+         
+         def token = ehrService.login(username, password, orgnumber)
+         
+         if (token)
+         {
+            session.token = token
+            session.username = username
+            redirect(controller:'patient', action:'list')
+            return
+         }
+         else
+         {
+            flash.message = "Usuario no existe"
+         }
+         /*
            def u = User.findByUserAndPass(user, pass)
            if (u)
            {
@@ -22,29 +46,31 @@ class UserController {
               println "login err"
               flash.message = "Usuario no existe"
            }
-       }
+         */
+      }
    }
    
    def logout()
    {
-       session.user = null
+       session.token = null
+       session.username = null
        redirect(action:'login')
    }
-    
-    def index() {
-        redirect(action: "list", params: params)
-    }
+   
+   def index() {
+      redirect(action: "list", params: params)
+   }
 
-    def list(Integer max) {
-        params.max = Math.min(max ?: 10, 100)
-        [userInstanceList: User.list(params), userInstanceTotal: User.count()]
-    }
+   def list(Integer max) {
+      params.max = Math.min(max ?: 10, 100)
+      [userInstanceList: User.list(params), userInstanceTotal: User.count()]
+   }
 
-    def create() {
-        [userInstance: new User(params)]
-    }
+   def create() {
+      [userInstance: new User(params)]
+   }
 
-    def save() {
+   def save() {
         def userInstance = new User(params)
         if (!userInstance.save(flush: true)) {
             render(view: "create", model: [userInstance: userInstance])
@@ -53,9 +79,9 @@ class UserController {
 
         flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), userInstance.id])
         redirect(action: "show", id: userInstance.id)
-    }
+   }
 
-    def show(Long id) {
+   def show(Long id) {
         def userInstance = User.get(id)
         if (!userInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), id])
@@ -64,9 +90,9 @@ class UserController {
         }
 
         [userInstance: userInstance]
-    }
+   }
 
-    def edit(Long id) {
+   def edit(Long id) {
         def userInstance = User.get(id)
         if (!userInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), id])
@@ -75,9 +101,9 @@ class UserController {
         }
 
         [userInstance: userInstance]
-    }
+   }
 
-    def update(Long id, Long version) {
+   def update(Long id, Long version) {
         def userInstance = User.get(id)
         if (!userInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), id])
@@ -104,9 +130,9 @@ class UserController {
 
         flash.message = message(code: 'default.updated.message', args: [message(code: 'user.label', default: 'User'), userInstance.id])
         redirect(action: "show", id: userInstance.id)
-    }
+   }
 
-    def delete(Long id) {
+   def delete(Long id) {
         def userInstance = User.get(id)
         if (!userInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), id])
@@ -123,5 +149,5 @@ class UserController {
             flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'user.label', default: 'User'), id])
             redirect(action: "show", id: id)
         }
-    }
+   }
 }

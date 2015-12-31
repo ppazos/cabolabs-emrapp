@@ -93,17 +93,17 @@ grails.project.dependency.resolution = {
         //runtime ":yui-minify-resources:0.1.4"
 
         
-        build ":tomcat:7.0.52.1"
+        build ":tomcat:7.0.55.2"
 
         // plugins for the compile step
-        compile ':scaffolding:2.1.0'
-        compile ':cache:1.1.3'
-        compile ':asset-pipeline:1.8.3'
+        compile ':scaffolding:2.1.2'
+        compile ':cache:1.1.8'
+        compile ':asset-pipeline:2.1.5'
 
         // plugins needed at runtime but not for compilation
-        runtime ':hibernate4:4.3.5.4' // or ':hibernate:3.6.10.14'
+        runtime ':hibernate4:4.3.8.1' // or ':hibernate:3.6.10.14'
         runtime ':database-migration:1.4.0'
-        runtime ':jquery:1.11.0.2'
+        runtime ':jquery:1.11.1'
         
         compile ':quartz:1.0.2'
     }
