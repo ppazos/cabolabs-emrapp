@@ -21,7 +21,7 @@ class EhrService {
          // Sin URLENC da error null pointer exception sin mas datos... no se porque es. PREGUNTAR!
          def res = ehr.post(
             path:'rest/login',
-            requestContentType: URLENC,
+            requestContentType: ContentType.URLENC,
             body: [username: username, password: password, organization: orgnumber]
          )
          
@@ -41,7 +41,7 @@ class EhrService {
     * Get a list of patients from the server.
     * @return
     */
-   def getPatients(int max = 20)
+   def getPatients(String token, int max = 20)
    {
       /**
        * Con timeout:
@@ -89,6 +89,7 @@ class EhrService {
            uri.query = [ format: 'json', max: max ] // TODO: max/offset are not implemented yet
          
            headers.'User-Agent' = 'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4'
+           headers.'Authorization' = 'Bearer '+ token
            
            // Begin: java code to set HTTP Parameters/Properties
            // Groovy HTTPBuilder doesn't provide convenience methods

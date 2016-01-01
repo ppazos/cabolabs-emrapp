@@ -27,9 +27,9 @@
       #form1 {
         border: 2px solid #999;
         padding: 20px 20px;
-        width: 290px;
+        width: 330px;
+        display: inline-block;
         position: relative;
-        left: 25%;
         background-color: #fff;
         -moz-box-shadow:    2px 3px 5px 1px #ccc;
         -webkit-box-shadow: 2px 3px 5px 1px #ccc;
@@ -39,7 +39,6 @@
         border-radius: 10px;
       }
       #form1 table {
-        width: 270px;
         margin-bottom: 0px;
       }
       p {margin:1em 0}
@@ -69,14 +68,10 @@
         margin: 10px auto;
         background-color: #99ccff;
       }
-      /* para centrar el login/sign horiz */
       #sign_panel {
-        width: 50%;
       }
       #sign_panel > div {
-        position: relative;
-        left: 50%;
-        width: 50%;
+        text-align:center;
       }
     </style>
     
@@ -110,11 +105,15 @@
           <table>
             <tr>
               <th><g:message code="registros.sign.field.user" /></th>
-              <td><input type="text" id="user" name="user" size="24" /></td>
+              <td><input type="text" id="user" name="username" size="24" /></td>
             </tr>
             <tr>
               <th><g:message code="registros.sign.field.pass" /></th>
-              <td><input type="password" name="pass" size="24" /></td>
+              <td><input type="password" name="password" size="24" /></td>
+            </tr>
+            <tr>
+              <th>Organization</th>
+              <td><input type="text" name="orgnumber" size="24" /></td>
             </tr>
             <tr>
               <th></th>

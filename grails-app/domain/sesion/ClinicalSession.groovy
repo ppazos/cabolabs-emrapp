@@ -19,7 +19,8 @@ class ClinicalSession {
    
    Map datosPaciente = [:] // Map<String,String> cachea los datos para no tener que pedirlos de nuevo
    
-   User composer // se setea cuando se firma el registro
+   //User composer // se setea cuando se firma el registro
+   String composer
    
    static hasMany = [documents: Document]
    

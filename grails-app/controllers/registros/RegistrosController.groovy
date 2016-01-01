@@ -722,17 +722,30 @@ class RegistrosController {
     * @param docId
     * @return
     */
-   def sign(String user, String pass)
+   def sign(String username, String password, String orgnumber)
    {
       if (params.doit)
       {
+         if (!username && !password && !orgnumber)
+         {
+            flash.message = 'Especifique todos los campos'
+            return
+         }
+         
+         /*
          def u = User.findByUserAndPass(user, pass)
          if (!u)
          {
             flash.message = g.message(code:'registros.sign.error.auth')
             return
          }
-         
+         */
+         def token = ehrService.login(username, password, orgnumber)
+         if (!token)
+         {
+            flash.message = g.message(code:'registros.sign.error.auth')
+            return
+         }
          
          def cses = session.clinicalSession
          
@@ -745,7 +758,7 @@ class RegistrosController {
          }
          
          cses.open = false
-         cses.composer = u // TODO> si el usuario en sesion es distinto al que firma, habria que dejar constancia del que esta en sesion para audit.
+         cses.composer = username // TODO> si el usuario en sesion es distinto al que firma, habria que dejar constancia del que esta en sesion para audit.
          cses.dateClosed = new Date()
          
          if (!cses.save(flush:true))

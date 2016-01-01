@@ -112,7 +112,7 @@ class CommitJob {
                query:  [
                   ehrUid: ehrUid,
                   auditSystemId: 'CABOLABS_EHR',
-                  auditCommitter: cses.composer.name
+                  auditCommitter: cses.composer
                ],
                body: '<versions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">'+ versions +'</versions>'
             )

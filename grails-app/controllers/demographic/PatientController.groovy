@@ -37,7 +37,7 @@ class PatientController {
       // TIMER
       def start = System.currentTimeMillis()
       
-      def patientList = ehrService.getPatients()
+      def patientList = ehrService.getPatients(session.token)
       
       // FIXME: when we add support for pagination, the last page might result in an empty list and that's a valid response
       if (patientList.size() == 0) flash.message = g.message(code:'patient.patientList.error.serverError')

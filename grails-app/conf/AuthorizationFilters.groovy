@@ -10,7 +10,7 @@ class AuthorizationFilters {
         {
             before = {
                 
-                if( !session?.user &&
+                if( !session.token &&
                     !openActions.contains(controllerName+"-"+actionName) )
                 {
                     redirect(controller:'user', action:'login')
