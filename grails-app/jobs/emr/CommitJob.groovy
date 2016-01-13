@@ -32,6 +32,7 @@ class CommitJob {
       
       // http://groovy.codehaus.org/modules/http-builder/doc/rest.html
       def ehr = new RESTClient(config.server.protocol + config.server.ip +':'+ config.server.port + config.server.path)
+      def token
       
       def res // response de requests
       def ehrUid // para lookup
@@ -45,6 +46,8 @@ class CommitJob {
       Random random = new Random()
       csess.each { cses ->
          
+         token = cses.authToken
+         
          println "Commit de sesion: "+ cses.id + " para patUid: "+ cses.patientUid
          
          // Serializa a XML los documentos que estan en la sesion clinica
@@ -55,8 +58,11 @@ class CommitJob {
          serializedDocs.eachWithIndex { serDoc, i ->
          
             // logging
-            def compoFile = new File('committed' + File.separator +'composition_'+ random.nextInt(10000) +'_'+ i +'.xml')
+            def filename = 'committed' + File.separator +'composition_'+ random.nextInt(10000) +'_'+ i +'.xml'
+            def compoFile = new File(filename)
             compoFile << serDoc
+            
+            println "save $filename"
             // /logging
          
             // Remove namespace declarations for version, will be added to versions
@@ -69,7 +75,11 @@ class CommitJob {
          // lookup de ehrUid
          try
          {
-            res = ehr.get( path:'rest/ehrForSubject', query:[subjectUid:cses.patientUid, format:'json'] )
+            res = ehr.get(
+                path:'rest/ehrForSubject',
+                query:[subjectUid:cses.patientUid, format:'json'],
+                headers:['Authorization': 'Bearer '+ token]
+            )
             
             // FIXME: el paciente puede existir y no tener EHR, verificar si devuelve el EHR u otro error, ej. paciente no existe...
             ehrUid = res.data.uid
@@ -105,6 +115,11 @@ class CommitJob {
             //params['auditCommitter'] = cses.composer.name
             // TODO: auditCommitterId
             
+            def commit_versions ='<versions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">'+ versions +'</versions>'
+            
+            def versions_file = new File('committed' + File.separator +'versions_'+ random.nextInt(10000) +'_.xml')
+            versions_file << commit_versions
+            
             // Sin URLENC da error null pointer exception sin mas datos... no se porque es. PREGUNTAR!
             res = ehr.post(
                path:'rest/commit',
@@ -114,7 +129,8 @@ class CommitJob {
                   auditSystemId: 'CABOLABS_EHR',
                   auditCommitter: cses.composer
                ],
-               body: '<versions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openehr.org/v1">'+ versions +'</versions>'
+               headers:['Authorization': 'Bearer '+ token],
+               body: commit_versions
             )
                
             /*

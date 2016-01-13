@@ -125,12 +125,12 @@ class XmlSerializer {
                committer('xsi:type':"PARTY_IDENTIFIED") {
                   external_ref {
                      id('xsi:type': 'HIER_OBJECT_ID') {
-                        value(cses.composer.uid)
+                        value(cses.composer) // FIXME: now composer is the username .uid)
                      }
                      namespace('DEMOGRAPHIC')
                      type('PERSON')
                   }
-                  name(cses.composer.name)
+                  name(cses.composer) // FIXME: now composer is the username .name)
                   // identifiers DV_IDENTIFIER
                }
                
@@ -259,12 +259,12 @@ class XmlSerializer {
          
          external_ref {
             id('xsi:type': 'HIER_OBJECT_ID') {
-               value(cses.composer.uid)
+               value(cses.composer)// FIXME: now composer is the username .uid)
             }
             namespace('DEMOGRAPHIC')
             type('PERSON')
          }
-         name(cses.composer.name)
+         name(cses.composer)// FIXME: now composer is the username .name)
          // identifiers DV_IDENTIFIER
       }
       

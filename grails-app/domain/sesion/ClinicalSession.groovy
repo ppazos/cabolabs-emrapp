@@ -22,6 +22,8 @@ class ClinicalSession {
    //User composer // se setea cuando se firma el registro
    String composer
    
+   String authToken
+   
    static hasMany = [documents: Document]
    
    static constraints = {
