@@ -846,10 +846,85 @@ class RegistrosController {
       
       try
       {
+         // TODO: mover a EhrService
          def ehr = new RESTClient(config.server.protocol + config.server.ip +':'+ config.server.port + config.server.path)
-         res = ehr.get( path:'rest/compositions', query:[ehrUid:ehrUid] ) // Por ahora no hay format, findCompositions tira siempre XML
+         
+         // custom handlers to access the raw response from the reader
+         ehr.handler.failure = { resp, reader ->
+            println "failure handler"
+            [response:resp, reader:reader]
+         }
+         ehr.handler.success = { resp, reader ->
+            println "success handler"
+            [response:resp, reader:reader]
+         }
+         
+         res = ehr.get( path: 'rest/compositions',
+                        query: [ehrUid: ehrUid, format: 'json'],
+                        headers: ['Authorization': 'Bearer '+ session.token] )
          
          //println res.data // TEST NodeChild (XML parseado)
+
+         // groovy.util.slurpersupport.NodeChild for format XML
+         // net.sf.json.JSONObject for format JSON
+         //println res.reader.getClass()
+         //println res.response.getClass() //class groovyx.net.http.HttpResponseDecorator
+         
+         // JSON
+         //println res.reader.toString()
+         /*
+          * {
+               "result": [{
+                  "id": 1,
+                  "archetypeId": "openEHR-EHR-COMPOSITION.signos.v1",
+                  "category": "event",
+                  "dataIndexed": true,
+                  "ehrUid": "11111111-1111-1111-1111-111111111111",
+                  "lastVersion": true,
+                  "organizationUid": "d6b7bc9b-4909-4b80-ad8b-4f2c8ffa985c",
+                  "startTime": "2016-05-24 01:00:13",
+                  "subjectId": "11111111-1111-1111-1111-111111111111",
+                  "templateId": "Signos",
+                  "uid": "e20e3cc9-5def-47e6-a0d2-96cbf6675698"
+               }],
+               "pagination": {
+                  "max": 30,
+                  "offset": 0,
+                  "nextOffset": 30,
+                  "prevOffset": 0
+               }
+            }
+          */
+         
+         // XML
+         //println groovy.xml.XmlUtil.serialize(res.reader)
+         /* for reader class NodeChild (format = xml)
+          * <?xml version="1.0" encoding="UTF-8"?>
+          * <map>
+              <entry key="result">
+                <compositionIndex id="1">
+                  <archetypeId>openEHR-EHR-COMPOSITION.signos.v1</archetypeId>
+                  <category>event</category>
+                  <dataIndexed>true</dataIndexed>
+                  <ehrUid>11111111-1111-1111-1111-111111111111</ehrUid>
+                  <lastVersion>true</lastVersion>
+                  <organizationUid>d6b7bc9b-4909-4b80-ad8b-4f2c8ffa985c</organizationUid>
+                  <startTime>2016-05-24 01:00:13</startTime>
+                  <subjectId>11111111-1111-1111-1111-111111111111</subjectId>
+                  <templateId>Signos</templateId>
+                  <uid>e20e3cc9-5def-47e6-a0d2-96cbf6675698</uid>
+                </compositionIndex>
+              </entry>
+              <entry key="pagination">
+                <entry key="max">30</entry>
+                <entry key="offset">0</entry>
+                <entry key="nextOffset">30</entry>
+                <entry key="prevOffset">0</entry>
+              </entry>
+            </map>
+          */
+         
+         //println res.response.data.name() // map
       }
       catch (Exception e)
       {
@@ -859,10 +934,8 @@ class RegistrosController {
       }
       
       // TODO: meterle el modelo
-      render (template:'compositionList', model:[compositionIdxList:res.data])
+      render (template:'compositionList', model:[compositionIdxList:res.reader.result])
    }
-   
-   
    
    
    
@@ -915,7 +988,12 @@ class RegistrosController {
       def res
       try
       {
-         res = ehr.get( path:'rest/checkout', contentType: TEXT, query:[ehrUid:ehrUid, compositionUid:uid] )
+         res = ehr.get( 
+            path: 'rest/checkout', 
+            contentType: TEXT, 
+            query: [ehrUid:ehrUid, compositionUid:uid],
+            headers: ['Authorization': 'Bearer '+ session.token]
+         )
       }
       catch (Exception e)
       {
@@ -949,7 +1027,7 @@ class RegistrosController {
       // TODO: refactor
 
 
-      def cses = new ClinicalSession(patientUid: patientUid)
+      def cses = new ClinicalSession(patientUid: patientUid, authToken: session.token)
       cses.datosPaciente = ehrService.getPatient(patientUid, session.token)
       
       

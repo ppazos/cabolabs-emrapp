@@ -8,11 +8,11 @@
     <th><g:message code="registros.compositionList.field.subjectId" /></th>
     <th></th>
   </tr>
-  <%--
+  <%-- AHORA ES JSONObject
   cIdxList es NodeChild (XML Parseado) que devuelve EHRServer.findCompositions()
   el nombre del nodo cIdxList es 'list' y los hijos son compositionIndex.
   --%>
-  <g:each in="${compositionIdxList.children()}" var="c">
+  <g:each in="${compositionIdxList}" var="c">
 	   <tr>
 	     <!-- <td>${c.ehrId}</td> -->
 	     <td>${c.uid}</td>
