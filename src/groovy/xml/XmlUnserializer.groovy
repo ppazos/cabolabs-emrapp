@@ -61,7 +61,7 @@ class XmlUnserializer {
          
          contentNode.children().each { child ->
            
-            println "path: "+ getNodePath(parentPath, child)
+            //println "path: "+ getNodePath(parentPath, child)
             
             if (child.'@xsi:type'.text() == 'ELEMENT')
             {
@@ -70,6 +70,16 @@ class XmlUnserializer {
                processDvMethod = 'process_'+ child.value.'@xsi:type'.text()
 
                this."$processDvMethod"(child.value, getNodePath(parentPath, child))
+               
+               // if the element has a constraint for the name
+               if (!child.name.isEmpty())
+               {
+                  // if the type of the element name is not stated, it is a DV_TEXT because is defined that way on the IM
+                  if (child.name.'@xsi:type'.isEmpty()) processDvMethod = 'process_DV_TEXT'
+                  else processDvMethod = 'process_'+ child.name.'@xsi:type'.text() // DV_CODED_TEXT or DV_TEXT
+                  
+                  this."$processDvMethod"(child.name, getNodePath(parentPath, child))
+               }
             }
             else
             {
@@ -175,6 +185,7 @@ class XmlUnserializer {
    
    private process_DV_CODED_TEXT(parsedDv, path)
    {
+      println ">>>> process_DV_CODED_TEXT "+ path
       /*
        * <change_type>
             <value>creation</value>
@@ -185,8 +196,18 @@ class XmlUnserializer {
               <code_string>249</code_string>
             </defining_code>
           </change_type>
+          
+          <name xsi:type="DV_CODED_TEXT">
+            <value>Frecuencia del pulso</value>
+            <defining_code>
+              <terminology_id>
+                <value>local</value>
+              </terminology_id>
+              <code_string>at1026</code_string>
+            </defining_code>
+          </name>
        */
-      
+      doc.bindData[getNodePath(path, parsedDv) + '/defining_code/code_string'] = parsedDv.defining_code.code_string.text()
    }
    
    private process_DV_TEXT(parsedDv, path)
@@ -196,7 +217,7 @@ class XmlUnserializer {
        *   <value>...</value>
        * </value>
        */
-      
+      doc.bindData[getNodePath(path, parsedDv) + '/value'] = parsedDv.value.text()
    }
    
    private process_DV_BOOLEAN(parsedDv, path)

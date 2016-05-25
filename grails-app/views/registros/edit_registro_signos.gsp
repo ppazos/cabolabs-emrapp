@@ -245,14 +245,19 @@
               </g:else>
             </td>
             <td>
+              <!-- 
+              1. ${bindings['frecuencia_cardiaca_name']}<br/>
+              2. ${doc.bindData}<br/>
+              3. ${doc.bindData[ bindings['frecuencia_cardiaca_name'] ]}<br/>
+              -->
               <g:each in="${name?.attributes.find{ it.rmAttributeName == "defining_code" }.children[0].xmlNode.code_list}" var="code">
-                1. ${bindings['frecuencia_cardiaca_name']}
-                2. ${doc.bindData}
-                3. ${doc.bindData[ bindings['frecuencia_cardiaca_name'] ]}
-                4. ${code.text()}
+                <!-- 
+                code. ${code.text()}<br/>
+                -->
                 <label><input type="radio" value="${code.text()}" name="frecuencia_cardiaca_name" ${((doc.bindData[ bindings['frecuencia_cardiaca_name'] ] == code.text() ) ? 'checked="checked"':'')} />${template.getTerm('openEHR-EHR-OBSERVATION.pulse.v1', code.text())}</label>
               </g:each>
-              </br>
+              <br/>
+              
               <input type="text" name="frecuencia_cardiaca_mag" id="frecuencia_cardiaca_mag" value="${doc.bindData[ bindings['frecuencia_cardiaca_mag'] ]}" />
             </td>
             <td>

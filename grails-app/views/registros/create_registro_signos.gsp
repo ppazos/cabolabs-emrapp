@@ -247,7 +247,7 @@
               <g:each in="${name?.attributes.children.code_list}" var="code">
                 <label><input type="radio" value="${code.text()}" name="frecuencia_cardiaca_name" />${template.getTerm('openEHR-EHR-OBSERVATION.pulse.v1', code.text())}</label>
               </g:each>
-              </br>
+              <br/>
               
               <input type="text" name="frecuencia_cardiaca_mag" id="frecuencia_cardiaca_mag" />
             </td>
