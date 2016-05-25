@@ -214,7 +214,6 @@
                 <input type="text" value="${node?.xmlNode.list[0].units.text()}" readonly="readonly" name="temperatura_units" />
               </g:if>
               <g:else>
-                ${doc.bindData[ bindings['temperatura_units'] ]}
                 <g:each in="${node?.xmlNode.list}" var="item">
                   <label><input type="radio" value="${item.units.text()}" name="temperatura_units" ${((doc.bindData[ bindings['temperatura_units'] ] == item.units.text() ) ? 'checked="checked"':'')} />${item.units.text()}</label>
                 </g:each>
@@ -222,35 +221,53 @@
             </td>
           </tr>
           
-          <g:set var="node" value="${template.getNode( bindings['frecuencia_cardiaca'])}" />
+          <!--
+           this node has constraints for the name and the value
+           the difference from this to the respiratory frequency is
+           that the path in the binding her epoints to an ELEMENT, but
+           on the respiratory points to the ELEMENT.value, so the code
+           is a little different, here we need the ELEMENT because we
+           also need the constraint for the ELEMENT.name
+          -->
+          <g:set var="node" value="${template.getNode(bindings['frecuencia_cardiaca'])}" />
+          <g:set var="name" value="${node.attributes.find{ it.rmAttributeName == "name" }.children[0]}" />
+          <g:set var="valueConstraints" value="${node.attributes.find{ it.rmAttributeName == 'value' }.children[0]}" />
           <tr>
             <td>
               Frecuencia cardíaca:
-              <g:if test="${node?.xmlNode.list.size() == 1}">
-                <g:if test="${node?.xmlNode.list[0].magnitude}">
-                (${node?.xmlNode.list[0].magnitude.lower}..${node?.xmlNode.list[0].magnitude.upper})
+              <g:if test="${valueConstraints.xmlNode.list.size() == 1}">
+                <g:if test="${valueConstraints.xmlNode.list[0].magnitude}">
+                (${valueConstraints.xmlNode.list[0].magnitude.lower}..${valueConstraints.xmlNode.list[0].magnitude.upper})
                 </g:if>
               </g:if>
               <g:else>
-                TODO: al cambiar la unidad seleccionada, poner el rango respectivo si esta definido.
+                <!-- TODO: al cambiar la unidad seleccionada, poner el rango respectivo si esta definido. -->
               </g:else>
             </td>
             <td>
+              <g:each in="${name?.attributes.find{ it.rmAttributeName == "defining_code" }.children[0].xmlNode.code_list}" var="code">
+                1. ${bindings['frecuencia_cardiaca_name']}
+                2. ${doc.bindData}
+                3. ${doc.bindData[ bindings['frecuencia_cardiaca_name'] ]}
+                4. ${code.text()}
+                <label><input type="radio" value="${code.text()}" name="frecuencia_cardiaca_name" ${((doc.bindData[ bindings['frecuencia_cardiaca_name'] ] == code.text() ) ? 'checked="checked"':'')} />${template.getTerm('openEHR-EHR-OBSERVATION.pulse.v1', code.text())}</label>
+              </g:each>
+              </br>
               <input type="text" name="frecuencia_cardiaca_mag" id="frecuencia_cardiaca_mag" value="${doc.bindData[ bindings['frecuencia_cardiaca_mag'] ]}" />
             </td>
             <td>
-              <g:if test="${node?.xmlNode.list.size() == 1}">
-                <input type="text" value="${node?.xmlNode.list[0].units.text()}" readonly="readonly" name="frecuencia_cardiaca_units" />
+              <g:if test="${valueConstraints.xmlNode.list.size() == 1}">
+                <input type="text" value="${valueConstraints.xmlNode.list[0].units}" readonly="readonly" name="frecuencia_cardiaca_units" />
               </g:if>
               <g:else>
-                <g:each in="${node?.xmlNode.list}" var="item">
+                <g:each in="${valueConstraints.xmlNode.list}" var="item">
                   <label><input type="radio" value="${item.units.text()}" name="frecuencia_cardiaca_units" ${((doc.bindData[ bindings['frecuencia_cardiaca_units'] ] == item.units.text() ) ? 'checked="checked"':'')} />${item.units.text()}</label>
                 </g:each>
               </g:else>
             </td>
           </tr>
           
-          <g:set var="node" value="${template.getNode( bindings['frecuencia_respiratoria'])}" />
+          <g:set var="node" value="${template.getNode(bindings['frecuencia_respiratoria'])}" />
           <tr>
             <td>
               Frecuencia respiratoria:
@@ -329,7 +346,7 @@
 	               <!-- Al cambiar la unidad seleccionada, poner el rango respectivo si esta definido. -->
                   <g:each in="${node.xmlNode.list}" var="cdvq_item">
                     <span class="magnitude_constraint" id="estatura_${cdvq_item.units}">
-                      <g:if test="${node.xmlNode.list[0].magnitude}">
+                      <g:if test="${cdvq_item.magnitude}">
                         (${cdvq_item.magnitude.lower}..${cdvq_item.magnitude.upper})
                       </g:if>
                     </span>

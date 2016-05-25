@@ -263,8 +263,6 @@ class RegistrosController {
     */
    def save(String templateId, String operation)
    {
-      //println params
-      
       if (!['create', 'edit'].contains(operation)) throw new Exception('operation is not valid '+ operation)
       
       /*
@@ -1045,6 +1043,27 @@ class RegistrosController {
       def view = views[ templateId ][ 'edit' ]
       def template = manager.getTemplate(templateId)
 
+      // TEST
+      /*
+      def nnnn = template.getNode("/content[archetype_id=openEHR-EHR-OBSERVATION.pulse.v1]/data[at0002]/events[at0003]/data[at0001]/items[at0004]")
+      println nnnn // com.cabolabs.openehr.opt.model.ObjectNode@eebf1
+      println nnnn.attributes.find{it.rmAttributeName == 'value'}.children // [com.cabolabs.openehr.opt.model.ObjectNode@14ab3c5]
+      println nnnn.attributes.find{ it.rmAttributeName == "name" }.children[0].attributes.find{ it.rmAttributeName == "defining_code" }.children[0].xmlNode.code_list
+      */
+      /*
+      println nnnn.rmTypeName // ELEMENT
+      println nnnn.xmlNode // ELEMENTtruetruefalsefalse01at0004nametruetruefalsefalse11DV_CODED_TEXT ....
+      println nnnn.attributes // [com.cabolabs.openehr.opt.model.AttributeNode@1a430c9, com.cabolabs.openehr.opt.model.AttributeNode@7ef9af]
+      println nnnn.attributes.rmAttributeName // [name, value]
+      
+      nnnn = template.getNode("/content[archetype_id=openEHR-EHR-OBSERVATION.height.v1]/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value")
+      println nnnn // com.cabolabs.openehr.opt.model.ObjectNode@eebf1
+      println nnnn.rmTypeName // DV_QUANTITY
+      println nnnn.xmlNode // DV_QUANTITYtruetruefalsefalse11openehr122truetruefalsefalse01000cmtruetruefalsefalse0250in ....
+      println nnnn.attributes // []
+      println nnnn.attributes.rmAttributeName // []
+      */
+      //println template.nodes
       
       // xml to document to extract the path-value mapping used in the view to show the values.
       def xmlu = new xml.XmlUnserializer()
