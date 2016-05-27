@@ -231,13 +231,13 @@
           -->
           <g:set var="node" value="${template.getNode(bindings['frecuencia_cardiaca'])}" />
           <g:set var="name" value="${node.attributes.find{ it.rmAttributeName == "name" }.children[0]}" />
-          <g:set var="valueConstraints" value="${node.attributes.find{ it.rmAttributeName == 'value' }.children[0]}" />
+          <g:set var="value" value="${node.attributes.find{ it.rmAttributeName == 'value' }.children[0]}" />
           <tr>
             <td>
               Frecuencia cardíaca:
-              <g:if test="${valueConstraints.xmlNode.list.size() == 1}">
-                <g:if test="${valueConstraints.xmlNode.list[0].magnitude}">
-                (${valueConstraints.xmlNode.list[0].magnitude.lower}..${valueConstraints.xmlNode.list[0].magnitude.upper})
+              <g:if test="${value.xmlNode.list.size() == 1}">
+                <g:if test="${value.xmlNode.list[0].magnitude}">
+                (${value.xmlNode.list[0].magnitude.lower}..${value.xmlNode.list[0].magnitude.upper})
                 </g:if>
               </g:if>
               <g:else>
@@ -261,11 +261,11 @@
               <input type="text" name="frecuencia_cardiaca_mag" id="frecuencia_cardiaca_mag" value="${doc.bindData[ bindings['frecuencia_cardiaca_mag'] ]}" />
             </td>
             <td>
-              <g:if test="${valueConstraints.xmlNode.list.size() == 1}">
-                <input type="text" value="${valueConstraints.xmlNode.list[0].units}" readonly="readonly" name="frecuencia_cardiaca_units" />
+              <g:if test="${value.xmlNode.list.size() == 1}">
+                <input type="text" value="${value.xmlNode.list[0].units}" readonly="readonly" name="frecuencia_cardiaca_units" />
               </g:if>
               <g:else>
-                <g:each in="${valueConstraints.xmlNode.list}" var="item">
+                <g:each in="${value.xmlNode.list}" var="item">
                   <label><input type="radio" value="${item.units.text()}" name="frecuencia_cardiaca_units" ${((doc.bindData[ bindings['frecuencia_cardiaca_units'] ] == item.units.text() ) ? 'checked="checked"':'')} />${item.units.text()}</label>
                 </g:each>
               </g:else>

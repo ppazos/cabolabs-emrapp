@@ -501,7 +501,11 @@ bind_C_COMPLEX_OBJECT_DV_TEXT sin restricciones: DV_TEXT [/content[at0002]/activ
        *  [org.openehr.am.openehrprofile.datatypes.quantity.CDvQuantityItem@88db432c]
        */
       
-      return new DvQuantity( magnitude: bind_data[cdv.path + "/magnitude"],
+      // The new BigDecimal is because Grails was not binding the float correctly
+      // if "11.0" comes from the UI, it was binded as "110", and that was saved to the DB.
+      // With this, it works OK.
+      // http://stackoverflow.com/questions/37450774/grails-2-5-3-not-binding-float-fields-correctly/37454016
+      return new DvQuantity( magnitude: new BigDecimal(bind_data[cdv.path + "/magnitude"]),
                              units:     bind_data[cdv.path + "/units"],
                              aomType:   'C_DV_QUANTITY' )
    }
