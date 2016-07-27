@@ -240,13 +240,20 @@ class RegistrosController {
    
    def create(String templateId)
    {
+      //def resource = grailsApplication.parentContext.getResource("WEB-INF/grails-app/views/registros/"+ views[templateId][actionName] +".gsp")
+      //println "res : "+ resource      
+      //println "file: "+ resource.file
+      
+      /* This check doesnt work on prod, removed temporarly...
       // Verifica que exista la vista (avisa nomas para que no se olvide de crear la vista)
       def uri = "registros/"+ views[templateId][actionName] +".gsp"
       def resource = grailsAttributes.pagesTemplateEngine.getResourceForUri(uri)
+      
       if ( !(resource && resource.file && resource.exists()) )
       {
-         throw new Exception(g.message(code:'registros.create.error.viewDoesntExists') + uri)
+         throw new Exception(g.message(code:'registros.create.error.viewDoesntExists') + resource.file.absolutePath)
       }
+      */
       
       def template = manager.getTemplate(templateId)
       
