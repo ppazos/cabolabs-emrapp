@@ -670,7 +670,8 @@ class RegistrosController {
       
       def cses = new ClinicalSession(patientUid: patientUid, authToken: session.token)
       cses.datosPaciente = ehrService.getPatient(patientUid, session.token)
-      
+      cses.datosPaciente.remove('id')
+      cses.datosPaciente.remove('deleted')
       if (!cses.save(flush:true))
       {
          println cses.errors

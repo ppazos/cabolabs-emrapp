@@ -107,7 +107,7 @@ class EhrService {
               //println json
               /*
               data = [
-                 patients: [...],
+                 list: [...],
                  pagination: [
                     max, offset, nextOffset, prevOffset
                  ]
@@ -115,7 +115,7 @@ class EhrService {
               */
               
               //println xml.uid // on json los datos estan como maps
-              patientList = json.patients
+              patientList = json.list
               
               // Caches the result
               patientList.each { patient ->
