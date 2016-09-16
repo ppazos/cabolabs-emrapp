@@ -90,7 +90,7 @@ environments {
            protocol = "http://" // https://
            ip = "cabolabs-ehrserver.rhcloud.com"
            port = "80"
-           path = "/ehr/" // should start and end with /
+           path = "/" // should start and end with /
         }
         
 //        server {
