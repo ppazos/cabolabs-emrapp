@@ -2,10 +2,11 @@ package sesion
 
 import auth.User
 import registros.Document
+import demographic.Patient
 
 class ClinicalSession {
 
-   String patientUid
+   //String patientUid
    Date dateCreated
    
    /* fecha en la que se firma el registro y se cierra, es el commit logico al sistema,
@@ -17,7 +18,8 @@ class ClinicalSession {
    boolean open = true // se cierra cuando se firma
    boolean committed = false // true cuando se commitea al server
    
-   Map datosPaciente = [:] // Map<String,String> cachea los datos para no tener que pedirlos de nuevo
+   //Map datosPaciente = [:] // Map<String,String> cachea los datos para no tener que pedirlos de nuevo
+   Patient patient
    
    //User composer // se setea cuando se firma el registro
    String composer
@@ -27,7 +29,7 @@ class ClinicalSession {
    static hasMany = [documents: Document]
    
    static constraints = {
-      patientUid(nullable:false)
+      //patientUid(nullable:false)
       composer(nullable:true)
       dateClosed(nullable:true)
    }

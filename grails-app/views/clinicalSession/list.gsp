@@ -8,7 +8,7 @@
   <body>
     <div class="nav" role="navigation">
       <ul>
-        <li><g:link class="list" controller="patient" action="list"><g:message code="clinicalSession.list.nav.patients" /></g:link></li>
+        <li><g:link class="list" controller="patient" action="index"><g:message code="clinicalSession.list.nav.patients" /></g:link></li>
       </ul>
       <g:render template="/user/loggedUser" />
     </div>
@@ -35,7 +35,7 @@
             <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
               <td>${cses.id}</td>
               <td>
-                <g:link class="list" controller="registros" action="list" params="[patientUid:cses.patientUid]">${cses.datosPaciente.firstName} ${cses.datosPaciente.lastName}</g:link>
+                <g:link class="list" controller="registros" action="list" params="[patientUid:cses.patient.uid]">${cses.patient.firstname} ${cses.patient.lastname}</g:link>
               </td>
               <td>${cses.dateCreated}</td>
               <td>${cses.open}</td>

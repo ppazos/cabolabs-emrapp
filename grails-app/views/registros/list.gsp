@@ -36,10 +36,10 @@
   <body>
     <div class="nav" role="navigation">
       <ul>
-        <li><g:link class="list" controller="patient" action="list"><g:message code="registros.currentSession.action.patients" /></g:link></li>
+        <li><g:link class="list" controller="patient" action="index"><g:message code="registros.currentSession.action.patients" /></g:link></li>
         <li><g:link class="list" controller="clinicalSession" action="list"><g:message code="registros.currentSession.action.sessions" /></g:link></li>
         <li>
-          <g:set var="cses" value="${ClinicalSession.findByPatientUidAndOpen(params.patientUid, true)}" />
+          <g:set var="cses" value="${ClinicalSession.findByPatientAndOpen(patient, true)}" />
           <g:if test="${cses}">
             <g:link class="create" controller="registros" action="continueSession" id="${cses.id}"><g:message code="registros.list.action.continueSession" /></g:link>
           </g:if>
@@ -54,7 +54,7 @@
       <g:render template="/user/loggedUser" />
     </div>
     
-    <g:render template="patientData" model="${params.datosPaciente}" />
+    <g:render template="patientData" model="[patientInstance: patientInstance]" />
     
     <h1><g:message code="registros.currentSession.action.history" /></h1>
     <div class="content">

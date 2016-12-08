@@ -84,7 +84,10 @@
       <g:render template="/user/loggedUser" />
     </div>
     
-    <g:render template="patientData" model="${session.clinicalSession.datosPaciente}" />
+    <!-- evita error de lazy load si se accede a session.clinicalSession.documents -->
+    <g:set var="cses" value="${session.clinicalSession.refresh()}" />
+    
+    <g:render template="patientData" model="[patientInstance: cses.patient]" />
   
     <h1>Registro de signos</h1>
 

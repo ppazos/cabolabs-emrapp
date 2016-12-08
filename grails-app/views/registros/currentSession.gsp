@@ -35,27 +35,27 @@
   <body>
     <div class="nav" role="navigation">
       <ul>
-        <li><g:link class="list" controller="patient" action="list"><g:message code="registros.currentSession.action.patients" /></g:link></li>
+        <li><g:link class="list" controller="patient" action="index"><g:message code="registros.currentSession.action.patients" /></g:link></li>
         <li><g:link class="list" controller="clinicalSession" action="list"><g:message code="registros.currentSession.action.sessions" /></g:link></li>
-        <li><g:link class="list" controller="registros" action="list" params="[patientUid:session.clinicalSession.patientUid]"><g:message code="registros.currentSession.action.history" /></g:link></li>
+        <li><g:link class="list" controller="registros" action="list" params="[patientUid:session.clinicalSession.patient.uid]"><g:message code="registros.currentSession.action.history" /></g:link></li>
       </ul>
       <g:render template="/user/loggedUser" />
     </div>
     
-    <g:render template="patientData" model="${session.clinicalSession.datosPaciente}" />
+    <g:render template="patientData" model="[patientInstance: session.clinicalSession.patient]" />
     
     <h1><g:message code="registros.currentSession.label.createRecord" /></h1>
     <div class="content">
     
-      <%-- evita error de lazy load si se accede a session.clinicalSession.documents --%>
+      <!-- evita error de lazy load si se accede a session.clinicalSession.documents -->
       <g:set var="cses" value="${session.clinicalSession.refresh()}" />
     
       <g:each in="${templates}" var="template">
         
-        <%-- hay un doc para el arquetipo en la sesion? --%>
+        <!-- hay un doc para el arquetipo en la sesion? -->
         <g:set var="doc" value="${cses.getDocumentForTemplate( template.templateId )}" />
         
-        <%-- nombre y descripcion del arquetipo --%>
+        <!-- nombre y descripcion del arquetipo -->
         <g:set var="term" value="${template.getTerm(template.definition.archetypeId, "at0000")}" />
         
         <g:if test="${doc}">
@@ -68,14 +68,13 @@
         ${template.getDescription(template.definition.archetypeId, "at0000")}
         <br/><br/>
       </g:each>
-      
-      <%-- debe haber algun registro hecho para poder ir a firmar --%>
+
       <g:if test="${cses.documents.size() > 0}">
         <div id="sign">
           <g:link action="sign"><g:message code="registros.sign.action.sign" /></g:link>
         </div>
       </g:if>
-      
+       
       <%-- ahora tengo una pantalla de registros historicos
       <!-- Lista de registros en el EHR Server -->
       <h1>Registros historicos</h1>

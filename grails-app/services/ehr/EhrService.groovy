@@ -9,13 +9,13 @@ class EhrService {
    def cache = [:]
 
    def config = Holders.config
-   
+   def server_url = config.server.protocol + config.server.ip +':'+ config.server.port + config.server.path
    
    def login(String username, String password, String orgnumber)
    {
       // service login
       // set token on session
-      def ehr = new RESTClient(config.server.protocol + config.server.ip +':'+ config.server.port + config.server.path)
+      def ehr = new RESTClient(server_url)
       try
       {
          // Sin URLENC da error null pointer exception sin mas datos... no se porque es. PREGUNTAR!
@@ -31,16 +31,161 @@ class EhrService {
       catch (Exception e)
       {
          // FIXME: log a disco
-         println "except 2:" + e.message
+         println "except login:" + e.message
          e.printStackTrace(System.out)
       }
    }
    
-   
    /**
-    * Get a list of patients from the server.
+    * helps to get the uid of the current org to create ehrs for that org.
+    * @param username
     * @return
     */
+   def profile(String token, String username)
+   {
+      def ehr = new RESTClient(server_url)
+      ehr.headers.'User-Agent' = 'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4'
+      ehr.headers.'Authorization' = 'Bearer '+ token
+      try
+      {
+         // Sin URLENC da error null pointer exception sin mas datos... no se porque es. PREGUNTAR!
+         def res = ehr.get(
+            path: 'rest/profile/'+username,
+            query: [format: 'json']
+         )
+         
+         //println "profile res:"+ res.responseData.toString()
+         //println res.responseData.getClass()
+         
+         // username, email, organizations
+         return res.responseData
+      }
+      catch (Exception e)
+      {
+         // FIXME: log a disco
+         println "except profile:" + e.message
+         e.printStackTrace(System.out)
+      }
+   }
+   
+   def createEhr(String token, String subjectUid)
+   {
+      // service login
+      // set token on session
+      def ehr = new RESTClient(server_url)
+      ehr.headers.'User-Agent' = 'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4'
+      ehr.headers.'Authorization' = 'Bearer '+ token
+      try
+      {
+         // Sin URLENC da error null pointer exception sin mas datos... no se porque es. PREGUNTAR!
+         def res = ehr.post(
+            path:'rest/ehrs',
+            requestContentType: ContentType.URLENC,
+            body: [subjectUid: subjectUid]
+         )
+         
+         // ehr
+         return res.responseData
+      }
+      catch (Exception e)
+      {
+         // FIXME: log a disco
+         println "post ehrs:" + e.message
+         e.printStackTrace(System.out)
+      }
+   }
+   
+   def getCompositions(String token, String ehrUid)
+   {
+      def res = []
+      try
+      {
+         def ehr = new RESTClient(server_url)
+         
+         // custom handlers to access the raw response from the reader
+         ehr.handler.failure = { resp, reader ->
+            println "failure handler"
+            [response:resp, reader:reader]
+         }
+         ehr.handler.success = { resp, reader ->
+            println "success handler"
+            [response:resp, reader:reader]
+         }
+         
+         def data = ehr.get( path: 'rest/compositions',
+                        query: [ehrUid: ehrUid, format: 'json'],
+                        headers: ['Authorization': 'Bearer '+ token] )
+         
+         res = data.reader.result
+         
+         // JSON
+         //println res.reader.toString()
+         /*
+          * {
+               "result": [{
+                  "id": 1,
+                  "archetypeId": "openEHR-EHR-COMPOSITION.signos.v1",
+                  "category": "event",
+                  "dataIndexed": true,
+                  "ehrUid": "11111111-1111-1111-1111-111111111111",
+                  "lastVersion": true,
+                  "organizationUid": "d6b7bc9b-4909-4b80-ad8b-4f2c8ffa985c",
+                  "startTime": "2016-05-24 01:00:13",
+                  "subjectId": "11111111-1111-1111-1111-111111111111",
+                  "templateId": "Signos",
+                  "uid": "e20e3cc9-5def-47e6-a0d2-96cbf6675698"
+               }],
+               "pagination": {
+                  "max": 30,
+                  "offset": 0,
+                  "nextOffset": 30,
+                  "prevOffset": 0
+               }
+            }
+          */
+         
+         // XML
+         //println groovy.xml.XmlUtil.serialize(res.reader)
+         /* for reader class NodeChild (format = xml)
+          * <?xml version="1.0" encoding="UTF-8"?>
+          * <map>
+              <entry key="result">
+                <compositionIndex id="1">
+                  <archetypeId>openEHR-EHR-COMPOSITION.signos.v1</archetypeId>
+                  <category>event</category>
+                  <dataIndexed>true</dataIndexed>
+                  <ehrUid>11111111-1111-1111-1111-111111111111</ehrUid>
+                  <lastVersion>true</lastVersion>
+                  <organizationUid>d6b7bc9b-4909-4b80-ad8b-4f2c8ffa985c</organizationUid>
+                  <startTime>2016-05-24 01:00:13</startTime>
+                  <subjectId>11111111-1111-1111-1111-111111111111</subjectId>
+                  <templateId>Signos</templateId>
+                  <uid>e20e3cc9-5def-47e6-a0d2-96cbf6675698</uid>
+                </compositionIndex>
+              </entry>
+              <entry key="pagination">
+                <entry key="max">30</entry>
+                <entry key="offset">0</entry>
+                <entry key="nextOffset">30</entry>
+                <entry key="prevOffset">0</entry>
+              </entry>
+            </map>
+          */
+         
+         //println res.response.data.name() // map
+      }
+      catch (Exception e)
+      {
+         // TODO: log a disco
+         render "Ocurrio un error al obtener los registros del paciente "+ e.message
+         return res
+      }
+      
+      return res
+   }
+   
+   
+
    def getPatients(String token, int max = 20)
    {
       /**
