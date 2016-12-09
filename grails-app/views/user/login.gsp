@@ -56,6 +56,7 @@
         -webkit-border-radius: 10px;
         -moz-border-radius: 10px;
         border-radius: 10px;
+        width: 320px;;
       }
       #form1 table {
         width: 270px;
@@ -103,6 +104,9 @@
         text-align: right;
         width: 50%;
       }
+      .logo {
+        width: 50%;
+      }
     </style>
     <!--[if lt IE 8]>
       <style type="text/css">
@@ -133,7 +137,7 @@
       <div id="outer">
         <div id="formwrap">
           <g:form url="[action:'login']" method="post" id="form1">
-            <a href="http://cabolabs.com" target="_blank"><img src="http://cabolabs.com/images/logo_min_2.png" /></a>
+            <a href="http://cabolabs.com" target="_blank"><img src="${resource(dir: 'images', file: 'cabolabs_logo.png')}" class="logo" /></a>
             <h3 align="center">Sistema de Registro Clínico</h3>
             <g:if test="${flash.message}">
               <div class="error"><g:message code="${flash.message}" /></div>
