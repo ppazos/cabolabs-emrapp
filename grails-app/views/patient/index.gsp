@@ -14,6 +14,9 @@
       <ul>
         <li><g:link class="list" controller="clinicalSession" action="list"><g:message code="patient.list.action.sessions" /></g:link></li>
       </ul>
+      <ul>
+        <li><g:link class="create" controller="patient" action="create"><g:message code="patient.create.action" /></g:link></li>
+      </ul>
       <g:render template="/user/loggedUser" />
     </div>
     <div id="list-document" class="content scaffold-list" role="main">
@@ -26,9 +29,6 @@
 		<!--
 		TODO: busqueda de pacientes por nombre
 		-->
-		
-		<g:link controller="patient" action="create">Add patient</g:link>
-		
 		<table>
 		  <tr>
 		    <th><g:message code="patient.list_table.field.uid" /></th>
