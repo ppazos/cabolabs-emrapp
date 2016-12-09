@@ -25,6 +25,7 @@ import registros.valores.DataValue
 import sesion.ClinicalSession
 import auth.User
 import ehr.EhrService
+import demographic.Patient
 
 import groovyx.net.http.*
 import static groovyx.net.http.ContentType.TEXT
@@ -221,20 +222,7 @@ class RegistrosController {
     */
    def list(String patientUid)
    {
-      println "list: "+ params
-      
-      // Sino tengo ya los datos del paciente,
-      // se los pido al servidor.
-      if (!params.datosPaciente)
-      {
-         params.datosPaciente = ehrService.getPatient(patientUid, session.token)
-      }
-      
-      // Solo renderea la vista
-      // El param lo usa la vista para pedir al servidor
-      // los registros desde la accion compositionList
-      
-      println params
+      [patientInstance: Patient.findByUid(patientUid)]
    }
    
    
@@ -661,17 +649,12 @@ class RegistrosController {
     */
    def openSession(String patientUid)
    {
-      //println params
-      //println params.datosPaciente
-      
       // el ehrUid se podria resolver en el momento del commit usando el uid del paciente...
       // 1. query del ehrUid por el patientUid
       // 2. creo sesion con el ehrUid
       
-      def cses = new ClinicalSession(patientUid: patientUid, authToken: session.token)
-      cses.datosPaciente = ehrService.getPatient(patientUid, session.token)
-      cses.datosPaciente.remove('id')
-      cses.datosPaciente.remove('deleted')
+      def patient = Patient.findByUid(patientUid)
+      def cses = new ClinicalSession(patient: patient, authToken: session.token)
       if (!cses.save(flush:true))
       {
          println cses.errors
@@ -692,7 +675,7 @@ class RegistrosController {
     */
    def currentSession()
    {
-      println "cs=="+ session.clinicalSession.datosPaciente +", "+ session.datosPaciente
+      println "cs=="+ session.clinicalSession.patient // +", "+ session.datosPaciente
       if (!session.clinicalSession)
       {
          redirect(controller:'person', action:'list')
@@ -738,14 +721,6 @@ class RegistrosController {
             return
          }
          
-         /*
-         def u = User.findByUserAndPass(user, pass)
-         if (!u)
-         {
-            flash.message = g.message(code:'registros.sign.error.auth')
-            return
-         }
-         */
          def token = ehrService.login(username, password, orgnumber)
          if (!token)
          {
@@ -794,153 +769,15 @@ class RegistrosController {
    def compositionList(String patientUid)
    {
       def res
-      def ehrUid = ehrService.getEhrIdByPatientId(patientUid, session.token)
-      
-      
-      /* ****
+      def patient = Patient.findByUid(patientUid)
+      def ehrUid = patient.ehrUid //ehrService.getEhrIdByPatientId(patientUid, session.token)
 
-      // Pide datos al EHR Server
-      def ehr = new RESTClient('http://'+ config.ehr_ip +':8090/ehr/')
-      
-      
-      // Lookup de ehrId por subjectId
-      // FIXME: esto se puede evitar si viene el dato con el paciente
-      try
-      {
-         // Si ocurre un error (status >399), tira una exception porque el defaultFailureHandler asi lo hace.
-         // Para obtener la respuesta del XML que devuelve el servidor, se accede al campo "response" en la exception.
-         res = ehr.get( path:'rest/ehrForSubject', query:[subjectUid:patientUid, format:'json'] )
-         
-         // FIXME: el paciente puede existir y no tener EHR, verificar si devuelve el EHR u otro error, ej. paciente no existe...
-         // WONTFIX: siempre tira una excepcion en cada caso de error porque el servidor tira error 500 not found en esos casos.
-         ehrUid = res.data.uid
-      }
-      catch (org.apache.http.conn.HttpHostConnectException e) // no hay conectividad
-      {
-         render e.message
-         return
-      }
-      catch (groovyx.net.http.HttpResponseException e)
-      {
-         // puedo acceder al response usando la excepci�n!
-         // 500 class groovyx.net.http.HttpResponseDecorator
-         println e.response.status.toString() +" "+ e.response.class.toString()
-         
-         // errorEHR no encontrado para el paciente $subjectId, se debe crear un EHR para el paciente
-         println e.response.data
-         
-         // WARNING: es el XML parseado, no el texto en bruto!
-         // class groovy.util.slurpersupport.NodeChild
-         println e.response.data.getClass()
-         
-         // Procesando el XML
-         println e.response.data.code.text() // error
-         println e.response.data.message.text() // el texto
-         
-         // text/xml
-         println e.response.contentType
-         
-         // TODO: log a disco
-         // no debe serguir si falla el lookup
-         //render "Ocurrio un error al obtener el ehr del paciente "+ e.message
-         render e.response.data.message.text()
-         return
-      }
-      */
-      
       println "ehrUid: $ehrUid"
       
-      try
-      {
-         // TODO: mover a EhrService
-         def ehr = new RESTClient(config.server.protocol + config.server.ip +':'+ config.server.port + config.server.path)
-         
-         // custom handlers to access the raw response from the reader
-         ehr.handler.failure = { resp, reader ->
-            println "failure handler"
-            [response:resp, reader:reader]
-         }
-         ehr.handler.success = { resp, reader ->
-            println "success handler"
-            [response:resp, reader:reader]
-         }
-         
-         res = ehr.get( path: 'rest/compositions',
-                        query: [ehrUid: ehrUid, format: 'json'],
-                        headers: ['Authorization': 'Bearer '+ session.token] )
-         
-         //println res.data // TEST NodeChild (XML parseado)
-
-         // groovy.util.slurpersupport.NodeChild for format XML
-         // net.sf.json.JSONObject for format JSON
-         //println res.reader.getClass()
-         //println res.response.getClass() //class groovyx.net.http.HttpResponseDecorator
-         
-         // JSON
-         //println res.reader.toString()
-         /*
-          * {
-               "result": [{
-                  "id": 1,
-                  "archetypeId": "openEHR-EHR-COMPOSITION.signos.v1",
-                  "category": "event",
-                  "dataIndexed": true,
-                  "ehrUid": "11111111-1111-1111-1111-111111111111",
-                  "lastVersion": true,
-                  "organizationUid": "d6b7bc9b-4909-4b80-ad8b-4f2c8ffa985c",
-                  "startTime": "2016-05-24 01:00:13",
-                  "subjectId": "11111111-1111-1111-1111-111111111111",
-                  "templateId": "Signos",
-                  "uid": "e20e3cc9-5def-47e6-a0d2-96cbf6675698"
-               }],
-               "pagination": {
-                  "max": 30,
-                  "offset": 0,
-                  "nextOffset": 30,
-                  "prevOffset": 0
-               }
-            }
-          */
-         
-         // XML
-         //println groovy.xml.XmlUtil.serialize(res.reader)
-         /* for reader class NodeChild (format = xml)
-          * <?xml version="1.0" encoding="UTF-8"?>
-          * <map>
-              <entry key="result">
-                <compositionIndex id="1">
-                  <archetypeId>openEHR-EHR-COMPOSITION.signos.v1</archetypeId>
-                  <category>event</category>
-                  <dataIndexed>true</dataIndexed>
-                  <ehrUid>11111111-1111-1111-1111-111111111111</ehrUid>
-                  <lastVersion>true</lastVersion>
-                  <organizationUid>d6b7bc9b-4909-4b80-ad8b-4f2c8ffa985c</organizationUid>
-                  <startTime>2016-05-24 01:00:13</startTime>
-                  <subjectId>11111111-1111-1111-1111-111111111111</subjectId>
-                  <templateId>Signos</templateId>
-                  <uid>e20e3cc9-5def-47e6-a0d2-96cbf6675698</uid>
-                </compositionIndex>
-              </entry>
-              <entry key="pagination">
-                <entry key="max">30</entry>
-                <entry key="offset">0</entry>
-                <entry key="nextOffset">30</entry>
-                <entry key="prevOffset">0</entry>
-              </entry>
-            </map>
-          */
-         
-         //println res.response.data.name() // map
-      }
-      catch (Exception e)
-      {
-         // TODO: log a disco
-         render "Ocurrio un error al obtener los registros del paciente "+ e.message
-         return
-      }
+      def documents = ehrService.getCompositions(session.token, ehrUid)
       
       // TODO: meterle el modelo
-      render (template:'compositionList', model:[compositionIdxList:res.reader.result])
+      render (template:'compositionList', model:[compositionIdxList: documents])
    }
    
    
@@ -987,7 +824,8 @@ class RegistrosController {
     */
    def checkoutComposition(String uid, String patientUid)
    {
-      def ehrUid = ehrService.getEhrIdByPatientId(patientUid, session.token)
+      def patient = Patient.findByUid(patientUid)
+      def ehrUid = patient.ehrUid
       
       def ehr = new RESTClient(config.server.protocol + config.server.ip +':'+ config.server.port + config.server.path)
       
@@ -1032,10 +870,7 @@ class RegistrosController {
       // Same code as RegistrosController.openSession
       // TODO: refactor
 
-
-      def cses = new ClinicalSession(patientUid: patientUid, authToken: session.token)
-      cses.datosPaciente = ehrService.getPatient(patientUid, session.token)
-      
+      def cses = new ClinicalSession(patient: patient, authToken: session.token)
       
       
       // Solo una clinical session puede estar seleccionada para crear registros,

@@ -47,8 +47,9 @@ class CommitJob {
       csess.each { cses ->
          
          token = cses.authToken
+         ehrUid = cses.patient.ehrUid
          
-         println "Commit de sesion: "+ cses.id + " para patUid: "+ cses.patientUid
+         println "Commit de sesion: "+ cses.id + " para patUid: "+ cses.patient.uid +" y ehr "+ ehrUid
          
          // Serializa a XML los documentos que estan en la sesion clinica
          serializer = new XmlSerializer(cses)
@@ -71,39 +72,6 @@ class CommitJob {
             
             versions += serDoc
          }
-         
-         // lookup de ehrUid
-         try
-         {
-            res = ehr.get(
-                path:'rest/ehrForSubject',
-                query:[subjectUid:cses.patientUid, format:'json'],
-                headers:['Authorization': 'Bearer '+ token]
-            )
-            
-            // FIXME: el paciente puede existir y no tener EHR, verificar si devuelve el EHR u otro error, ej. paciente no existe...
-            ehrUid = res.data.uid
-         }
-         catch (Exception e)
-         {
-            // si es una except por que dio error el request la except tiene response,
-            // pero si es una except por otro error, no va a tener response
-            //
-            //  No such property: response for class: org.apache.http.conn.HttpHostConnectException
-            // TODO: preguntar porque en los ejemplos del sitio web usan exception.response pero la except no tiene ese atributo
-            /*
-            if (e?.response.status == 404)
-            {
-               // TODO> ver que hacer con los errores
-            }
-            */
-            
-            println "except 1: "+ e.message
-            return // no debe serguir si falla el lookup
-         }
-
-         println "ehrUid: $ehrUid"
-         //println "Commit!"
        
          //println "versions: "+ params
          

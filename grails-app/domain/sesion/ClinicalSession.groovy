@@ -6,7 +6,6 @@ import demographic.Patient
 
 class ClinicalSession {
 
-   //String patientUid
    Date dateCreated
    
    /* fecha en la que se firma el registro y se cierra, es el commit logico al sistema,
@@ -18,7 +17,6 @@ class ClinicalSession {
    boolean open = true // se cierra cuando se firma
    boolean committed = false // true cuando se commitea al server
    
-   //Map datosPaciente = [:] // Map<String,String> cachea los datos para no tener que pedirlos de nuevo
    Patient patient
    
    //User composer // se setea cuando se firma el registro

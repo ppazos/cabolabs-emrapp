@@ -138,7 +138,7 @@
       <g:render template="/user/loggedUser" />
     </div>
     
-    <g:render template="patientData" model="${session.clinicalSession.datosPaciente}" />
+    <g:render template="patientData" model="[patientInstance: session.clinicalSession.patient]" />
     
     <h1>Orden de laboratorio</h1>
     <!-- TODO: poder ordenar multiples estudios. -->

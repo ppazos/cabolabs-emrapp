@@ -84,7 +84,7 @@
       <g:render template="/user/loggedUser" />
     </div>
     
-    <g:render template="patientData" model="${session.clinicalSession.datosPaciente}" />
+    <g:render template="patientData" model="[patientInstance: session.clinicalSession.patient]" />
   
     <h1>Registro de signos</h1>
 

@@ -26,27 +26,25 @@ class UserController {
          {
             session.token = token
             session.username = username
-            redirect(controller:'patient', action:'list')
+            
+            // Get current org uid
+            def profile = ehrService.profile(token, username)
+            
+            println orgnumber
+            println profile.email
+            println profile.organizations
+            profile.organizations.each { println "o: "+ it.number +" "+ it.uid}
+            
+            def currentOrg = profile.organizations.find { it.number == orgnumber }
+            session.organizationUid = currentOrg.uid
+            
+            redirect(controller:'patient', action:'index')
             return
          }
          else
          {
             flash.message = "Usuario no existe"
          }
-         /*
-           def u = User.findByUserAndPass(user, pass)
-           if (u)
-           {
-              println "login ok"
-              session.user = u
-              redirect(controller:'patient', action:'list')
-           }
-           else
-           {
-              println "login err"
-              flash.message = "Usuario no existe"
-           }
-         */
       }
    }
    
