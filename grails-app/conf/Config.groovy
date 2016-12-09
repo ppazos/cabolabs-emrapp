@@ -88,7 +88,7 @@ environments {
         
         server {
            protocol = "http://" // https://
-           ip = "cabolabs-ehrserver.rhcloud.com"
+           ip = "ehrserver-cabolabs2.rhcloud.com"
            port = "80"
            path = "/" // should start and end with /
         }
