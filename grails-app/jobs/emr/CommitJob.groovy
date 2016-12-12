@@ -115,7 +115,7 @@ class CommitJob {
             //println "res2: " + res.responseData.getClass() // nodeChild
             //println "res3: " + res.responseData.name() // result
             
-            if (res.responseData.type.code.text() != "AA")
+            if (res.responseData.type.text() != "AA")
             {
                throw new Exception("Server rejected the commit")
             }
@@ -123,11 +123,9 @@ class CommitJob {
          catch (Exception e)
          {
             // FIXME: log a disco
-            println "except 2:" + e.message
+            println "except commit:" + e.message
             
             e.printStackTrace(System.out)
-            
-            println "3"
             
             /*
                if (e?.response.status == 404)
