@@ -90,7 +90,7 @@ class CommitJob {
             
             // Sin URLENC da error null pointer exception sin mas datos... no se porque es. PREGUNTAR!
             res = ehr.post(
-               path:'rest/commit',
+               path:'api/v1/commit',
                requestContentType: XML,
                query:  [
                   ehrUid: ehrUid,

@@ -20,7 +20,7 @@ class EhrService {
       {
          // Sin URLENC da error null pointer exception sin mas datos... no se porque es. PREGUNTAR!
          def res = ehr.post(
-            path:'rest/login',
+            path:'api/v1/login',
             requestContentType: ContentType.URLENC,
             body: [username: username, password: password, organization: orgnumber]
          )
@@ -50,11 +50,11 @@ class EhrService {
       {
          // Sin URLENC da error null pointer exception sin mas datos... no se porque es. PREGUNTAR!
          def res = ehr.get(
-            path: 'rest/profile/'+username,
+            path: 'api/v1/users/'+username,
             query: [format: 'json']
          )
          
-         //println "profile res:"+ res.responseData.toString()
+         println "profile res:"+ res.responseData.toString()
          //println res.responseData.getClass()
          
          // username, email, organizations
@@ -79,7 +79,7 @@ class EhrService {
       {
          // Sin URLENC da error null pointer exception sin mas datos... no se porque es. PREGUNTAR!
          def res = ehr.post(
-            path:'rest/ehrs',
+            path:'api/v1/ehrs',
             requestContentType: ContentType.URLENC,
             body: [subjectUid: subjectUid]
          )
@@ -112,7 +112,7 @@ class EhrService {
             [response:resp, reader:reader]
          }
          
-         def data = ehr.get( path: 'rest/compositions',
+         def data = ehr.get( path: 'api/v1/compositions',
                         query: [ehrUid: ehrUid, format: 'json'],
                         headers: ['Authorization': 'Bearer '+ token] )
          
@@ -201,7 +201,7 @@ class EhrService {
       {
          // Si ocurre un error (status >399), tira una exception porque el defaultFailureHandler asi lo hace.
          // Para obtener la respuesta del XML que devuelve el servidor, se accede al campo "response" en la exception.
-         res = ehr.get( path: 'rest/ehrForSubject',
+         res = ehr.get( path: 'api/v1/ehrForSubject',
                         query: [subjectUid:patientUid, format:'json'],
                         headers: ['Authorization': 'Bearer '+ token] )
          

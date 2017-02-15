@@ -833,7 +833,7 @@ class RegistrosController {
       try
       {
          res = ehr.get( 
-            path: 'rest/checkout', 
+            path: 'api/v1/checkout', 
             contentType: TEXT, 
             query: [ehrUid:ehrUid, compositionUid:uid],
             headers: ['Authorization': 'Bearer '+ session.token]
