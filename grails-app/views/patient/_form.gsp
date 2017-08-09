@@ -24,13 +24,14 @@
 
 </div>
 
+<%-- ehrUId is set by the server
 <div class="fieldcontain ${hasErrors(bean: patientInstance, field: 'ehrUid', 'error')} ">
   <label for="ehrUid">
     <g:message code="patient.ehrUid.label" default="Ehr Uid" />
   </label>
   <g:textField name="ehrUid" value="${patientInstance?.ehrUid}"/>
 </div>
-
+--%>
 
 <div class="fieldcontain ${hasErrors(bean: patientInstance, field: 'sex', 'error')} required">
   <label for="sex">

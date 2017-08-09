@@ -90,10 +90,9 @@ class CommitJob {
             
             // Sin URLENC da error null pointer exception sin mas datos... no se porque es. PREGUNTAR!
             res = ehr.post(
-               path:'api/v1/commit',
+               path:'api/v1/ehrs/'+ ehrUid +'/compositions',
                requestContentType: XML,
                query:  [
-                  ehrUid: ehrUid,
                   auditSystemId: 'CABOLABS_EHR',
                   auditCommitter: cses.composer
                ],
